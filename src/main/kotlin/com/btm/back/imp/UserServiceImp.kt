@@ -19,14 +19,14 @@ class UserServiceImp :UserService{
         logger.debug(u.toString())
         System.out.println(u.toString())
         if (u!=null){
-            return BaseResult(false,"此号码已经注册请直接登录")
+            return BaseResult.FAIL("此号码已经注册请直接登录")
         }else{
             var user =User()
             user.account = body.phone
             user.phone = body.phone
             user.password = body.password
             userrepository.save(user)
-            return BaseResult(true,user)
+            return BaseResult.SECUESS(user)
         }
     }
 
@@ -35,9 +35,9 @@ class UserServiceImp :UserService{
         System.out.println(u.toString())
         if(u.isEmpty){
             userrepository.deleteById(id)
-            return BaseResult(true,"删除成功")
+            return BaseResult.SECUESS("删除成功")
         }else{
-            return BaseResult(false,"未找到该用户")
+            return BaseResult.FAIL("未找到该用户")
         }
 
 
@@ -51,12 +51,12 @@ class UserServiceImp :UserService{
         System.out.println(u.toString())
         if(u!=null){
             if(u.phone == body.phone&&u.password==body.password){
-                return BaseResult(true,u)
+                return BaseResult.SECUESS(u)
             }else{
-                return BaseResult(false,"账号或密码错误")
+                return BaseResult.FAIL("账号或密码错误",null)
             }
         }else{
-            return BaseResult(false,"请先注册账号")
+            return BaseResult.FAIL("请先注册账号",null)
         }
     }
 
@@ -64,7 +64,7 @@ class UserServiceImp :UserService{
         var list:List<User?>?=null
 
         list= userrepository.findAll()
-        return BaseResult(true,list)
+        return BaseResult.SECUESS(list)
     }
 
 

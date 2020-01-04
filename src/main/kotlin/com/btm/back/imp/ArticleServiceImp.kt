@@ -33,16 +33,16 @@ class ArticleServiceImp : ArticleService {
         artice.article_Updatetime = body?.article_Updatetime
         articleRespository.save(artice)
         logger.debug(artice.toString())
-        return BaseResult(true, artice)
+        return BaseResult.SECUESS( artice)
     }
 
     override fun getArticleDetailById(body: ReqBody?): BaseResult {
         val artice = articleRespository.findById(body?.id ?: 0)
         logger.debug(artice.toString())
         if (artice.isEmpty) {
-            return BaseResult(false, null)
+            return BaseResult.FAIL( null)
         } else {
-            return BaseResult(true, artice)
+            return BaseResult.SECUESS( artice)
         }
     }
 
@@ -50,9 +50,9 @@ class ArticleServiceImp : ArticleService {
         val artice = articleRespository.findById(body?.id ?: 0)
         logger.debug(artice.toString())
         if (artice.isEmpty) {
-            return BaseResult(false, null)
+            return BaseResult.FAIL()
         } else {
-            return BaseResult(true, artice.get().article_Type)
+            return BaseResult.SECUESS( artice.get().article_Type)
         }
     }
 
@@ -61,7 +61,7 @@ class ArticleServiceImp : ArticleService {
         val pages: Page<Article> = articleRespository.findAll(pageable)
         val iterator: MutableIterator<Article> = pages.iterator()
         logger.debug(iterator.toString())
-        return BaseResult(true, iterator)
+        return BaseResult.SECUESS( iterator)
 //
     }
 
@@ -81,10 +81,10 @@ class ArticleServiceImp : ArticleService {
             artice.get().article_Updatetime = body?.article_Updatetime
             articleRespository.save(artice.get())
             logger.debug(artice.get().toString())
-            return BaseResult(true, artice.get())
+            return BaseResult.SECUESS( artice.get())
 
         } else {
-            return BaseResult(false, "更新失败找到不这个帖子")
+            return BaseResult.FAIL( "更新失败找到不这个帖子")
 
         }
 
@@ -96,9 +96,9 @@ class ArticleServiceImp : ArticleService {
         logger.debug(article.toString())
         if (article.isPresent) {
             articleRespository.delete(article.get())
-            return BaseResult(false, "删除成功")
+            return BaseResult.SECUESS( "删除成功")
         } else {
-            return BaseResult(false, "要删除的帖子找不到")
+            return BaseResult.FAIL( "要删除的帖子找不到")
         }
     }
 

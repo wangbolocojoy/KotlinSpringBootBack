@@ -25,12 +25,12 @@ class NovelServiceImp :NovelService{
             val pages: Page<Novel> = novelRespository.findAll(pageable)
             val iterator: MutableIterator<Novel> = pages.iterator()
             logger.debug(iterator.toString())
-            return BaseResult(true, iterator)
+            return BaseResult.SECUESS(iterator)
         }else{
             val pages: Page<Novel> = novelRespository.findAllByNovel_type(body?.type?:8,pageable)
             val iterator: MutableIterator<Novel> = pages.iterator()
             logger.debug(iterator.toString())
-            return BaseResult(true, iterator)
+            return BaseResult.SECUESS(iterator)
         }
 
 
@@ -41,9 +41,9 @@ class NovelServiceImp :NovelService{
         val novel = novelRespository.findByNovel_nameLike(body!!.novelName)
         logger.debug(novel.toString())
         if (novel.isNullOrEmpty()){
-            return  BaseResult(true,novel)
+            return  BaseResult.SECUESS(novel)
         }else{
-            return  BaseResult(false,novel)
+            return  BaseResult.FAIL("没有搜索到")
         }
     }
 
@@ -51,9 +51,9 @@ class NovelServiceImp :NovelService{
         val novel = novelRespository.findById(body!!.novelId)
         logger.debug(novel.toString())
         if (novel.isPresent){
-            return  BaseResult(true,novel)
+            return  BaseResult.SECUESS(novel)
         }else{
-            return  BaseResult(false,novel)
+            return  BaseResult.FAIL("获取类型失败")
         }
     }
 

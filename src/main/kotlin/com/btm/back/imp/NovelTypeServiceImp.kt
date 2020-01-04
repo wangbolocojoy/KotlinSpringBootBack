@@ -18,7 +18,7 @@ class NovelTypeServiceImp : NovelTypeService {
     override fun getNovelTypes(body: ReqBody?): BaseResult {
         val list = novelTypeRespository.findAll()
         logger.debug(list.toString())
-        return BaseResult(true, list)
+        return BaseResult.SECUESS(list)
     }
 
 }

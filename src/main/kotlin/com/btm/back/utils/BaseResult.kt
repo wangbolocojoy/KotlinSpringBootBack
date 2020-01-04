@@ -7,7 +7,6 @@ class BaseResult {
             : String? = null
     var data //数据对象
             : Any? = null
-    private val yes = false
 
     constructor()
     constructor(code: Int?, massege: String?) {
@@ -15,23 +14,47 @@ class BaseResult {
         msg = massege
     }
 
+
     constructor(code: Int?, massege: String?, result: Any?) {
         status = code
         msg = massege
         data = result
     }
 
-    constructor(yes: Boolean, data: Any?) {
-        if (yes) {
-            status = HttpCode.successcode
-            msg = HttpCode.successmsg
-            this.data = data
-        } else {
-            status = HttpCode.failcode
-            msg = HttpCode.failmsg
-            this.data = data
-        }
+    constructor(msg: String?) {
+        this.msg = msg
     }
+
+    companion object{
+        fun SECUESS(massege: String?, data: Any?):BaseResult{
+            return BaseResult(HttpCode.successcode,massege,data)
+        }
+        fun SECUESS( data: Any?):BaseResult{
+            return BaseResult(HttpCode.successcode,HttpCode.successmsg,data)
+        }
+        fun SECUESS( messager: String):BaseResult{
+            return BaseResult(HttpCode.successcode,messager,null)
+        }
+        fun SECUESS():BaseResult{
+            return BaseResult(HttpCode.successcode,HttpCode.successmsg,"操作成功")
+        }
+
+
+        open fun FAIL(massege: String?, data: Any?):BaseResult{
+            return BaseResult(HttpCode.failcode,massege,data)
+        }
+        open fun FAIL( data: Any?):BaseResult{
+            return BaseResult(HttpCode.failcode,HttpCode.failmsg,data)
+        }
+        open fun FAIL(massege: String?):BaseResult{
+            return BaseResult(HttpCode.failcode,massege,null)
+        }
+        open fun FAIL():BaseResult{
+            return BaseResult(HttpCode.failcode,HttpCode.failmsg,"操作失败")
+        }
+
+    }
+
 
 
 
