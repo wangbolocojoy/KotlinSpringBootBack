@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository
 @Repository
 @Component
 interface NovelRespository : JpaRepository<Novel, String>, JpaSpecificationExecutor<Any> {
-//    @Query("select st from Novel st where st.novel_name like %?1%")
+    @Query("select st from Novel st where st.novel_name like %?1%")
     fun findByNovel_nameLike(name: String?): List<Novel>
 
     //    @Query("select st from Novel st where st.novel_name")
