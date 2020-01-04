@@ -84,7 +84,7 @@ class ArticleServiceImp : ArticleService {
             return BaseResult(true, artice.get())
 
         } else {
-            return BaseResult(false, null)
+            return BaseResult(false, "更新失败找到不这个帖子")
 
         }
 
