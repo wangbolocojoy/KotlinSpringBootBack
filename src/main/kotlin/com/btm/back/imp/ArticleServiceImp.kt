@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 class ArticleServiceImp : ArticleService {
     @Autowired
     lateinit var articleRespository: ArticleRespository
-    private val logger: Logger = LoggerFactory.getLogger(UserServiceImp::class.java)
+     private val log: Logger = LoggerFactory.getLogger(this.javaClass)
     override fun creatArticle(body: ReqBody?): BaseResult {
         val artice = Article()
         artice.article_Address_Id = body?.article_Address_Id
@@ -32,13 +32,13 @@ class ArticleServiceImp : ArticleService {
         artice.article_Typename = body?.article_Typename
         artice.article_Updatetime = body?.article_Updatetime
         articleRespository.save(artice)
-        logger.debug(artice.toString())
+        log.debug(artice.toString())
         return BaseResult.SECUESS( artice)
     }
 
     override fun getArticleDetailById(body: ReqBody?): BaseResult {
         val artice = articleRespository.findById(body?.id ?: 0)
-        logger.debug(artice.toString())
+        log.debug(artice.toString())
         if (artice.isEmpty) {
             return BaseResult.FAIL( null)
         } else {
@@ -48,7 +48,7 @@ class ArticleServiceImp : ArticleService {
 
     override fun getArticleByType(body: ReqBody?): BaseResult {
         val artice = articleRespository.findById(body?.id ?: 0)
-        logger.debug(artice.toString())
+        log.debug(artice.toString())
         if (artice.isEmpty) {
             return BaseResult.FAIL()
         } else {
@@ -60,7 +60,7 @@ class ArticleServiceImp : ArticleService {
         val pageable: Pageable = PageRequest.of(body?.page ?: 1, body?.pagesize ?: 10)
         val pages: Page<Article> = articleRespository.findAll(pageable)
         val iterator: MutableIterator<Article> = pages.iterator()
-        logger.debug(iterator.toString())
+        log.debug(iterator.toString())
         return BaseResult.SECUESS( iterator)
 //
     }
@@ -68,6 +68,11 @@ class ArticleServiceImp : ArticleService {
     override fun updateArticle(body: ReqBody?): BaseResult {
         val artice = articleRespository.findById(body?.id ?: 0)
         if (artice.isPresent) {
+            val article1 = artice.get()
+            body.run {
+                article1.article_Id = this?.article_Id
+                article1
+            }
             artice.get().article_Address_Id = body?.article_Address_Id
             artice.get().article_Author = body?.article_Author
             artice.get().article_AuthorId = body?.article_AuthorId
@@ -80,7 +85,7 @@ class ArticleServiceImp : ArticleService {
             artice.get().article_Typename = body?.article_Typename
             artice.get().article_Updatetime = body?.article_Updatetime
             articleRespository.save(artice.get())
-            logger.debug(artice.get().toString())
+            log.debug(artice.get().toString())
             return BaseResult.SECUESS( artice.get())
 
         } else {
@@ -93,7 +98,7 @@ class ArticleServiceImp : ArticleService {
 
     override fun deleteArticleById(body: ReqBody?): BaseResult {
         val article = articleRespository.findById(body?.id ?: 0)
-        logger.debug(article.toString())
+        log.debug(article.toString())
         if (article.isPresent) {
             articleRespository.delete(article.get())
             return BaseResult.SECUESS( "删除成功")

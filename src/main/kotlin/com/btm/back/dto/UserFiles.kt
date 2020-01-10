@@ -17,6 +17,8 @@ class UserFiles{
     var fileurl:String?=""
     var fileLikes:Int =0
     var fileseenum:Int =0
+//    var fileispublic:Bool =false
+
     override fun toString(): String {
         return "UserFiles(id=$id, userid=$userid, filetype=$filetype, filename=$filename, fileurl=$fileurl, fileLikes=$fileLikes, fileseenum=$fileseenum)"
     }

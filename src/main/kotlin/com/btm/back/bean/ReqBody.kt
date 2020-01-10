@@ -1,6 +1,7 @@
 package com.btm.back.bean
 
 import com.btm.back.utils.abstractObjectToString
+import java.io.Serializable
 
 data class ReqBody( var phone: String ,
                     var password: String ,
@@ -21,7 +22,7 @@ data class ReqBody( var phone: String ,
                     var article_Typename: String,
                     var article_Carry_Number: Int,
                     var article_Relase_Name: String,
-                    var article_State: String) : abstractObjectToString() {
+                    var article_State: String) : abstractObjectToString(),Serializable {
 
 
 }

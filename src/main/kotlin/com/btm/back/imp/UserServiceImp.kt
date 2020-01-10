@@ -9,10 +9,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+
 @Service
 class UserServiceImp :UserService{
     @Autowired
     lateinit var userrepository: UserRespository
+
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImp::class.java)
     override fun register(body: ReqBody): BaseResult {
         var u= userrepository.findByPhone(body.phone)
