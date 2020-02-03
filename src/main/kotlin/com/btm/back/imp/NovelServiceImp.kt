@@ -19,7 +19,6 @@ class NovelServiceImp :NovelService{
     lateinit var novelRespository : NovelRespository
     private val logger: Logger = LoggerFactory.getLogger(NovelServiceImp::class.java)
     override fun getPageNovelList(body: ReqBody?): BaseResult {
-        logger.debug(body.toString())
         val pageable: Pageable = PageRequest.of(body?.page ?: 1, body?.pagesize ?: 10)
         if(body?.type?:8 >= 8){
             val pages: Page<Novel> = novelRespository.findAll(pageable)
@@ -37,13 +36,13 @@ class NovelServiceImp :NovelService{
 
     }
 
-    override fun searchNovel(body: ReqBody?): BaseResult {
-        val novel = novelRespository.findByNovel_nameLike(body!!.novelName)
+    override fun searchNovel(body: String?): BaseResult {
+        val novel = novelRespository.findByNovel_nameLike(body)
         logger.debug(novel.toString())
         if (novel.isNullOrEmpty()){
-            return  BaseResult.SECUESS(novel)
-        }else{
             return  BaseResult.FAIL("没有搜索到")
+        }else{
+            return  BaseResult.SECUESS(novel)
         }
     }
 

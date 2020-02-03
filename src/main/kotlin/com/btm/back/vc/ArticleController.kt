@@ -27,7 +27,7 @@ class ArticleController {
     fun creatArticle(@RequestBody s: ReqBody?) = articleServiceImp.creatArticle(s)
 
     @UserLoginToken
-    @RequestMapping(value = ["/cas/getArticleDetailById"],method = [RequestMethod.POST])
+    @RequestMapping(value = ["/cas/getArticleDetailById"],method = [RequestMethod.GET])
     @Throws(java.lang.Exception::class)
     fun getArticleDetailById(@RequestBody s: ReqBody?) = articleServiceImp.getArticleDetailById(s)
 

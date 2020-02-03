@@ -6,7 +6,7 @@ import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -18,9 +18,9 @@ class NovelController {
     lateinit var novelServiceImp: NovelServiceImp
 
     @UserLoginToken
-    @RequestMapping(value = ["/cas/getPageNovelList"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/cas/getPageNovelList"])
     @Throws(Exception::class)
-    fun getPageNovelList( @RequestBody p: ReqBody)= novelServiceImp.getPageNovelList(p)
+    fun getPageNovelList( @RequestBody p: ReqBody?)= novelServiceImp.getPageNovelList(p)
 
     /**
      * 搜索小说
@@ -30,9 +30,9 @@ class NovelController {
      * @throws Exception
      */
     @UserLoginToken
-    @RequestMapping(value = ["/cas/searchNovel"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/cas/searchNovel"])
     @Throws(Exception::class)
-    fun searchNovel( @RequestBody p: ReqBody) =novelServiceImp.searchNovel(p)
+    fun searchNovel( @RequestParam novelName: String?) =novelServiceImp.searchNovel(novelName)
 
 
 
