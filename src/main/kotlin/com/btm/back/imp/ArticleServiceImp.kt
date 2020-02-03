@@ -17,93 +17,65 @@ import org.springframework.stereotype.Service
 class ArticleServiceImp : ArticleService {
     @Autowired
     lateinit var articleRespository: ArticleRespository
-     private val log: Logger = LoggerFactory.getLogger(this.javaClass)
+    private val log: Logger = LoggerFactory.getLogger(this.javaClass)
     override fun creatArticle(body: ReqBody?): BaseResult {
+        if (body == null) {
+            return BaseResult.FAIL("参数不能为空")
+        }
         val artice = Article()
-        artice.article_Address_Id = body?.article_Address_Id
-        artice.article_Author = body?.article_Author
-        artice.article_AuthorId = body?.article_AuthorId
-        artice.article_Carry_Number = body?.article_Carry_Number
-        artice.article_Creattime = body?.article_Creattime
-        artice.article_Relase_Name = body?.article_Relase_Name
-        artice.article_State = body?.article_State
-        artice.article_Title = body?.article_Title
-        artice.article_Type = body?.article_Type
-        artice.article_Typename = body?.article_Typename
-        artice.article_Updatetime = body?.article_Updatetime
+        artice.article_Address_Id = body.article_Address_Id
+        artice.article_Author = body.article_Author
+        artice.article_AuthorId = body.article_AuthorId
+        artice.article_Carry_Number = body.article_Carry_Number
+        artice.article_Creattime = body.article_Creattime
+        artice.article_Relase_Name = body.article_Relase_Name
+        artice.article_State = body.article_State
+        artice.article_Title = body.article_Title
+        artice.article_Type = body.article_Type
+        artice.article_Typename = body.article_Typename
+        artice.article_Updatetime = body.article_Updatetime
         articleRespository.save(artice)
-        log.debug(artice.toString())
-        return BaseResult.SECUESS( artice)
+        return BaseResult.SECUESS(artice)
     }
 
     override fun getArticleDetailById(body: ReqBody?): BaseResult {
-        val artice = articleRespository.findById(body?.id ?: 0)
-        log.debug(artice.toString())
-        if (artice.isEmpty) {
-            return BaseResult.FAIL( null)
-        } else {
-            return BaseResult.SECUESS( artice)
-        }
+        val artice = body?.id?.let { articleRespository.findById(it) }
+        return BaseResult.SECUESS(artice)
     }
 
     override fun getArticleByType(body: ReqBody?): BaseResult {
-        val artice = articleRespository.findById(body?.id ?: 0)
-        log.debug(artice.toString())
-        if (artice.isEmpty) {
-            return BaseResult.FAIL()
-        } else {
-            return BaseResult.SECUESS( artice.get().article_Type)
-        }
+        val artice = body?.id?.let { articleRespository.findById(it) }
+        return BaseResult.SECUESS(artice?.get()?.article_Type)
     }
 
     override fun getArticleList(body: ReqBody?): BaseResult {
         val pageable: Pageable = PageRequest.of(body?.page ?: 1, body?.pagesize ?: 10)
         val pages: Page<Article> = articleRespository.findAll(pageable)
         val iterator: MutableIterator<Article> = pages.iterator()
-        log.debug(iterator.toString())
-        return BaseResult.SECUESS( iterator)
+        return BaseResult.SECUESS(iterator)
 //
     }
 
     override fun updateArticle(body: ReqBody?): BaseResult {
-        val artice = articleRespository.findById(body?.id ?: 0)
-        if (artice.isPresent) {
-            val article1 = artice.get()
-            body.run {
-                article1.article_Id = this?.article_Id
-                article1
-            }
-            artice.get().article_Address_Id = body?.article_Address_Id
-            artice.get().article_Author = body?.article_Author
-            artice.get().article_AuthorId = body?.article_AuthorId
-            artice.get().article_Carry_Number = body?.article_Carry_Number
-            artice.get().article_Creattime = body?.article_Creattime
-            artice.get().article_Relase_Name = body?.article_Relase_Name
-            artice.get().article_State = body?.article_State
-            artice.get().article_Title = body?.article_Title
-            artice.get().article_Type = body?.article_Type
-            artice.get().article_Typename = body?.article_Typename
-            artice.get().article_Updatetime = body?.article_Updatetime
-            articleRespository.save(artice.get())
-            log.debug(artice.get().toString())
-            return BaseResult.SECUESS( artice.get())
-
-        } else {
-            return BaseResult.FAIL( "更新失败找到不这个帖子")
-
+        val artice = body?.id?.let { articleRespository.findById(it) }
+        if (artice ==null ){
+            return BaseResult.FAIL("更新失败")
+        }else{
+            var article1 = body as?  Article
+            article1?.let { articleRespository.save(it) }
+            return  BaseResult.SECUESS(article1)
         }
 
 
     }
 
     override fun deleteArticleById(body: ReqBody?): BaseResult {
-        val article = articleRespository.findById(body?.id ?: 0)
-        log.debug(article.toString())
-        if (article.isPresent) {
+        val article = body?.id?.let { articleRespository.findById(it) }
+        if (article!= null) {
             articleRespository.delete(article.get())
-            return BaseResult.SECUESS( "删除成功")
+            return BaseResult.SECUESS("删除成功")
         } else {
-            return BaseResult.FAIL( "要删除的帖子找不到")
+            return BaseResult.FAIL("要删除的帖子找不到")
         }
     }
 
