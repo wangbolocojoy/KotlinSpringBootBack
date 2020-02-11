@@ -8,3 +8,12 @@ http://47.112.107.122:8080/back-1/myApplication/cas/getPageNovelList
 搜索说接口改为get 参数novelName=都市
 http://47.112.107.122:8080/back-1/myApplication/cas/searchNovel?novelName=都市
 
+
+
+
+
+## 部分获取小说列表，根据类型获取，可以不传类型默认返回所有类型
+![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2020-02-1119.17.09.png)
+![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2020-02-1119.20.42.png)
+
+

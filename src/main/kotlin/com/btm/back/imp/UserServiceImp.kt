@@ -17,7 +17,7 @@ class UserServiceImp :UserService{
 
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImp::class.java)
     override fun register(body: ReqBody): BaseResult {
-        var u= userrepository.findByPhone(body.phone)
+        var u= body.phone?.let { userrepository.findByPhone(it) }
         logger.debug(u.toString())
         System.out.println(u.toString())
         if (u!=null){
@@ -47,7 +47,7 @@ class UserServiceImp :UserService{
 
     override fun login(body: ReqBody): BaseResult {
         logger.debug(body.toString())
-        var u= userrepository.findByAccount(body.phone)
+        var u= body.phone?.let { userrepository.findByAccount(it) }
 
         logger.debug(u.toString())
         System.out.println(u.toString())
