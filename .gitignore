@@ -57,3 +57,4 @@ src/main/kotlin/com/btm/back/app/
 src/main/resources/.DS_Store
 src/main/resources/static/
 src/main/resources/templates/
+src/main/kotlin/com/btm/back/utils/OSSClientConstants.kt
