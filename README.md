@@ -7,10 +7,9 @@ http://47.112.107.122:8080/back-1/myApplication/cas/getPageNovelList
 
 搜索说接口改为get 参数novelName=都市
 http://47.112.107.122:8080/back-1/myApplication/cas/searchNovel?novelName=都市
-
-
-
-
+# 我的swift APP框架
+## 下载该项目之后可以快速进行iosapp的开发，集成网络请求Moya架Objectmapper，数据库CoreData数据管理类，BaserviewController实现自动适配Dark模式
+[传送门](https://github.com/wangbolocojoy/swiftTemplate)
 
 # 部分获取小说列表，根据类型获取，可以不传类型默认返回所有类型
 ![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2020-02-1119.17.09.png)
@@ -28,4 +27,6 @@ http://47.112.107.122:8080/back-1/myApplication/cas/searchNovel?novelName=都市
 ![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/IMG_1715.PNG)
 # 我的简历下载
 [简历](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/pdf/%E6%88%91%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%AE%80%E5%8E%86.pdf). 
- 
+
+
+
