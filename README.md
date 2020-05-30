@@ -27,5 +27,5 @@ http://47.112.107.122:8080/back-1/myApplication/cas/searchNovel?novelName=都市
 # iosDark模式下的idlink
 ![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/IMG_1715.PNG)
 # 我的简历下载
-[简历](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/pdf/%E7%AE%80%E5%8E%86.pdf). 
+[简历](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/pdf/%E6%88%91%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%AE%80%E5%8E%86.pdf). 
  
