@@ -16,7 +16,7 @@ class NovelController {
 
     @Autowired
     lateinit var novelServiceImp: NovelServiceImp
-
+    @UserLoginToken
     @RequestMapping(value = ["/cas/getPageNovelList"],method = [RequestMethod.POST])
     @Throws(Exception::class)
     fun getPageNovelList( @RequestBody p: ReqBody?)= novelServiceImp.getPageNovelList(p)

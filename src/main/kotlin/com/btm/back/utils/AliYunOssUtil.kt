@@ -1,5 +1,4 @@
 package com.btm.back.utils
-
 import com.aliyun.oss.OSSClient
 import com.aliyun.oss.model.ObjectMetadata
 import java.io.ByteArrayInputStream
@@ -18,7 +17,7 @@ object AliYunOssUtil {
      * @param suffix  文件后缀名
      * @return String 生成的文件url
      */
-    fun UploadToAliyun(filedir: String, `in`: InputStream?, suffix: String,type:String,user:String): String {
+    fun UploadToAliyun(filedir: String, `in`: InputStream?, suffix: String, type: String, user:String): String {
         println("------------>文件名称为:  $filedir.$suffix")
         ossClient = OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         var url: URL? = null
@@ -30,10 +29,11 @@ object AliYunOssUtil {
             objectMetadata.setHeader("Pragma", "no-cache") //设置页面不缓存
             objectMetadata.contentType = getcontentType(suffix)
             objectMetadata.contentDisposition = "inline;filename=$filedir.$suffix"
-            if(type =="vide"){
-                filepath = "home/vide/"+ createFolder(user)+"/"
+
+            filepath = if(type == "video"){
+                OSSClientConstants.VIDEO+ createFolder(user)+"/"
             }else{
-                filepath = "home/picture/"+ createFolder(user)+"/"
+                OSSClientConstants.PICTURE+ createFolder(user)+"/"
             }
             var fileoder = filepath+filedir
             // 上传文件

@@ -2,6 +2,7 @@ package com.btm.back.vc
 
 import com.btm.back.bean.ReqBody
 import com.btm.back.imp.UserServiceImp
+import com.btm.back.utils.PassToken
 import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
@@ -16,11 +17,11 @@ import javax.validation.Valid
 class UserController  {
     @Autowired
     lateinit var userServiceImp :UserServiceImp
-
+    @PassToken
     @RequestMapping(value = ["cas/register"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun register(@Valid @RequestBody u: ReqBody) = userServiceImp.register(u)
-
+    @PassToken
     @RequestMapping(value = ["cas/login"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun login(@Valid @RequestBody u: ReqBody)= userServiceImp.login(u)

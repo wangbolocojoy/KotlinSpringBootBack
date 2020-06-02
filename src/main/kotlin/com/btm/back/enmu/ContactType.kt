@@ -15,3 +15,8 @@ enum class ContactType {
 enum class StateType {
     OPEN, CLOSED
 }
+enum class UploadType{
+    VIDEO,
+    PICTUE
+
+}

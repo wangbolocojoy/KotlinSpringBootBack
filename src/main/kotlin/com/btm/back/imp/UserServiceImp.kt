@@ -2,9 +2,12 @@ package com.btm.back.imp
 
 import com.btm.back.bean.ReqBody
 import com.btm.back.dto.User
+import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.UserRespository
 import com.btm.back.service.UserService
 import com.btm.back.utils.BaseResult
+import com.btm.back.utils.TokenService
+import com.btm.back.vo.UserVo
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,8 +29,14 @@ class UserServiceImp :UserService{
             user.account = body.phone
             user.phone = body.phone
             user.password = body.password
+            user.token = TokenService.getToken(user)
             userrepository.save(user)
-            BaseResult.SECUESS(user)
+            var usvo = UserVo()
+//            var bser = BeanCopier.create(User::class.java,UserVo::class.java,false)
+//            bser.copy(user,usvo,null)
+            var s = CopierUtil.copyProperties(user,UserVo::class.java)
+            logger.debug(s.toString())
+            BaseResult.SECUESS(s)
         }
     }
 
@@ -56,6 +65,11 @@ class UserServiceImp :UserService{
         }else{
             BaseResult.FAIL("请先注册账号",null)
         }
+    }
+
+    override fun findUserById(phone: String):User? {
+        var u=  userrepository.findByPhone(phone)
+        return u
     }
 
     override fun test() : BaseResult{
