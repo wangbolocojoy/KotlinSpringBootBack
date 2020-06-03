@@ -26,8 +26,10 @@ class Article {
     var article_Carry_Number: Int? = null
     var article_Relase_Name: String? = null
     var article_State: String? = null
+    var article_Address:String? = null
     override fun toString(): String {
-        return "Article(id=$id, article_Id=$article_Id, article_Title=$article_Title, article_Creattime=$article_Creattime, article_Updatetime=$article_Updatetime, article_Author=$article_Author, article_AuthorId=$article_AuthorId, article_Type=$article_Type, article_Address_Id=$article_Address_Id, article_Typename=$article_Typename, article_Carry_Number=$article_Carry_Number, article_Relase_Name=$article_Relase_Name, article_State=$article_State)"
+        return "Article(id=$id, article_Id=$article_Id, article_Title=$article_Title, article_Creattime=$article_Creattime, article_Updatetime=$article_Updatetime, article_Author=$article_Author, article_AuthorId=$article_AuthorId, article_Type=$article_Type, article_Address_Id=$article_Address_Id, article_Typename=$article_Typename, article_Carry_Number=$article_Carry_Number, article_Relase_Name=$article_Relase_Name, article_State=$article_State, article_Address=$article_Address)"
     }
+
 
 }

@@ -15,11 +15,12 @@ class UserFiles{
     var filetype: String? = ""
     var filename: String? = ""
     var fileurl:String?=""
+    var fileGroupId:Int?=0
     var fileLikes:Int =0
     var fileseenum:Int =0
     var fileispublic:Boolean =false
     override fun toString(): String {
-        return "UserFiles(id=$id, userid=$userid, filetype=$filetype, filename=$filename, fileurl=$fileurl, fileLikes=$fileLikes, fileseenum=$fileseenum, fileispublic=$fileispublic)"
+        return "UserFiles(id=$id, userid=$userid, filetype=$filetype, filename=$filename, fileurl=$fileurl, fileGroupId=$fileGroupId, fileLikes=$fileLikes, fileseenum=$fileseenum, fileispublic=$fileispublic)"
     }
 
 
