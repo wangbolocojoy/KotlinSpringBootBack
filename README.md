@@ -16,17 +16,7 @@ http://47.112.107.122:8080/back-1/myApplication/cas/searchNovel?novelName=都市
 
 ![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2020-02-1119.20.42.png)
 
-# ios上架的项目
-# ios工具类idlinktools，方便使用动态码进行iam单点登录
-![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/IMG_1714.PNG)
-# ios已上架商店idlink
-![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/IMG_1719.PNG)
-# 以上架的微信小程序，微信小程序直接搜索idlink
-![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/IMG_1717.PNG)
-# iosDark模式下的idlink
-![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/IMG_1715.PNG)
-# 我的简历下载
-[简历](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/pdf/%E6%88%91%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%AE%80%E5%8E%86.pdf). 
+
 
 
 
