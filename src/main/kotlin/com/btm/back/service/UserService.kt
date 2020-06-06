@@ -13,6 +13,7 @@ interface UserService {
     fun updateUser(body: ReqBody):BaseResult
     fun updateImages(id: Int,uploadType:String,les:List<MultipartFile?>? ):BaseResult
     fun test(): BaseResult
+    fun sendPost(body: ReqBody)
 //    fun deleteAllUsers()
 //    fun getUserById(id: Long): User?
 //    fun getUsers(): MutableIterable<User>?

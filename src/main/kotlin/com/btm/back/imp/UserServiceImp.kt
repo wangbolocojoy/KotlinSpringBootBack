@@ -118,5 +118,8 @@ class UserServiceImp :UserService{
         return BaseResult.SECUESS(list)
     }
 
+    override fun sendPost(body: ReqBody) {
+    }
+
 
 }

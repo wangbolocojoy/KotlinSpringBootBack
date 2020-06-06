@@ -18,16 +18,16 @@ class NovelServiceImp :NovelService{
     @Autowired
     lateinit var novelRespository : NovelRespository
     private val logger: Logger = LoggerFactory.getLogger(NovelServiceImp::class.java)
+    @Throws
     override fun getPageNovelList(body: ReqBody?): BaseResult {
 
         val pageable: Pageable = PageRequest.of(body?.page ?: 1, body?.pagesize ?: 10)
-        if(body?.type?:8 >= 8){
+        if(body?.type?:7 >= 7){
             val pages: Page<Novel> = novelRespository.findAll(pageable)
             val iterator: MutableIterator<Novel> = pages.iterator()
-            logger.debug(iterator.toString())
             return BaseResult.SECUESS(iterator)
         }else{
-            val pages: Page<Novel> = novelRespository.findAllByNovel_type(body?.type?:8,pageable)
+            val pages: Page<Novel> = novelRespository.findAllByNovel_type(body?.type?:7,pageable)
             val iterator: MutableIterator<Novel> = pages.iterator()
             logger.debug(iterator.toString())
             return BaseResult.SECUESS(iterator)
