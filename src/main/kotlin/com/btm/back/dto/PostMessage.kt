@@ -1,10 +1,7 @@
 package com.btm.back.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 
 @Entity
@@ -12,7 +9,7 @@ import javax.persistence.Table
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
 class PostMessage  {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = 0
     var userid: Int? = 0
     var postTitle: String? = ""

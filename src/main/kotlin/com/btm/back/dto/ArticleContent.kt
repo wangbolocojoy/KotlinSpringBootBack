@@ -1,10 +1,7 @@
 package com.btm.back.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 /**
  * @author hero
@@ -14,7 +11,7 @@ import javax.persistence.Table
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
 class ArticleContent {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
     var articleName: String? = null
     var articleImage: String? = null
@@ -22,8 +19,5 @@ class ArticleContent {
     var articleAuthor: String? = null
     var articleDetail: String? = null
     var articleLikes: Int? = null
-    override fun toString(): String {
-        return "ArticleContent(id=$id, articleName=$articleName, articleImage=$articleImage, articleTitle=$articleTitle, articleAuthor=$articleAuthor, articleDetail=$articleDetail, articleLikes=$articleLikes)"
-    }
 
 }

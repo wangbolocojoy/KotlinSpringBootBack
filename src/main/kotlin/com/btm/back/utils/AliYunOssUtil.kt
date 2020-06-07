@@ -41,14 +41,9 @@ object AliYunOssUtil {
             println("putResult---"+putResult)
             val resultStr = putResult.getETag();
             println("resultStr---"+resultStr)
-            var expiration: Date? = null //过期时间
-            //            String[] split = filedir.split("/");
-//            if(split[0].equals("circle")){// 朋友圈图片,设置URL过期时间为3个月
-//                expiration = new Date(new Date().getTime() + 3600l * 1000 * 24 * 90);
-//            }else{// 头像,设置URL过期时间为10年
-            expiration = Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10)
-            //            }
-// 生成URL
+
+            var expiration = Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10)
+            // 生成URL
             url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
             println("地址"+url)
         } catch (e: IOException) {
@@ -127,9 +122,9 @@ object AliYunOssUtil {
      * @param folder  模拟文件夹名 如"qj_nanjing/"
      * @param key Bucket下的文件的路径名+文件名 如："upload/cake.jpg"
      */
-     fun  deleteFile(   bucketName:String,  folder:String,  key:String){
+     fun  deleteFile(   bucketName:String,  folder:String,  key:String ,id:String){
          ossClient =OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
-        ossClient!!.deleteObject(bucketName, folder + key);
+        ossClient!!.deleteObject(bucketName, folder+id+"/" + key);
         System.out.println("删除" + bucketName + "下的文件" + folder + key + "成功");
     }
 

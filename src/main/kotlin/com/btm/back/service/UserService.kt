@@ -11,7 +11,7 @@ interface UserService {
     fun findUserById(id: String):User?
     fun getuserinfo(body: ReqBody):BaseResult
     fun updateUser(body: ReqBody):BaseResult
-    fun updateImages(id: Int,uploadType:String,les:List<MultipartFile?>? ):BaseResult
+    fun updateImages(id: Int,uploadType:String,uploadFile:MultipartFile?):BaseResult
     fun test(): BaseResult
     fun sendPost(body: ReqBody)
 //    fun deleteAllUsers()

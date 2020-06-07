@@ -1,31 +1,29 @@
 package com.btm.back.dto
 
-import com.btm.back.utils.abstractObjectToString
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "User")
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
-class User : abstractObjectToString() {
+class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = 0
     var relasename: String? = ""
     var phone: String? = ""
     var nickname: String? = ""
     var account: String? = ""
     var password: String? = ""
+    var userSex:Boolean? =false
     var icon: String? = ""
     var likestarts: Int? = 0
     var fances: Int? = 0
     var token: String? = ""
-    override fun toString(): String {
-        return "User(id=$id, relasename=$relasename, phone=$phone, nickname=$nickname, account=$account, password=$password, icon=$icon, likestarts=$likestarts, fances=$fances, token=$token)"
-    }
+    var seayinfo:String? = ""
+    var address:String? = ""
+    var originalFilename:String? = ""
+
 
 
 }

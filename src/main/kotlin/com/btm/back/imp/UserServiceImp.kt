@@ -7,6 +7,7 @@ import com.btm.back.repository.UserRespository
 import com.btm.back.service.UserService
 import com.btm.back.utils.AliYunOssUtil
 import com.btm.back.utils.BaseResult
+import com.btm.back.utils.OSSClientConstants
 import com.btm.back.utils.TokenService
 import com.btm.back.vo.UserVo
 import org.slf4j.Logger
@@ -71,22 +72,23 @@ class UserServiceImp :UserService{
     }
 
     override fun getuserinfo(body: ReqBody): BaseResult {
-        val u= body.id?.let { userrepository.findUserById(it) }
+        val u= body.id?.let { userrepository.findById(it) }
         return  BaseResult.SECUESS(u)
     }
 
 
 
     override fun updateUser(body: ReqBody): BaseResult {
-        val u= body.id?.let { userrepository.findUserById(it) }
+        val u= body.id?.let { userrepository.findById(it) }
         if (u != null){
-            u.icon = body.icon
             u.fances = body.fances
             u.likestarts = body.likestarts
             u.nickname = body.nickname
             u.relasename = body.relasename
-//            u.phone = body.phone
             u.account = body.account
+            u.address = body.address
+            u.seayinfo = body.seayinfo
+            u.userSex = body.userSex
             userrepository.save(u)
             var s = CopierUtil.copyProperties(u,UserVo::class.java)
             return  BaseResult.SECUESS(s)
@@ -95,17 +97,25 @@ class UserServiceImp :UserService{
         }
     }
 
-    override fun updateImages(id: Int,uploadType:String, files:List<MultipartFile?>? ):BaseResult {
-        val u=  userrepository.findUserById(id)
-        if (null !=u && !files.isNullOrEmpty()){
 
-            var list:ArrayList<String>? = null
-            for (file in files ) {
-               var url =AliYunOssUtil.UploadToAliyun(file!!.name,file.inputStream,file.contentType ?: "jpg",uploadType,id.toString())
-                list?.add(url)
+
+    override fun updateImages(id: Int,uploadType:String, uploadFile:MultipartFile? ):BaseResult {
+
+        val u=  userrepository.findById(id)
+
+        if (null !=u ){
+            if (null!=uploadFile){
+                val oldfilename = u.originalFilename
+                var url =AliYunOssUtil.UploadToAliyun(uploadFile.originalFilename ?: "",uploadFile.inputStream,uploadFile.contentType ?: "jpg",uploadType,id.toString())
+                u.icon = url
+                u.originalFilename = uploadFile.originalFilename
+                AliYunOssUtil.deleteFile(OSSClientConstants.BACKET_NAME,OSSClientConstants.PICTURE,oldfilename ?: "",id.toString())
+                userrepository.save(u)
+                var s = CopierUtil.copyProperties(u,UserVo::class.java)
+                return BaseResult.SECUESS("头像修改成功",s)
+            }else{
+                return  BaseResult.FAIL("文件不存在")
             }
-         return BaseResult.SECUESS(list)
-
         }else{
             return  BaseResult.FAIL("该用户不存在")
         }
