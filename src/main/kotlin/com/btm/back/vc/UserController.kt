@@ -37,7 +37,7 @@ class UserController  {
     @UserLoginToken
     @RequestMapping(value = ["uploadusericon"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    private fun uploadImages(@RequestParam  id:Int, @RequestParam uploadtype:String, @RequestPart("uploadFile")uploadFile: MultipartFile? )= userServiceImp.updateImages(id,uploadtype,uploadFile)
+    private fun uploadIcon(@RequestParam  id:Int, @RequestParam uploadtype:String, @RequestPart("uploadFile")uploadFile: MultipartFile? )= userServiceImp.updateIcon(id,uploadtype,uploadFile)
     @RequestMapping(value = ["test"])
     @Throws(java.lang.Exception::class)
     private fun test()=userServiceImp.test()

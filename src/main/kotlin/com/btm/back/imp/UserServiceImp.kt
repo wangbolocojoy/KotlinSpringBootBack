@@ -99,7 +99,7 @@ class UserServiceImp :UserService{
 
 
 
-    override fun updateImages(id: Int,uploadType:String, uploadFile:MultipartFile? ):BaseResult {
+    override fun updateIcon(id: Int,uploadType:String, uploadFile:MultipartFile? ):BaseResult {
 
         val u=  userrepository.findById(id)
 
