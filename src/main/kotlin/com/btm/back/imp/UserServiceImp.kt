@@ -150,9 +150,9 @@ class UserServiceImp :UserService{
      * 查找关注
      */
     override fun searchfollow(body: ReqBody): BaseResult {
-        val user = userrepository.findById(body.id ?:0)
-        val follow = followRespository.findByFollowid(body.followid?:0)
-        val f =follow.any { body.id == it.followid }
+        val user = userrepository.findByPhone(body.phone ?:"")
+        val follow = followRespository.findByFollowid(body.id?:0)
+        val f =follow.any { user?.id == it.followid }
         user?.isfollow = f
         return if (user!= null){
             val s = CopierUtil.copyProperties(user,UserVo::class.java)

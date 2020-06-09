@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
+/**
+ * 关注--粉丝
+ */
 @RestController
 @RequestMapping(value = ["/swiftTemplate/Follow"])
 class FollowController {
+
     @Autowired
     lateinit var  followService: FollowService
 

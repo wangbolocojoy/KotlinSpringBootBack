@@ -1,20 +1,119 @@
-# KotlinSpringBootBack
-Kotlin Spring Boot Project
-小说数据均来自爬虫存入数据库，不做商业用途
-测试需要改变这两个接口为get 浏览器直接访问  其他接口均为post请求浏览器不能直接访问
-测试接口：获取小说列表 get 参数可不传body{page:1,size:10}
-http://47.112.107.122:8080/back-1/myApplication/cas/getPageNovelList
+# 我的app后台项目
+##Kotlin Spring Boot Project
+###小说数据均来自爬虫存入数据库，不做商业用途
+###该项目缺少阿里云OSSkey配置文件，数据库配置文件
+####使用kotlin开发后台还是很不错的选择
+##用户表操作接口👇
+```kotlin
+/**
+* 用户
+*/
+@RestController
+@RequestMapping(value = ["/swiftTemplate/User"])
+class UserController  {
+    
+    @Autowired
+    lateinit var userServiceImp :UserServiceImp
+   
+    @PassToken
+    @RequestMapping(value = ["register"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun register(@Valid @RequestBody u: ReqBody) = userServiceImp.register(u)
+    
+    @PassToken
+    @RequestMapping(value = ["login"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun login(@Valid @RequestBody u: ReqBody)= userServiceImp.login(u)
 
-搜索说接口改为get 参数novelName=都市
-http://47.112.107.122:8080/back-1/myApplication/cas/searchNovel?novelName=都市
-# 我的swift APP框架
-## 下载该项目之后可以快速进行iosapp的开发，集成网络请求Moya架Objectmapper，数据库CoreData数据管理类，BaserviewController实现自动适配Dark模式
-[传送门](https://github.com/wangbolocojoy/swiftTemplate)
+    @UserLoginToken
+    @RequestMapping(value = ["getUseInfo"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getUserInfo(@Valid @RequestBody u: ReqBody)= userServiceImp.getuserinfo(u)
 
-# 部分获取小说列表，根据类型获取，可以不传类型默认返回所有类型
-![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2020-02-1119.17.09.png)
+    @UserLoginToken
+    @RequestMapping(value = ["updateUser"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun updateUser(@Valid @RequestBody u: ReqBody)= userServiceImp.updateUser(u)
 
-![image](https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2020-02-1119.20.42.png)
+    @UserLoginToken
+    @RequestMapping(value = ["uploadusericon"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun uploadIcon(@RequestParam  id:Int, @RequestParam uploadtype:String, @RequestPart("uploadFile")uploadFile: MultipartFile? )= userServiceImp.updateIcon(id,uploadtype,uploadFile)
+
+    @RequestMapping(value = ["test"])
+    @Throws(java.lang.Exception::class)
+    private fun test()=userServiceImp.test()
+
+    @UserLoginToken
+    @RequestMapping(value = ["deleteall"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun deleteall(@RequestBody u: ReqBody) {}
+
+    @UserLoginToken
+    @RequestMapping(value = ["searchfollow"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun searchfollow(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
+
+}
+
+```
+##粉丝 --关注接口
+```kotlin
+/**
+ * 关注--粉丝
+ */
+@RestController
+@RequestMapping(value = ["/swiftTemplate/Follow"])
+class FollowController {
+
+    @Autowired
+    lateinit var  followService: FollowService
+
+    @PassToken
+    @RequestMapping(value = ["followuser"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun followuser(@Valid @RequestBody u: ReqBody) = followService.followUser(u)
+
+    @PassToken
+    @RequestMapping(value = ["unfollowuser"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun unfollowuser(@Valid @RequestBody u: ReqBody) = followService.unFollowUser(u)
+
+    @PassToken
+    @RequestMapping(value = ["getfancelist"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getfancelist(@Valid @RequestBody u: ReqBody) = followService.getFanceList(u)
+
+    @PassToken
+    @RequestMapping(value = ["getfollowlist"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getfollowlist(@Valid @RequestBody u: ReqBody) = followService.getFollowList(u)
+}
+
+
+```
+
+
+
+
+
+# 我的APP项目🍎版 使用该后台接口开发的app[传送门👉](https://github.com/wangbolocojoy/swiftTemplate)
+## 该项目使用以下框架
+
+```swift
+pod 'Moya', '~> 13.0.1'
+pod 'ObjectMapper', '~> 3.5.2'
+pod 'AlamofireImage', '~> 3.5.2'
+pod 'SwiftyBeaver', '~> 1.7.0'
+pod 'IQKeyboardManagerSwift', '~> 6.4.0'
+pod 'MJRefresh', '~> 3.2.0'
+pod 'Gifu', '~> 3.2.0'
+pod 'SwiftyRSA','~>1.5.0'
+pod 'CryptoSwift' , '~> 1.0.0'
+pod 'Bugly','~> 2.5.0'
+```
+
+
 
 
 
