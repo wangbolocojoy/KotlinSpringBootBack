@@ -9,20 +9,21 @@ import javax.persistence.*
 class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int? = 0
-    var relasename: String? = ""
-    var phone: String? = ""
-    var nickname: String? = ""
-    var account: String? = ""
-    var password: String? = ""
-    var userSex:Boolean? =false
-    var icon: String? = ""
-    var likestarts: Int? = 0
-    var fances: Int? = 0
-    var token: String? = ""
-    var seayinfo:String? = ""
-    var address:String? = ""
-    var originalFilename:String? = ""
+    var id: Int? = null
+    var relasename: String? = null
+    var phone: String? = null
+    var nickname: String? = null
+    var account: String? = null
+    var password: String? = null
+    var usersex:Boolean? = false
+    var icon: String? = null
+    var likestarts: Int? = null
+    var fances: Int? = null
+    var token: String? = null
+    var seayinfo:String? = null
+    var address:String? = null
+    var originalfilename:String? = null
+    var isfollow:Boolean? = false
 
 
 

@@ -59,3 +59,7 @@ src/main/resources/static/
 src/main/resources/templates/
 src/main/kotlin/com/btm/back/utils/OSSClientConstants.kt
 src/main/kotlin/com/btm/back/vo/
+/src/main/resources/application.yml
+/src/main/resources/application-debug.yml
+/src/main/resources/application-relase.yml
+/src/main/resources/logback-spring.xml

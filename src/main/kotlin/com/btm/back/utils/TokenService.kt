@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 object TokenService {
     fun getToken(user: User): String {
         var token = ""
-        token = JWT.create().withAudience(user.phone) // 将 user id 保存到 token 里面
+        token = JWT.create().withAudience(user.phone) // 将 user phone 保存到 token 里面
                 .sign(Algorithm.HMAC256(user.password)) // 以 password 作为 token 的密钥;
         return token
     }

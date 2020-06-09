@@ -38,14 +38,19 @@ class UserController  {
     @RequestMapping(value = ["uploadusericon"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun uploadIcon(@RequestParam  id:Int, @RequestParam uploadtype:String, @RequestPart("uploadFile")uploadFile: MultipartFile? )= userServiceImp.updateIcon(id,uploadtype,uploadFile)
+
     @RequestMapping(value = ["test"])
     @Throws(java.lang.Exception::class)
     private fun test()=userServiceImp.test()
+
     @UserLoginToken
     @RequestMapping(value = ["deleteall"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    private fun deleteall(@RequestBody u: ReqBody) {
-    }
+    private fun deleteall(@RequestBody u: ReqBody) {}
 
+    @UserLoginToken
+    @RequestMapping(value = ["searchfollow"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun searchfollow(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
 
 }

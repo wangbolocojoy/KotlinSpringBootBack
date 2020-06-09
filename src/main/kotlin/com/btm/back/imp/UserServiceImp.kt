@@ -3,6 +3,7 @@ package com.btm.back.imp
 import com.btm.back.bean.ReqBody
 import com.btm.back.dto.User
 import com.btm.back.helper.CopierUtil
+import com.btm.back.repository.FollowRespository
 import com.btm.back.repository.UserRespository
 import com.btm.back.service.UserService
 import com.btm.back.utils.AliYunOssUtil
@@ -20,10 +21,11 @@ import org.springframework.web.multipart.MultipartFile
 class UserServiceImp :UserService{
     @Autowired
     lateinit var userrepository: UserRespository
-
+    @Autowired
+    lateinit var followRespository: FollowRespository
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImp::class.java)
     override fun register(body: ReqBody): BaseResult {
-        var u= body.phone?.let { userrepository.findByPhone(it) }
+        val u= body.phone?.let { userrepository.findByPhone(it) }
         logger.debug(u.toString())
         return if (u!=null){
             BaseResult.FAIL("此号码已经注册请直接登录")
@@ -34,7 +36,7 @@ class UserServiceImp :UserService{
             user.password = body.password
             user.token = TokenService.getToken(user)
             userrepository.save(user)
-            var s = CopierUtil.copyProperties(user,UserVo::class.java)
+            val s = CopierUtil.copyProperties(user,UserVo::class.java)
             logger.debug(s.toString())
             BaseResult.SECUESS(s)
         }
@@ -67,7 +69,7 @@ class UserServiceImp :UserService{
     }
 
     override fun findUserById(phone: String):User? {
-        var u=  userrepository.findByPhone(phone)
+        val u=  userrepository.findByPhone(phone)
         return u
     }
 
@@ -81,16 +83,29 @@ class UserServiceImp :UserService{
     override fun updateUser(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
         if (u != null){
-            u.fances = body.fances
-            u.likestarts = body.likestarts
-            u.nickname = body.nickname
-            u.relasename = body.relasename
-            u.account = body.account
-            u.address = body.address
-            u.seayinfo = body.seayinfo
-            u.userSex = body.userSex
+            if (null !=body.usersex){
+                u.usersex = body.usersex
+            }
+            if (null !=body.nickname){
+                u.nickname = body.nickname
+            }
+            if (null !=body.relasename){
+                u.relasename = body.relasename
+            }
+            if (null !=body.seayinfo){
+                u.seayinfo = body.seayinfo
+            }
+            if (null !=body.address){
+                u.address = body.address
+            }
+            if (null !=body.fances){
+                u.fances = body.fances
+            }
+            if (null !=body.likestarts){
+                u.likestarts = body.likestarts
+            }
             userrepository.save(u)
-            var s = CopierUtil.copyProperties(u,UserVo::class.java)
+            val s = CopierUtil.copyProperties(u,UserVo::class.java)
             return  BaseResult.SECUESS(s)
         }else{
             return BaseResult.FAIL("该用户不存在")
@@ -105,10 +120,10 @@ class UserServiceImp :UserService{
 
         if (null !=u ){
             if (null!=uploadFile){
-                val oldfilename = u.originalFilename
+                val oldfilename = u.originalfilename
                 var url =AliYunOssUtil.UploadToAliyun(uploadFile.originalFilename ?: "",uploadFile.inputStream,uploadFile.contentType ?: "jpg",uploadType,id.toString())
                 u.icon = url
-                u.originalFilename = uploadFile.originalFilename
+                u.originalfilename = uploadFile.originalFilename
                 AliYunOssUtil.deleteFile(OSSClientConstants.BACKET_NAME,OSSClientConstants.PICTURE,oldfilename ?: "",id.toString())
                 userrepository.save(u)
                 var s = CopierUtil.copyProperties(u,UserVo::class.java)
@@ -129,6 +144,25 @@ class UserServiceImp :UserService{
     }
 
     override fun sendPost(body: ReqBody) {
+    }
+
+    /**
+     * 查找关注
+     */
+    override fun searchfollow(body: ReqBody): BaseResult {
+        val user = userrepository.findById(body.id ?:0)
+        val follow = followRespository.findByFollowid(body.followid?:0)
+        val f =follow.any { body.id == it.followid }
+        user?.isfollow = f
+        return if (user!= null){
+            val s = CopierUtil.copyProperties(user,UserVo::class.java)
+            BaseResult.SECUESS(s)
+        }else{
+            BaseResult.FAIL("用户不存在")
+        }
+
+
+
     }
 
 

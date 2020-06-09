@@ -1,6 +1,8 @@
 package com.btm.back.utils
 import com.aliyun.oss.OSSClient
 import com.aliyun.oss.model.ObjectMetadata
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -9,6 +11,7 @@ import java.util.*
 
 object AliYunOssUtil {
     private var ossClient: OSSClient? = null
+    private val logger: Logger = LoggerFactory.getLogger(AliYunOssUtil::class.java)
     /**
      * 上传文件到阿里云,并生成url
      *
@@ -18,7 +21,7 @@ object AliYunOssUtil {
      * @return String 生成的文件url
      */
     fun UploadToAliyun(filedir: String, `in`: InputStream?, suffix: String, type: String, user:String): String {
-        println("------------>文件名称为:  $filedir.$suffix")
+        logger.info("------------>文件名称为:  $filedir.$suffix")
         ossClient = OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         var url: URL? = null
         var filepath = "home/picture/"
@@ -38,14 +41,14 @@ object AliYunOssUtil {
             var fileoder = filepath+filedir
             // 上传文件
             val putResult= ossClient!!.putObject(OSSClientConstants.BACKET_NAME, fileoder, `in`, objectMetadata)
-            println("putResult---"+putResult)
+            logger.info("putResult---"+putResult)
             val resultStr = putResult.getETag();
-            println("resultStr---"+resultStr)
+            logger.info("resultStr---"+resultStr)
 
             var expiration = Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10)
             // 生成URL
             url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
-            println("地址"+url)
+            logger.info("地址"+url)
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
@@ -72,7 +75,7 @@ object AliYunOssUtil {
         if(!ossClient!!.doesBucketExist(bucketName)){
             //创建存储空间
             var bucket=ossClient!!.createBucket(bucketName);
-            System.out.println("创建存储空间成功");
+            logger.info("创建存储空间成功");
             return bucket.getName();
         }
         return bucketNames;
@@ -87,7 +90,7 @@ object AliYunOssUtil {
        ossClient =OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
 
         ossClient!!.deleteBucket(bucketName);
-        System.out.println("删除" + bucketName + "Bucket成功");
+        logger.info("删除" + bucketName + "Bucket成功");
     }
 
     /**
@@ -106,7 +109,7 @@ object AliYunOssUtil {
         if(!ossClient!!.doesObjectExist(OSSClientConstants.BACKET_NAME, keySuffixWithSlash)){
             //创建文件夹
             ossClient!!.putObject(OSSClientConstants.BACKET_NAME, keySuffixWithSlash,  ByteArrayInputStream( byteArrayOf(0)));
-            System.out.println("创建文件夹成功");
+            logger.info("创建文件夹成功");
             //得到文件夹名
             var objecta = ossClient!!.getObject(OSSClientConstants.BACKET_NAME, keySuffixWithSlash);
             var fileDir=objecta.getKey();
@@ -125,7 +128,7 @@ object AliYunOssUtil {
      fun  deleteFile(   bucketName:String,  folder:String,  key:String ,id:String){
          ossClient =OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         ossClient!!.deleteObject(bucketName, folder+id+"/" + key);
-        System.out.println("删除" + bucketName + "下的文件" + folder + key + "成功");
+        logger.info("删除" + bucketName + "下的文件" + folder + key + "成功");
     }
 
 
@@ -140,7 +143,7 @@ object AliYunOssUtil {
     fun deletePicture(key: String) {
         ossClient = OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         ossClient!!.deleteObject(OSSClientConstants.BACKET_NAME, key)
-        println("aliyundelete-------$key")
+        logger.info("aliyundelete-------$key")
         ossClient!!.shutdown()
     }
 
@@ -151,7 +154,7 @@ object AliYunOssUtil {
      * @return String HTTP Content-type
      */
     fun getcontentType(suffix: String): String {
-        println("------------>文件格式为:  $suffix")
+        logger.info("------------>文件格式为:  $suffix")
         return if (suffix.equals("bmp", ignoreCase = true)) {
             "image/bmp"
         } else if (suffix.equals("gif", ignoreCase = true)) {

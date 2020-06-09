@@ -29,7 +29,6 @@ class NovelServiceImp :NovelService{
         }else{
             val pages: Page<Novel> = novelRespository.findAllByNovel_type(body?.type?:7,pageable)
             val iterator: MutableIterator<Novel> = pages.iterator()
-            logger.debug(iterator.toString())
             return BaseResult.SECUESS(iterator)
         }
 
@@ -48,7 +47,6 @@ class NovelServiceImp :NovelService{
 
     override fun getallnoveltype(body: ReqBody?): BaseResult {
         val novel = body?.novelId?.let { novelRespository.findById(it) }
-        logger.debug(novel.toString())
         if (novel!=null){
             return  BaseResult.SECUESS(novel)
         }else{
