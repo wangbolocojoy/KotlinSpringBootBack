@@ -94,7 +94,7 @@ class FollowServiceImp : FollowService {
      */
     override fun unFollowUser(body: ReqBody): BaseResult {
         if (body.followid == null) {
-            return BaseResult.FAIL("关注人id不能为空")
+            return BaseResult.FAIL("要取消关注人的id不能为空")
         }
         val follow = body.userid?.let { followRespository.findByUserid(it) }
         val f = follow?.singleOrNull { it.followid == body.followid }

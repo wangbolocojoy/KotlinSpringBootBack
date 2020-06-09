@@ -100,7 +100,38 @@ class FollowController {
 }
 
 ```
+##获取粉丝列表接口
 
+```kotlin
+
+ /**
+     * 获取粉丝列表
+     * 返回该粉丝是否关注自己的  状态
+     */
+    override fun getFanceList(body: ReqBody): BaseResult {
+        val fancelist = body.userid?.let { followRespository.findByFollowid(it) }
+        return if (fancelist.isNullOrEmpty()) {
+            BaseResult.FAIL("粉丝列表为空")
+        } else {
+            val list = ArrayList<UserVo>()
+            fancelist.forEach {
+                val user = userRespository.findById(it.userid ?: 0)
+                val followlist = body.userid?.let { followRespository.findByUserid(body.userid ?: 0) }
+                //该粉丝状态是否关注了用户
+                user?.isfollow = followlist?.any { it1 ->
+                    it1.followid == user?.id
+                }
+                if (user != null) {
+                    //重新包装user
+                    val s = CopierUtil.copyProperties(user, UserVo::class.java)
+                    s?.let { it1 -> list.add(it1) }
+                }
+            }
+            BaseResult.SECUESS(list)
+        }
+    }
+
+```
 
 
 
