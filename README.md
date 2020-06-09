@@ -105,7 +105,7 @@ class FollowController {
 
 
 
-# 我的APP项目🍎版 使用该后台接口开发的app[传送门👉](https://github.com/wangbolocojoy/swiftTemplate)
+# 我的APP项目版 使用该后台接口开发的app👉[传送门](https://github.com/wangbolocojoy/swiftTemplate)
 ## 该项目使用以下框架
 
 ```podfile
