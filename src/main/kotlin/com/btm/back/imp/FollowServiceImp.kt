@@ -12,50 +12,54 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class FollowServiceImp :FollowService{
+class FollowServiceImp : FollowService {
 
     @Autowired
     lateinit var followRespository: FollowRespository
     @Autowired
     lateinit var userRespository: UserRespository
+
     /**
      * 获取关注列表
      */
     override fun getFollowList(body: ReqBody): BaseResult {
         val follow = body.userid?.let { followRespository.findByUserid(it) }
-        if (follow.isNullOrEmpty()){
-            return  BaseResult.FAIL("关注列表为空")
-        }else{
+        if (follow.isNullOrEmpty()) {
+            return BaseResult.FAIL("关注列表为空")
+        } else {
             val list = ArrayList<UserVo>()
             follow.forEach {
-                  val user = userRespository.findById(it.followid?:0)
+                val user = userRespository.findById(it.followid ?: 0)
                 //改为全部关注状态
-                    user?.isfollow = true
-                   if (user != null){
-                       val s = CopierUtil.copyProperties(user, UserVo::class.java)
-                       s?.let { it1 -> list.add(it1) }
-                   }
+                user?.isfollow = true
+                if (user != null) {
+                    val s = CopierUtil.copyProperties(user, UserVo::class.java)
+                    s?.let { it1 -> list.add(it1) }
+                }
             }
-            return  BaseResult.SECUESS(list)
+            return BaseResult.SECUESS(list)
         }
     }
+
     /**
      * 获取粉丝列表
+     * 返回该粉丝是否关注自己的  状态
      */
     override fun getFanceList(body: ReqBody): BaseResult {
-        val f = body.userid?.let { followRespository.findByFollowid(it) }
-        return if (f.isNullOrEmpty()){
+        val fancelist = body.userid?.let { followRespository.findByFollowid(it) }
+        return if (fancelist.isNullOrEmpty()) {
             BaseResult.FAIL("粉丝列表为空")
-        }else{
+        } else {
             val list = ArrayList<UserVo>()
-            f.forEach {
-                    val user = userRespository.findById(it.userid?:0)
-                    val follow = body.userid?.let { followRespository.findByUserid(body.userid?:0) }
-                //是否关注了该粉丝
-                    user?.isfollow = follow?.any{it1->
-                       it1.followid == user?.id
-                    }
-                    if (user != null) {
+            fancelist.forEach {
+                val user = userRespository.findById(it.userid ?: 0)
+                val followlist = body.userid?.let { followRespository.findByUserid(body.userid ?: 0) }
+                //该粉丝状态是否关注了用户
+                user?.isfollow = followlist?.any { it1 ->
+                    it1.followid == user?.id
+                }
+                if (user != null) {
+                    //重新包装user
                     val s = CopierUtil.copyProperties(user, UserVo::class.java)
                     s?.let { it1 -> list.add(it1) }
                 }
@@ -68,19 +72,19 @@ class FollowServiceImp :FollowService{
      * 关注用户
      */
     override fun followUser(body: ReqBody): BaseResult {
-        if(body.followid == null){
-            return  BaseResult.FAIL("关注人id不能为空")
+        if (body.followid == null) {
+            return BaseResult.FAIL("关注人id不能为空")
         }
         val follow = body.userid?.let { followRespository.findByUserid(it) }
         val f = follow?.any { it.followid == body.followid }
-        return if (f == true){
+        return if (f == true) {
             BaseResult.FAIL("已经关注该用户")
-        }else{
-                val follow1 = Follow()
-                follow1.followid = body.followid
-                follow1.userid = body.userid
-                followRespository.save(follow1)
-                BaseResult.SECUESS("关注成功")
+        } else {
+            val follow1 = Follow()
+            follow1.followid = body.followid
+            follow1.userid = body.userid
+            followRespository.save(follow1)
+            BaseResult.SECUESS("关注成功")
         }
 
     }
@@ -89,19 +93,18 @@ class FollowServiceImp :FollowService{
      * 取消关注
      */
     override fun unFollowUser(body: ReqBody): BaseResult {
-        if(body.followid == null){
-            return  BaseResult.FAIL("关注人id不能为空")
+        if (body.followid == null) {
+            return BaseResult.FAIL("关注人id不能为空")
         }
         val follow = body.userid?.let { followRespository.findByUserid(it) }
-        val f = follow?.singleOrNull{it.followid == body.followid}
-        return if (f != null){
+        val f = follow?.singleOrNull { it.followid == body.followid }
+        return if (f != null) {
             followRespository.delete(f)
             BaseResult.SECUESS("取消关注成功")
-        }else{
+        } else {
             BaseResult.FAIL("还未关注该用户")
         }
     }
-
 
 
 }
