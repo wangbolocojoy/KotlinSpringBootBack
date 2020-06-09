@@ -66,6 +66,7 @@ class UserController  {
 ```
 ## 粉丝 --关注接口
 ```kotlin
+
 /**
  * 关注--粉丝
  */
@@ -76,27 +77,27 @@ class FollowController {
     @Autowired
     lateinit var  followService: FollowService
 
-    @PassToken
+
+    @UserLoginToken
     @RequestMapping(value = ["followuser"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun followuser(@Valid @RequestBody u: ReqBody) = followService.followUser(u)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["unfollowuser"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun unfollowuser(@Valid @RequestBody u: ReqBody) = followService.unFollowUser(u)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getfancelist"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun getfancelist(@Valid @RequestBody u: ReqBody) = followService.getFanceList(u)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getfollowlist"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun getfollowlist(@Valid @RequestBody u: ReqBody) = followService.getFollowList(u)
 }
-
 
 ```
 
