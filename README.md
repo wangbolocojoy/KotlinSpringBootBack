@@ -132,7 +132,106 @@ class FollowController {
     }
 
 ```
-
+## 获取推荐人列表 测试完成
+### 过滤掉已经关注的用户
+```json
+{
+    "status":200,
+    "msg":"success",
+    "data":[
+        {
+            "id":30,
+            "nickname":null,
+            "account":"13550247642",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        },
+        {
+            "id":32,
+            "nickname":null,
+            "account":"13550247643",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        },
+        {
+            "id":33,
+            "nickname":null,
+            "account":"13550247644",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        },
+        {
+            "id":34,
+            "nickname":null,
+            "account":"13550247645",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        },
+        {
+            "id":35,
+            "nickname":null,
+            "account":"13550247646",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        },
+        {
+            "id":36,
+            "nickname":null,
+            "account":"13550247647",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        },
+        {
+            "id":37,
+            "nickname":null,
+            "account":"13550247648",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        },
+        {
+            "id":38,
+            "nickname":null,
+            "account":"13550247649",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        },
+        {
+            "id":39,
+            "nickname":null,
+            "account":"13550247650",
+            "icon":null,
+            "address":null,
+            "usersex":false,
+            "seayinfo":null,
+            "isfollow":false
+        }
+    ]
+}
+```
 
 
 
