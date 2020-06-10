@@ -40,4 +40,10 @@ class FollowController {
     @RequestMapping(value = ["getfollowlist"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun getfollowlist(@Valid @RequestBody u: ReqBody) = followService.getFollowList(u)
+
+    @UserLoginToken
+    @RequestMapping(value = ["getrecommendlist"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getrecommendlist(@Valid @RequestBody u: ReqBody) = followService.getRecommend(u)
+
 }

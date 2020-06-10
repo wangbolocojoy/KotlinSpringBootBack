@@ -22,4 +22,8 @@ interface FollowService {
      */
     fun unFollowUser(body: ReqBody): BaseResult
 
+    /**
+     * 获取推荐人列表
+     */
+    fun getRecommend(body: ReqBody): BaseResult
 }
