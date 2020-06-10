@@ -42,4 +42,6 @@ interface UserService {
     fun sendPost(body: ReqBody)
 
     fun searchfollow(body: ReqBody):BaseResult
+
+
 }

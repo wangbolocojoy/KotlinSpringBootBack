@@ -9,6 +9,9 @@ import com.btm.back.repository.UserRespository
 import com.btm.back.service.FollowService
 import com.btm.back.utils.BaseResult
 import com.btm.back.vo.FollowVO
+import com.btm.back.vo.UserVo
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -22,7 +25,7 @@ class FollowServiceImp : FollowService {
     lateinit var followRespository: FollowRespository
     @Autowired
     lateinit var userRespository: UserRespository
-
+    private val logger: Logger = LoggerFactory.getLogger(FollowServiceImp::class.java)
     /**
      * 获取关注列表
      */
@@ -80,6 +83,8 @@ class FollowServiceImp : FollowService {
             return BaseResult.FAIL("关注人id不能为空")
         }
         val follow = body.userid?.let { followRespository.findByUserid(it) }
+        val user = userRespository.findById(body.userid?:0)
+        val followuser = userRespository.findById(body.followid?:0)
         val f = follow?.any { it.followid == body.followid }
         return if (f == true) {
             BaseResult.FAIL("已经关注该用户")
@@ -87,8 +92,14 @@ class FollowServiceImp : FollowService {
             val follow1 = Follow()
             follow1.followid = body.followid
             follow1.userid = body.userid
+            var follows = user?.follows ?:0
+            user?.follows = follows +1
+            user?.let { userRespository.save(it) }
+            var fances = followuser?.fances?:0
+            followuser?.fances =  fances +1
+            followuser?.let { userRespository.save(it) }
             followRespository.save(follow1)
-            BaseResult.SECUESS("关注成功")
+            BaseResult.SECUESS("关注成功",user)
         }
 
     }
@@ -103,32 +114,104 @@ class FollowServiceImp : FollowService {
         val follow = body.userid?.let { followRespository.findByUserid(it) }
         val f = follow?.singleOrNull { it.followid == body.followid }
         return if (f != null) {
+            val user = userRespository.findById(body.userid?:0)
+            var follownum = user?.follows ?:0
+            user?.follows = follownum -1
+            user?.let { userRespository.save(it) }
+            val followuser = userRespository.findById(body.followid?:0)
+            var fancesnum =  followuser?.fances?:0
+            followuser?.fances = fancesnum -1
+            followuser?.let { userRespository.save(it) }
             followRespository.delete(f)
-            BaseResult.SECUESS("取消关注成功")
+            BaseResult.SECUESS("取消关注成功",user)
         } else {
             BaseResult.FAIL("还未关注该用户")
         }
     }
 
     override fun getRecommend(body: ReqBody): BaseResult {
-        val follow = body.userid?.let { followRespository.findByFollowid(it) }
+        val follow = body.userid?.let { followRespository.findByUserid(it) }
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pagesize ?: 10)
         val pages: Page<User> = userRespository.findAll(pageable)
-        val iterator: MutableIterator<User> = pages.iterator()
-        val users=ArrayList<FollowVO>()
-        follow?.forEach { iterator.forEach { it1 ->
-                if (it.userid != it1.id){
-                    val s = CopierUtil.copyProperties(it1, FollowVO::class.java)
-                    s?.let { it2 -> users.add(it2) }
-            }
-            }
+        var list =  pages.filterNot {
+            it.id == body.userid
         }
-        if (users.isNullOrEmpty()){
-            return  BaseResult.FAIL("推荐列表为空")
+        val u =ArrayList<FollowVO>()
+        if (follow.isNullOrEmpty()){
+            list.map { it.isfollow = false
+                val s = CopierUtil.copyProperties(it, FollowVO::class.java)
+                s?.let { it1 -> u.add(it1) }
+            }
+            return BaseResult.SECUESS(u)
         }else{
-            return  BaseResult.SECUESS(users)
+          follow.forEach {
+              list = list.filterNot { it1->
+                  it1.id == it.followid
+              }
+          }
+
+            list.map {
+
+                val s = CopierUtil.copyProperties(it, FollowVO::class.java)
+                s?.let { it1 -> u.add(it1) }
+
+            }
+
+            return BaseResult.SECUESS(u)
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        val iterator: MutableIterator<User> = pages.iterator()
+//        val users=ArrayList<FollowVO>()
+//        if (follow.isNullOrEmpty()){
+//            iterator.forEach {
+//                if (body.userid != it.id){
+//                    val s = CopierUtil.copyProperties(it, FollowVO::class.java)
+//                    s?.let { it2 -> users.add(it2) }
+//                }
+//
+//            }
+//            return BaseResult.SECUESS(users)
+//        }else{
+//            follow.forEach { iterator.forEach { it1 ->
+//                if (it.userid != it1.id){
+//                    val s = CopierUtil.copyProperties(it1, FollowVO::class.java)
+//                    s?.let { it2 -> users.add(it2) }
+//                }
+//            }
+//            }
+//            if (users.isNullOrEmpty()){
+//                return  BaseResult.FAIL("推荐列表为空")
+//            }else{
+//                return  BaseResult.SECUESS(users)
+//            }
+//        }
+
+    }
+
+    override fun getuserfancesandfollows(body: ReqBody): BaseResult {
+        val user = userRespository.findById(body.userid ?: 0)
+        return if (user != null) {
+            user.fances = followRespository.findByFollowid(body.userid ?:0).size
+            user.follows = followRespository.findByUserid(body.userid ?: 0).size
+            userRespository.save(user)
+            val s = CopierUtil.copyProperties(user, UserVo::class.java)
+            BaseResult.SECUESS(s)
+        }else{
+            BaseResult.FAIL("该用户不存在")
+        }
     }
 
 

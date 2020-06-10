@@ -17,8 +17,9 @@ class User {
     var password: String? = null
     var usersex:Boolean? = false
     var icon: String? = null
-    var likestarts: Int? = null
-    var fances: Int? = null
+    var likestarts: Int? = 0
+    var fances: Int? = 0
+    var follows: Int? = 0
     var token: String? = null
     var seayinfo:String? = null
     var address:String? = null

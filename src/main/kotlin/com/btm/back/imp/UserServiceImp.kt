@@ -58,7 +58,7 @@ class UserServiceImp :UserService{
         val u= body.phone?.let { userrepository.findByAccount(it) }
         return if(u!=null){
             if(u.phone == body.phone&&u.password==body.password){
-                var s = CopierUtil.copyProperties(u,UserVo::class.java)
+                val s = CopierUtil.copyProperties(u,UserVo::class.java)
                 BaseResult.SECUESS(s)
             }else{
                 BaseResult.FAIL("账号或密码错误")
@@ -75,7 +75,13 @@ class UserServiceImp :UserService{
 
     override fun getuserinfo(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
-        return  BaseResult.SECUESS(u)
+        return if (u != null) {
+            val  s= CopierUtil.copyProperties(u,UserVo::class.java)
+            BaseResult.SECUESS(s)
+        }else{
+            BaseResult.FAIL("该用户不存在")
+        }
+
     }
 
 
@@ -119,17 +125,17 @@ class UserServiceImp :UserService{
         val u=  userrepository.findById(id)
 
         if (null !=u ){
-            if (null!=uploadFile){
+            return if (null!=uploadFile){
                 val oldfilename = u.originalfilename
-                var url =AliYunOssUtil.UploadToAliyun(uploadFile.originalFilename ?: "",uploadFile.inputStream,uploadFile.contentType ?: "jpg",uploadType,id.toString())
+                val url =AliYunOssUtil.UploadToAliyun(uploadFile.originalFilename ?: "",uploadFile.inputStream,uploadFile.contentType ?: "jpg",uploadType,id.toString())
                 u.icon = url
                 u.originalfilename = uploadFile.originalFilename
                 AliYunOssUtil.deleteFile(OSSClientConstants.BACKET_NAME,OSSClientConstants.PICTURE,oldfilename ?: "",id.toString())
                 userrepository.save(u)
-                var s = CopierUtil.copyProperties(u,UserVo::class.java)
-                return BaseResult.SECUESS("头像修改成功",s)
+                val s = CopierUtil.copyProperties(u,UserVo::class.java)
+                BaseResult.SECUESS("头像修改成功",s)
             }else{
-                return  BaseResult.FAIL("文件不存在")
+                BaseResult.FAIL("文件不存在")
             }
         }else{
             return  BaseResult.FAIL("该用户不存在")

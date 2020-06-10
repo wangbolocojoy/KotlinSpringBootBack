@@ -26,4 +26,9 @@ interface FollowService {
      * 获取推荐人列表
      */
     fun getRecommend(body: ReqBody): BaseResult
+
+    /**
+     * 获取用户关注人数
+     */
+    fun getuserfancesandfollows(body: ReqBody):BaseResult
 }
