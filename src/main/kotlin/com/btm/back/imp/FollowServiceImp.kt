@@ -149,7 +149,6 @@ class FollowServiceImp : FollowService {
                   it1.id == it.followid
               }
           }
-
             list.map {
 
                 val s = CopierUtil.copyProperties(it, FollowVO::class.java)
