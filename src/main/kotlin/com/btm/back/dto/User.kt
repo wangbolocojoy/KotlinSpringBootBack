@@ -18,6 +18,7 @@ class User {
     var usersex:Boolean? = false
     var icon: String? = null
     var likestarts: Int? = 0
+    var postnum:Int? = 0
     var fances: Int? = 0
     var follows: Int? = 0
     var token: String? = null

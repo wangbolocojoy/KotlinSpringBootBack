@@ -1,9 +1,12 @@
 package com.btm.back.bean
 
+import com.btm.back.utils.abstractObjectToString
+import java.io.Serializable
 
-class PageBody {
-    var page: Int = 0
-    var type: Int = 8
-    var pagesize: Int = 20
-    var novelname: String = ""
-}
+
+data class PageBody(var page: Int?,
+                    var type: Int?,
+                    var pagesize: Int?,
+                    var novelname: String?,
+                    var userid:Int? ,
+                    var postid:Int?) : abstractObjectToString(), Serializable

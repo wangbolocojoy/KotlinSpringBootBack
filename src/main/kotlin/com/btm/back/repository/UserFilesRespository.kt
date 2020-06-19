@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.query.Param
 
 interface UserFilesRespository : JpaRepository<UserFiles, Long>{
-    fun findUserFilesByUserid(@Param("userid") userid: String):List<UserFiles>
+    fun findAllByPostid(@Param("postid") postid: Int):List<UserFiles>
+
 }

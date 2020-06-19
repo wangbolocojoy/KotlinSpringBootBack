@@ -9,7 +9,7 @@ import com.btm.back.repository.UserRespository
 import com.btm.back.service.FollowService
 import com.btm.back.utils.BaseResult
 import com.btm.back.vo.FollowVO
-import com.btm.back.vo.UserVo
+import com.btm.back.vo.UserVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -206,7 +206,7 @@ class FollowServiceImp : FollowService {
             user.fances = followRespository.findByFollowid(body.userid ?:0).size
             user.follows = followRespository.findByUserid(body.userid ?: 0).size
             userRespository.save(user)
-            val s = CopierUtil.copyProperties(user, UserVo::class.java)
+            val s = CopierUtil.copyProperties(user, UserVO::class.java)
             BaseResult.SECUESS(s)
         }else{
             BaseResult.FAIL("该用户不存在")
