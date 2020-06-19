@@ -56,7 +56,7 @@ class PostServiceIml:PostService{
             list.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
-                s?.postimages = file
+                s?.postImages = file
                 s?.let { it1 -> images.add(it1) }
             }
             BaseResult.SECUESS(images)
