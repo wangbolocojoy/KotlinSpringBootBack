@@ -48,6 +48,7 @@ class UserFilesServiceImp:UserFilesService{
             BaseResult.FAIL("参数不能为空")
         }else{
             val list = AliYunOssUtil.uploadToAliyunFiles(id,postid,userFilesRespository,uploadFile = uploadFile,userid = id.toString())
+            logger.info("上传"+list.size+"张图片成功")
             BaseResult.SECUESS("上传"+list.size+"张图片成功",list)
         }
     }

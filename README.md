@@ -232,7 +232,35 @@ class FollowController {
     ]
 }
 ```
-
+### 批量上传图片
+```json
+{
+    "status": 200,
+    "msg": "上传2张图片成功",
+    "data": [
+        {
+            "id": 86,
+            "userid": 30,
+            "postid": 2,
+            "filetype": "image/jpeg",
+            "originalFilename": "IMG_2512.JPG",
+            "fileurl": "https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/home/picture/30/IMG_2512.JPG",
+            "fileLikes": 0,
+            "fileseenum": 0
+        },
+        {
+            "id": 87,
+            "userid": 30,
+            "postid": 2,
+            "filetype": "image/jpeg",
+            "originalFilename": "IMG_2513.JPG",
+            "fileurl": "https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/home/picture/30/IMG_2513.JPG",
+            "fileLikes": 0,
+            "fileseenum": 0
+        }
+    ]
+}
+```
 
 
 # 我的APP项目版 使用该后台接口开发的app👉[传送门](https://github.com/wangbolocojoy/swiftTemplate)

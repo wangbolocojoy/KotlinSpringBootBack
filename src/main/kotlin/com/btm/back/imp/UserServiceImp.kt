@@ -89,17 +89,17 @@ class UserServiceImp :UserService{
     override fun updateUser(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
         if (u != null){
-            if (null !=body.usersex){
-                u.usersex = body.usersex
+            if (null !=body.userSex){
+                u.userSex = body.userSex
             }
-            if (null !=body.nickname){
-                u.nickname = body.nickname
+            if (null !=body.nickName){
+                u.nickName = body.nickName
             }
-            if (null !=body.relasename){
-                u.relasename = body.relasename
+            if (null !=body.relaseName){
+                u.relaseName = body.relaseName
             }
-            if (null !=body.seayinfo){
-                u.seayinfo = body.seayinfo
+            if (null !=body.easyInfo){
+                u.esayInfo = body.easyInfo
             }
             if (null !=body.address){
                 u.address = body.address
@@ -107,8 +107,8 @@ class UserServiceImp :UserService{
             if (null !=body.fances){
                 u.fances = body.fances
             }
-            if (null !=body.likestarts){
-                u.likestarts = body.likestarts
+            if (null !=body.likeStarts){
+                u.likeStarts = body.likeStarts
             }
             userrepository.save(u)
             val s = CopierUtil.copyProperties(u,UserVO::class.java)
@@ -126,10 +126,10 @@ class UserServiceImp :UserService{
 
         if (null !=u ){
             return if (null!=uploadFile){
-                val oldfilename = u.originalfilename
+                val oldfilename = u.originalFilename
                 val url =AliYunOssUtil.uploadToAliyun(uploadFile.originalFilename ?: "",uploadFile.inputStream,uploadFile.contentType ?: "jpg",uploadType,id.toString())
                 u.icon = url
-                u.originalfilename = uploadFile.originalFilename
+                u.originalFilename = uploadFile.originalFilename
                 AliYunOssUtil.deleteFile(oldfilename ?: "",id.toString())
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
@@ -157,9 +157,9 @@ class UserServiceImp :UserService{
      */
     override fun searchfollow(body: ReqBody): BaseResult {
         val user = userrepository.findByPhone(body.phone ?:"")
-        val follow = followRespository.findByFollowid(body.id?:0)
-        val f =follow.any { user?.id == it.followid }
-        user?.isfollow = f
+        val follow = followRespository.findByFollowId(body.id?:0)
+        val f =follow.any { user?.id == it.followId }
+        user?.isFollow = f
         return if (user!= null){
             val s = CopierUtil.copyProperties(user, UserVO::class.java)
             BaseResult.SECUESS(s)

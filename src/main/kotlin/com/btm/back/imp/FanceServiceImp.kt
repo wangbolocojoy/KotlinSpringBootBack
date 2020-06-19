@@ -12,7 +12,7 @@ class FanceServiceImp :FanceService{
     @Autowired
     lateinit var fanceRespository: FanceRespository
     override fun getFanceList(body: ReqBody): BaseResult {
-        val  fance = body.id?.let { fanceRespository.findByUserid(it) }
+        val  fance = body.userId?.let { fanceRespository.findAllByUserId(it) }
         if (fance.isNullOrEmpty()){
             return BaseResult.FAIL("粉丝列表为空")
         }else{
