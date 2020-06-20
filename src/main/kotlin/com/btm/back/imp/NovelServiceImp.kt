@@ -21,15 +21,17 @@ class NovelServiceImp :NovelService{
     @Throws
     override fun getPageNovelList(body: ReqBody?): BaseResult {
 
-        val pageable: Pageable = PageRequest.of(body?.page ?: 1, body?.pagesize ?: 10)
-        if(body?.type?:7 >= 7){
+        val pageable: Pageable = PageRequest.of(body?.page ?: 1, body?.pageSize ?: 10)
+        return if(body?.type?:7 >= 7){
             val pages: Page<Novel> = novelRespository.findAll(pageable)
             val iterator: MutableIterator<Novel> = pages.iterator()
-            return BaseResult.SECUESS(iterator)
+            logger.info("获取小说列表")
+            BaseResult.SECUESS(iterator)
         }else{
             val pages: Page<Novel> = novelRespository.findAllByNovel_type(body?.type?:7,pageable)
             val iterator: MutableIterator<Novel> = pages.iterator()
-            return BaseResult.SECUESS(iterator)
+            logger.info("获取小说列表")
+            BaseResult.SECUESS(iterator)
         }
 
 

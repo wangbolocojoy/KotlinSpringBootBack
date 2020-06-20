@@ -3,7 +3,7 @@ import com.aliyun.oss.OSSClient
 import com.aliyun.oss.model.ObjectMetadata
 import com.btm.back.dto.UserFiles
 import com.btm.back.repository.UserFilesRespository
-import com.myapplication.novel.novel.untils.OSSClientConstants
+import com.btm.back.utils.OSSClientConstants
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.multipart.MultipartFile

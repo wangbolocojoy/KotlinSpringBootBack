@@ -4,6 +4,8 @@ import com.btm.back.bean.ReqBody
 import com.btm.back.repository.FanceRespository
 import com.btm.back.service.FanceService
 import com.btm.back.utils.BaseResult
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -11,12 +13,15 @@ import org.springframework.stereotype.Service
 class FanceServiceImp :FanceService{
     @Autowired
     lateinit var fanceRespository: FanceRespository
+    private val logger: Logger = LoggerFactory.getLogger(FanceServiceImp::class.java)
     override fun getFanceList(body: ReqBody): BaseResult {
         val  fance = body.id?.let { fanceRespository.findByUserid(it) }
-        if (fance.isNullOrEmpty()){
-            return BaseResult.FAIL("粉丝列表为空")
+        return if (fance.isNullOrEmpty()){
+            logger.info("粉丝列表为空")
+            BaseResult.FAIL("粉丝列表为空")
         }else{
-            return  BaseResult.SECUESS(fance)
+            logger.info("粉丝列表$fance")
+            BaseResult.SECUESS(fance)
         }
     }
 

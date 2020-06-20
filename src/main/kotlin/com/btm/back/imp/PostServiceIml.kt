@@ -10,6 +10,8 @@ import com.btm.back.service.PostService
 import com.btm.back.utils.AliYunOssUtil
 import com.btm.back.utils.BaseResult
 import com.btm.back.vo.PostVO
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -24,18 +26,19 @@ class PostServiceIml:PostService{
 
     @Autowired
     lateinit var userFilesRespository: UserFilesRespository
-
+    private val logger: Logger = LoggerFactory.getLogger(PostServiceIml::class.java)
     override fun sendPost(body: PostBody): BaseResult {
-        return if (body.userid != null) {
+        return if (body.userId != null) {
             val post = Post()
-            post.userId = body.userid
-            post.posttitle = body.posttitle
-            post.postaddress = body.postaddress
-            post.postdetail = body.postdetail
-            post.postpublic = body.postpulic ?: false
-            post.poststarts = body.poststart ?: 0
+            post.userId = body.userId
+            post.posttitle = body.postTitle
+            post.postaddress = body.postAddress
+            post.postdetail = body.postDetail
+            post.postpublic = body.postPublic ?: false
+            post.poststarts = body.postStart ?: 0
             postRespository.save(post)
             val s = CopierUtil.copyProperties(post,PostVO::class.java)
+            logger.info("发布帖子成功$s")
             BaseResult.SECUESS(s)
         } else {
             BaseResult.FAIL("用户id不能为空")
@@ -44,8 +47,8 @@ class PostServiceIml:PostService{
     }
 
     override fun getPostByUserId(body: PageBody): BaseResult {
-        val pageable: Pageable = PageRequest.of(body.page ?: 1, body.pagesize ?: 10)
-        val list = postRespository.findAllByUserId(body.userid ?:0,pageable)
+        val pageable: Pageable = PageRequest.of(body.page ?: 1, body.pageSize ?: 10)
+        val list = postRespository.findAllByUserId(body.userId ?:0,pageable)
         return if (list.isEmpty){
             BaseResult.FAIL("该用户暂时未发过帖子",list)
         }else{
@@ -56,26 +59,29 @@ class PostServiceIml:PostService{
                 s?.postImages = file
                 s?.let { it1 -> images.add(it1) }
             }
+            logger.info("获取用户帖子成功$images")
             BaseResult.SECUESS(images)
         }
     }
 
     override fun getPosts(body: PageBody): BaseResult {
-        val pageable: Pageable = PageRequest.of(body.page ?: 1, body.pagesize ?: 10)
+        val pageable: Pageable = PageRequest.of(body.page ?: 1, body.pageSize ?: 10)
         val list = postRespository.findAll(pageable)
         return if (list.isEmpty){
             BaseResult.FAIL("暂时没有帖子")
         }else{
+            logger.info("获取帖子成功$list")
             BaseResult.SECUESS(list)
         }
     }
 
     override fun deletePost(body: PageBody): BaseResult {
-        val post = body.postid?.let { postRespository.findById(it) }
+        val post = body.postId?.let { postRespository.findById(it) }
         return if (post != null){
-            val list = userFilesRespository.findAllByPostId(body.postid ?:0)
-            AliYunOssUtil.deleteFiles(body.userid.toString(),list)
+            val list = userFilesRespository.findAllByPostId(body.postId ?:0)
+            AliYunOssUtil.deleteFiles(body.userId.toString(),list)
             postRespository.delete(post)
+            logger.info("删除帖子成功$list")
             BaseResult.SECUESS("删除成功")
         }else{
             BaseResult.FAIL("帖子id不能为空")

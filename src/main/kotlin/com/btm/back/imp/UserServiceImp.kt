@@ -35,7 +35,7 @@ class UserServiceImp :UserService{
             user.token = TokenService.getToken(user)
             userrepository.save(user)
             val s = CopierUtil.copyProperties(user,UserVO::class.java)
-            logger.info("注册成功---  ",s.toString())
+            logger.info("注册成功--- $s ")
             BaseResult.SECUESS(s)
         }
     }
@@ -57,7 +57,7 @@ class UserServiceImp :UserService{
         return if(u!=null){
             if(u.phone == body.phone&&u.password==body.password){
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("登录成功---  ",s.toString())
+                logger.info("登录成功--- $s ")
                 BaseResult.SECUESS(s)
             }else{
                 BaseResult.FAIL("账号或密码错误")
@@ -76,7 +76,7 @@ class UserServiceImp :UserService{
         val u= body.id?.let { userrepository.findById(it) }
         return if (u != null) {
             val  s= CopierUtil.copyProperties(u,UserVO::class.java)
-            logger.info("获取用户信息成功---  ",s.toString())
+            logger.info("获取用户信息成功--- $s ")
             BaseResult.SECUESS(s)
         }else{
             BaseResult.FAIL("该用户不存在")
@@ -89,17 +89,17 @@ class UserServiceImp :UserService{
     override fun updateUser(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
         if (u != null){
-            if (null !=body.usersex){
-                u.usersex = body.usersex
+            if (null !=body.userSex){
+                u.usersex = body.userSex
             }
-            if (null !=body.nickname){
-                u.nickname = body.nickname
+            if (null !=body.nickName){
+                u.nickname = body.nickName
             }
-            if (null !=body.relasename){
-                u.relasename = body.relasename
+            if (null !=body.relaseName){
+                u.relasename = body.relaseName
             }
-            if (null !=body.seayinfo){
-                u.seayinfo = body.seayinfo
+            if (null !=body.easyInfo){
+                u.seayinfo = body.easyInfo
             }
             if (null !=body.address){
                 u.address = body.address
@@ -107,11 +107,12 @@ class UserServiceImp :UserService{
             if (null !=body.fances){
                 u.fances = body.fances
             }
-            if (null !=body.likestarts){
-                u.likestarts = body.likestarts
+            if (null !=body.likeStarts){
+                u.likestarts = body.likeStarts
             }
             userrepository.save(u)
             val s = CopierUtil.copyProperties(u,UserVO::class.java)
+            logger.info("更新用户信息成功$s")
             return  BaseResult.SECUESS(s)
         }else{
             return BaseResult.FAIL("该用户不存在")
@@ -121,9 +122,7 @@ class UserServiceImp :UserService{
 
 
     override fun updateIcon(id: Int,uploadType:String, uploadFile:MultipartFile? ):BaseResult {
-
         val u=  userrepository.findById(id)
-
         if (null !=u ){
             return if (null!=uploadFile){
                 val oldfilename = u.originalfilename
@@ -133,6 +132,7 @@ class UserServiceImp :UserService{
                 AliYunOssUtil.deleteFile(oldfilename ?: "",id.toString())
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("头像修改成功$s")
                 BaseResult.SECUESS("头像修改成功",s)
             }else{
                 BaseResult.FAIL("文件不存在")
@@ -143,7 +143,7 @@ class UserServiceImp :UserService{
     }
 
     override fun test() : BaseResult{
-        var list:List<User?>?=null
+        val list:List<User?>?
 
         list= userrepository.findAll()
         return BaseResult.SECUESS(list)
@@ -162,6 +162,7 @@ class UserServiceImp :UserService{
         user?.isfollow = f
         return if (user!= null){
             val s = CopierUtil.copyProperties(user, UserVO::class.java)
+            logger.info("查找用户成功$s")
             BaseResult.SECUESS(s)
         }else{
             BaseResult.FAIL("用户不存在")
