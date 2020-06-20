@@ -9,5 +9,4 @@ interface PostService {
     fun getPostByUserId(body: PageBody): BaseResult
     fun getPosts(body: PageBody): BaseResult
     fun deletePost(body: PageBody):BaseResult
-    fun getPostDetail(body: PageBody):BaseResult
 }

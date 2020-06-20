@@ -10,13 +10,13 @@ class UserFiles{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
-    var userId: Int? = null
-    var postId:Int? = null
-    var fileType: String? = null
+    var userid: Int? = null
+    var postid:Int? = null
+    var filetype: String? = null
     var originalFilename: String? = null
-    var fileUrl:String?= null
+    var fileurl:String?= null
     var fileLikes:Int? = null
-
+    var fileseenum:Int? = null
 
 
 }

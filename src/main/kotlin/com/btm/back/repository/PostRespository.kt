@@ -6,8 +6,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PostRespository: JpaRepository<Post,Long>{
-    fun findAllByUserId(userId:Int,pageable: Pageable): Page<Post>
+    fun findAllByUserId(userid:Int,pageable: Pageable): Page<Post>
     fun deleteById(id:Int)
     fun findById(id:Int):Post
-
 }

@@ -95,11 +95,12 @@ object AliYunOssUtil {
                    logger.info("save - success - pictureUrl -> $url")
                    val file = UserFiles()
                    file.originalFilename =  multipartFile.originalFilename
-                   file.userId = id
-                   file.postId = postid
-                   file.fileType = multipartFile.contentType
-                   file.fileUrl = url.toString()
+                   file.userid = id
+                   file.postid = postid
+                   file.filetype = multipartFile.contentType
+                   file.fileurl = url.toString()
                    file.fileLikes = 0
+                   file.fileseenum = 0
                    list.add(file)
                    userFilesRespository.save(file)
                } catch (e: IOException) {
