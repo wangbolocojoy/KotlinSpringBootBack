@@ -11,5 +11,5 @@ import org.springframework.data.repository.query.Param
 interface UserRespository : JpaRepository<User, Long> {
     fun findByPhone(@Param("phone") phone: String): User?
     fun findByAccount(@Param("account") account: String): User?
-    fun findById(@Param("id") id:Int):User?
+    fun findById(@Param("id") id:Int):User
 }

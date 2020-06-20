@@ -6,10 +6,13 @@ import com.btm.back.dto.Post
 import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.PostRespository
 import com.btm.back.repository.UserFilesRespository
+import com.btm.back.repository.UserRespository
 import com.btm.back.service.PostService
 import com.btm.back.utils.AliYunOssUtil
 import com.btm.back.utils.BaseResult
+import com.btm.back.vo.PostAuthorVo
 import com.btm.back.vo.PostVO
+import com.btm.back.vo.UserFilesVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional
 class PostServiceIml:PostService{
     @Autowired
     lateinit var postRespository: PostRespository
+
+    @Autowired
+    lateinit var userRespository: UserRespository
 
     @Autowired
     lateinit var userFilesRespository: UserFilesRespository
@@ -55,8 +61,17 @@ class PostServiceIml:PostService{
             val images =ArrayList<PostVO>()
             list.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
+                val listFvo = ArrayList<UserFilesVO>()
+                val user =  userRespository.findById(it.userId ?: 0)
+                val postAuth = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
+                file?.map {it2 ->
+                    val s = CopierUtil.copyProperties(it2,UserFilesVO::class.java)
+                    s?.let { it3 -> listFvo.add(it3) }
+
+                }
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
-                s?.postImages = file
+                s?.postImages = listFvo
+                s?.author = postAuth
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取用户帖子成功$images")
@@ -73,9 +88,17 @@ class PostServiceIml:PostService{
             val images =ArrayList<PostVO>()
             list.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
+                val listFvo = ArrayList<UserFilesVO>()
+                val user =  userRespository.findById(it.userId ?: 0)
+                val postAuth = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
+                 file?.map {it2 ->
+                     val s = CopierUtil.copyProperties(it2,UserFilesVO::class.java)
+                     s?.let { it3 -> listFvo.add(it3) }
 
+                }
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
-                s?.postImages = file
+                s?.author = postAuth
+                s?.postImages = listFvo
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取帖子成功$images")
