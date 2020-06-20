@@ -95,8 +95,8 @@ class UserServiceImp :UserService{
             if (null !=body.nickName){
                 u.nickName = body.nickName
             }
-            if (null !=body.relaseName){
-                u.relaseName = body.relaseName
+            if (null !=body.realName){
+                u.realName = body.realName
             }
             if (null !=body.easyInfo){
                 u.easyInfo = body.easyInfo
@@ -109,6 +109,12 @@ class UserServiceImp :UserService{
             }
             if (null !=body.likeStarts){
                 u.likeStarts = body.likeStarts
+            }
+            if (null != body.postNum){
+                u.postNum = body.postNum
+            }
+            if (null != body.userSex){
+                u.userSex = body.userSex
             }
             userrepository.save(u)
             val s = CopierUtil.copyProperties(u,UserVO::class.java)

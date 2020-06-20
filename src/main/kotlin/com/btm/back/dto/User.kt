@@ -10,7 +10,7 @@ class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
-    var relaseName: String? = null
+    var realName: String? = null
     var phone: String? = null
     var nickName: String? = null
     var account: String? = null
