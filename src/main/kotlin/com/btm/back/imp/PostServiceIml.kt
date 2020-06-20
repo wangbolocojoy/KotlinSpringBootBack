@@ -73,7 +73,7 @@ class PostServiceIml:PostService{
     override fun deletePost(body: PageBody): BaseResult {
         val post = body.postid?.let { postRespository.findById(it) }
         return if (post != null){
-            val list = userFilesRespository.findAllByPostid(body.postid ?:0)
+            val list = userFilesRespository.findAllByPostId(body.postid ?:0)
             AliYunOssUtil.deleteFiles(body.userid.toString(),list)
             postRespository.delete(post)
             BaseResult.SECUESS("删除成功")

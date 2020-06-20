@@ -3,6 +3,7 @@ import com.aliyun.oss.OSSClient
 import com.aliyun.oss.model.ObjectMetadata
 import com.btm.back.dto.UserFiles
 import com.btm.back.repository.UserFilesRespository
+import com.myapplication.novel.novel.untils.OSSClientConstants
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.multipart.MultipartFile
@@ -94,13 +95,12 @@ object AliYunOssUtil {
                    url = URL("https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/$fileoder")
                    logger.info("save - success - pictureUrl -> $url")
                    val file = UserFiles()
-                   file.originalFilename =  multipartFile.originalFilename
-                   file.userid = id
-                   file.postid = postid
-                   file.filetype = multipartFile.contentType
-                   file.fileurl = url.toString()
+                   file.originalFileName =  multipartFile.originalFilename
+                   file.userId = id
+                   file.postId = postid
+                   file.fileType = multipartFile.contentType
+                   file.fileUrl = url.toString()
                    file.fileLikes = 0
-                   file.fileseenum = 0
                    list.add(file)
                    userFilesRespository.save(file)
                } catch (e: IOException) {
@@ -191,8 +191,8 @@ object AliYunOssUtil {
     fun deleteFiles(id:String,list:List<UserFiles>?){
         ossClient =OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         list?.forEach {
-            ossClient!!.deleteObject(OSSClientConstants.BACKET_NAME, OSSClientConstants.PICTURE+id+"/" + it.originalFilename)
-            logger.info("删除-->  " + OSSClientConstants.PICTURE+"/"+id+"/"+ it.originalFilename + "  <---成功")
+            ossClient!!.deleteObject(OSSClientConstants.BACKET_NAME, OSSClientConstants.PICTURE+id+"/" + it.originalFileName)
+            logger.info("删除-->  " + OSSClientConstants.PICTURE+"/"+id+"/"+ it.originalFileName + "  <---成功")
         }
         ossClient!!.shutdown()
 
