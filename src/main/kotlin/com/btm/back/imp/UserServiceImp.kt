@@ -90,16 +90,16 @@ class UserServiceImp :UserService{
         val u= body.id?.let { userrepository.findById(it) }
         if (u != null){
             if (null !=body.userSex){
-                u.usersex = body.userSex
+                u.userSex = body.userSex
             }
             if (null !=body.nickName){
-                u.nickname = body.nickName
+                u.nickName = body.nickName
             }
             if (null !=body.relaseName){
-                u.relasename = body.relaseName
+                u.relaseName = body.relaseName
             }
             if (null !=body.easyInfo){
-                u.seayinfo = body.easyInfo
+                u.easyInfo = body.easyInfo
             }
             if (null !=body.address){
                 u.address = body.address
@@ -108,7 +108,7 @@ class UserServiceImp :UserService{
                 u.fances = body.fances
             }
             if (null !=body.likeStarts){
-                u.likestarts = body.likeStarts
+                u.likeStarts = body.likeStarts
             }
             userrepository.save(u)
             val s = CopierUtil.copyProperties(u,UserVO::class.java)
@@ -125,10 +125,10 @@ class UserServiceImp :UserService{
         val u=  userrepository.findById(id)
         if (null !=u ){
             return if (null!=uploadFile){
-                val oldfilename = u.originalfilename
+                val oldfilename = u.originalFileName
                 val url =AliYunOssUtil.uploadToAliyun(uploadFile.originalFilename ?: "",uploadFile.inputStream,uploadFile.contentType ?: "jpg",uploadType,id.toString())
                 u.icon = url
-                u.originalfilename = uploadFile.originalFilename
+                u.originalFileName = uploadFile.originalFilename
                 AliYunOssUtil.deleteFile(oldfilename ?: "",id.toString())
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
@@ -157,9 +157,9 @@ class UserServiceImp :UserService{
      */
     override fun searchfollow(body: ReqBody): BaseResult {
         val user = userrepository.findByPhone(body.phone ?:"")
-        val follow = followRespository.findByFollowid(body.id?:0)
-        val f =follow.any { user?.id == it.followid }
-        user?.isfollow = f
+        val follow = followRespository.findByFollowId(body.id?:0)
+        val f =follow.any { user?.id == it.followId }
+        user?.isFollow = f
         return if (user!= null){
             val s = CopierUtil.copyProperties(user, UserVO::class.java)
             logger.info("查找用户成功$s")

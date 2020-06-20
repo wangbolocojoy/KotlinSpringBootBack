@@ -11,8 +11,8 @@ class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
-    var userid:Int? = null
-    var followid: Int? = null
+    var userId:Int? = null
+    var followId: Int? = null
 
 
 }

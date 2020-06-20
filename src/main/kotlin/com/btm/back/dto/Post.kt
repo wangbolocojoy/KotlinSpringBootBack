@@ -13,10 +13,10 @@ class Post  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
     var userId: Int? = null
-    var posttitle:String? = null
-    var postdetail:String? = null
-    var postaddress:String? = null
-    var postpublic:Boolean? = false
-    var poststarts:Int? = 0
+    var postTitle:String? = null
+    var postDetail:String? = null
+    var postAddress:String? = null
+    var postPublic:Boolean? = false
+    var postStarts:Int? = 0
 
 }

@@ -146,8 +146,8 @@ object AliYunOssUtil {
     fun   deleteBucket(   bucketName:String){
        ossClient =OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
 
-        ossClient!!.deleteBucket(bucketName);
-        logger.info("删除" + bucketName + "Bucket成功");
+        ossClient!!.deleteBucket(bucketName)
+        logger.info("删除" + bucketName + "Bucket成功")
     }
 
     /**
@@ -182,7 +182,7 @@ object AliYunOssUtil {
      * @param folder  模拟文件夹名 如"qj_nanjing/"
      * @param key Bucket下的文件的路径名+文件名 如："upload/cake.jpg"
      */
-     fun  deleteFile(    key:String ,id:String){
+     fun  deleteFile(key:String ,id:String){
          ossClient =OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         ossClient!!.deleteObject(OSSClientConstants.BACKET_NAME, OSSClientConstants.PICTURE+id+"/" + key)
         logger.info("删除-->  " + OSSClientConstants.PICTURE+"/"+id+"/"+ key+ "  <---成功")
@@ -192,7 +192,7 @@ object AliYunOssUtil {
         ossClient =OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         list?.forEach {
             ossClient!!.deleteObject(OSSClientConstants.BACKET_NAME, OSSClientConstants.PICTURE+id+"/" + it.originalFileName)
-            logger.info("删除-->  " + OSSClientConstants.PICTURE+"/"+id+"/"+ it.originalFileName + "  <---成功")
+            logger.info("删除-->  " + OSSClientConstants.PICTURE+id+"/"+ it.originalFileName + "  <---成功")
         }
         ossClient!!.shutdown()
 

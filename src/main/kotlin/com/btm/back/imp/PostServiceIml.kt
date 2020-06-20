@@ -31,11 +31,11 @@ class PostServiceIml:PostService{
         return if (body.userId != null) {
             val post = Post()
             post.userId = body.userId
-            post.posttitle = body.postTitle
-            post.postaddress = body.postAddress
-            post.postdetail = body.postDetail
-            post.postpublic = body.postPublic ?: false
-            post.poststarts = body.postStart ?: 0
+            post.postTitle = body.postTitle
+            post.postAddress = body.postAddress
+            post.postDetail = body.postDetail
+            post.postPublic = body.postPublic ?: false
+            post.postStarts = body.postStart ?: 0
             postRespository.save(post)
             val s = CopierUtil.copyProperties(post,PostVO::class.java)
             logger.info("发布帖子成功$s")
@@ -47,10 +47,10 @@ class PostServiceIml:PostService{
     }
 
     override fun getPostByUserId(body: PageBody): BaseResult {
-        val pageable: Pageable = PageRequest.of(body.page ?: 1, body.pageSize ?: 10)
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val list = postRespository.findAllByUserId(body.userId ?:0,pageable)
         return if (list.isEmpty){
-            BaseResult.FAIL("该用户暂时未发过帖子",list)
+            BaseResult.FAIL("该用户暂时未发过帖子")
         }else{
             val images =ArrayList<PostVO>()
             list.forEach {
@@ -70,21 +70,30 @@ class PostServiceIml:PostService{
         return if (list.isEmpty){
             BaseResult.FAIL("暂时没有帖子")
         }else{
-            logger.info("获取帖子成功$list")
-            BaseResult.SECUESS(list)
+            val images =ArrayList<PostVO>()
+            list.forEach {
+                val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
+
+                val s =CopierUtil.copyProperties(it,PostVO::class.java)
+                s?.postImages = file
+                s?.let { it1 -> images.add(it1) }
+            }
+            logger.info("获取帖子成功$images")
+            BaseResult.SECUESS(images)
         }
     }
 
     override fun deletePost(body: PageBody): BaseResult {
         val post = body.postId?.let { postRespository.findById(it) }
-        return if (post != null){
+        return if (post != null&& body.userId != null){
+
             val list = userFilesRespository.findAllByPostId(body.postId ?:0)
             AliYunOssUtil.deleteFiles(body.userId.toString(),list)
             postRespository.delete(post)
-            logger.info("删除帖子成功$list")
+            logger.info("删除帖子成功")
             BaseResult.SECUESS("删除成功")
         }else{
-            BaseResult.FAIL("帖子id不能为空")
+            BaseResult.FAIL("参数不能为空")
         }
 
 
