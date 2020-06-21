@@ -60,7 +60,7 @@ class PostServiceIml:PostService{
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val list = postRespository.findAllByUserId(body.userId ?:0,pageable)
         return if (list.isEmpty){
-            BaseResult.FAIL("该用户暂时未发过帖子")
+            BaseResult.SECUESS("该用户暂时未发过帖子")
         }else{
             val images =ArrayList<PostVO>()
             list.forEach {
@@ -89,7 +89,7 @@ class PostServiceIml:PostService{
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
         val list = postRespository.findAll(pageable)
         return if (list.isEmpty){
-            BaseResult.FAIL("暂时没有帖子")
+            BaseResult.SECUESS("暂时没有帖子")
         }else{
             val images =ArrayList<PostVO>()
             list.forEach {
