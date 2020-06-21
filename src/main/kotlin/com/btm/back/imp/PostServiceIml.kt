@@ -43,7 +43,11 @@ class PostServiceIml:PostService{
             post.postPublic = body.postPublic ?: false
             post.postStarts = body.postStart ?: 0
             postRespository.save(post)
+            val user = userRespository.findById(body.userId ?:0)
+            user?.postNum = user?.postNum?:0+1
+            user?.let { userRespository.save(it) }
             val s = CopierUtil.copyProperties(post,PostVO::class.java)
+
             logger.info("发布帖子成功$s")
             BaseResult.SECUESS(s)
         } else {
@@ -63,11 +67,13 @@ class PostServiceIml:PostService{
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
                 val user =  userRespository.findById(it.userId ?: 0)
-                val postAuth = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
+                var postAuth:PostAuthorVo? = null
+                if (user!= null){
+                    postAuth = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
+                }
                 file?.map {it2 ->
                     val s = CopierUtil.copyProperties(it2,UserFilesVO::class.java)
                     s?.let { it3 -> listFvo.add(it3) }
-
                 }
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.postImages = listFvo
@@ -80,7 +86,7 @@ class PostServiceIml:PostService{
     }
 
     override fun getPosts(body: PageBody): BaseResult {
-        val pageable: Pageable = PageRequest.of(body.page ?: 1, body.pageSize ?: 10)
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
         val list = postRespository.findAll(pageable)
         return if (list.isEmpty){
             BaseResult.FAIL("暂时没有帖子")
@@ -90,7 +96,10 @@ class PostServiceIml:PostService{
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
                 val user =  userRespository.findById(it.userId ?: 0)
-                val postAuth = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
+                var postAuth : PostAuthorVo? = null
+                if (user!= null ){
+                    postAuth = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
+                }
                  file?.map {it2 ->
                      val s = CopierUtil.copyProperties(it2,UserFilesVO::class.java)
                      s?.let { it3 -> listFvo.add(it3) }
@@ -113,6 +122,13 @@ class PostServiceIml:PostService{
             val list = userFilesRespository.findAllByPostId(body.postId ?:0)
             AliYunOssUtil.deleteFiles(body.userId.toString(),list)
             postRespository.delete(post)
+            val user = userRespository.findById(body.userId ?: 0)
+            if (user?.postNum?:0  >= 1){
+                user?.postNum = user?.postNum?:0 - 1
+            }else{
+                user?.postNum = 0
+            }
+            user?.let { userRespository.save(it) }
             logger.info("删除帖子成功")
             BaseResult.SECUESS("删除成功")
         }else{
