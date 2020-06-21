@@ -44,7 +44,7 @@ class PostServiceIml:PostService{
             post.postStarts = body.postStart ?: 0
             postRespository.save(post)
             val user = userRespository.findById(body.userId ?:0)
-            user?.postNum = user?.postNum?:0+1
+            user?.postNum =(user?.postNum?:0)+1
             user?.let { userRespository.save(it) }
             val s = CopierUtil.copyProperties(post,PostVO::class.java)
 
@@ -124,7 +124,7 @@ class PostServiceIml:PostService{
             postRespository.delete(post)
             val user = userRespository.findById(body.userId ?: 0)
             if (user?.postNum?:0  >= 1){
-                user?.postNum = user?.postNum?:0 - 1
+                user?.postNum = (user?.postNum?:0) - 1
             }else{
                 user?.postNum = 0
             }
@@ -132,7 +132,7 @@ class PostServiceIml:PostService{
             logger.info("删除帖子成功")
             BaseResult.SECUESS("删除成功")
         }else{
-            BaseResult.FAIL("参数不能为空")
+            BaseResult.FAIL("该帖子不存在")
         }
 
 
