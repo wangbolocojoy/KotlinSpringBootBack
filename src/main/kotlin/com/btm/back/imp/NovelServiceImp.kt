@@ -18,7 +18,14 @@ class NovelServiceImp :NovelService{
     @Autowired
     lateinit var novelRespository : NovelRespository
     private val logger: Logger = LoggerFactory.getLogger(NovelServiceImp::class.java)
-    @Throws
+
+    /**
+    * @Description: 分页获取小说列表
+    * @Param:
+    * @return:
+    * @Author: hero
+    * @Date: 2020-06-26
+    **/
     override fun getPageNovelList(body: ReqBody?): BaseResult {
 
         val pageable: Pageable = PageRequest.of(body?.page ?: 1, body?.pageSize ?: 10)
@@ -38,6 +45,13 @@ class NovelServiceImp :NovelService{
 
     }
 
+    /**
+    * @Description: 搜索小说
+    * @Param:
+    * @return:
+    * @Author: hero
+    * @Date: 2020-06-26
+    **/
     override fun searchNovel(body: ReqBody?): BaseResult {
         val novel = body?.novelName?.let { novelRespository.findByNovel_nameLike(it) }
         if (novel.isNullOrEmpty()){
@@ -47,6 +61,13 @@ class NovelServiceImp :NovelService{
         }
     }
 
+    /**
+    * @Description: 获取小说分类
+    * @Param:
+    * @return:
+    * @Author: hero
+    * @Date: 2020-06-26
+    **/
     override fun getallnoveltype(body: ReqBody?): BaseResult {
         val novel = body?.novelId?.let { novelRespository.findById(it) }
         if (novel!=null){

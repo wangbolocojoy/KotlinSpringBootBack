@@ -10,4 +10,6 @@ data class PostBody(var postTitle: String? ,
                     var postPublic:Boolean?,
                     var userId:Int?,
                     var postId:Int?,
+                    var page:Int?,
+                    var pageSize:Int?,
                     var postStart:Int?): abstractObjectToString(),Serializable

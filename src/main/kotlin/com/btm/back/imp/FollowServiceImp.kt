@@ -26,9 +26,14 @@ class FollowServiceImp : FollowService {
     @Autowired
     lateinit var userRespository: UserRespository
     private val logger: Logger = LoggerFactory.getLogger(FollowServiceImp::class.java)
-    /**
-     * 获取关注列表
-     */
+    
+    /** 
+    * @Description: 获取关注列表 
+    * @Param:  
+    * @return:  
+    * @Author: hero
+    * @Date: 2020-06-26 
+    **/
     override fun getFollowList(body: ReqBody): BaseResult {
         val follow = body.userId?.let { followRespository.findByUserId(it) }
         if (follow.isNullOrEmpty()) {
@@ -49,10 +54,14 @@ class FollowServiceImp : FollowService {
         }
     }
 
-    /**
-     * 获取粉丝列表
-     * 返回该粉丝是否关注自己的  状态
-     */
+   
+   /** 
+   * @Description: 获取粉丝列表 
+   * @Param:  
+   * @return:  
+   * @Author: hero
+   * @Date: 2020-06-26 
+   **/
     override fun getFanceList(body: ReqBody): BaseResult {
         val fancelist = body.userId?.let { followRespository.findByFollowId(it) }
         return if (fancelist.isNullOrEmpty()) {

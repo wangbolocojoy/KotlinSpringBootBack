@@ -41,6 +41,15 @@ class PostServiceIml:PostService{
     lateinit var userFilesRespository: UserFilesRespository
 
     private val logger: Logger = LoggerFactory.getLogger(PostServiceIml::class.java)
+
+    /**
+    * @Description: 发帖
+    * @Param:
+    * @return:
+    * @Author: hero
+    * @Date: 2020-06-26
+    * @Time: 01:18
+    **/
     override fun sendPost(body: PostBody): BaseResult {
         return if (body.userId != null) {
             val post = Post()
@@ -65,6 +74,14 @@ class PostServiceIml:PostService{
 
     }
 
+    /**
+    * @Description: 获取用户的帖子
+    * @Param:
+    * @return:
+    * @Author: hero
+    * @Date: 2020-06-26
+    * @Time: 01:18
+    **/
     override fun getPostByUserId(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val list = postRespository.findByUserIdOrderByCreatTimeDesc(body.userId ?:0,pageable)
@@ -95,6 +112,14 @@ class PostServiceIml:PostService{
         }
     }
 
+    /**
+    * @Description: 分页获取所有帖子
+    * @Param:
+    * @return:
+    * @Author: hero
+    * @Date: 2020-06-26
+    * @Time: 01:19
+    **/
     override fun getPosts(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
         val list = postRespository.findByOrderByCreatTimeDesc(pageable)
@@ -126,6 +151,14 @@ class PostServiceIml:PostService{
         }
     }
 
+    /**
+    * @Description: 用户删除帖子
+    * @Param:
+    * @return:
+    * @Author: hero
+    * @Date: 2020-06-26
+    * @Time: 01:19
+    **/
     override fun deletePost(body: PageBody): BaseResult {
         val post = body.postId?.let { postRespository.findById(it) }
         return if (post != null&& body.userId != null){
@@ -149,13 +182,21 @@ class PostServiceIml:PostService{
 
     }
 
+    /**
+    * @Description: 更新帖子点赞数量
+    * @Param:
+    * @return:
+    * @Author: hero
+    * @Date: 2020-06-26
+    * @Time: 01:19
+    **/
     override fun updatePostLikeStartt(body: PageBody): BaseResult {
         val user = body.userId?.let { userRespository.findById(it) }
         if (user != null){
               val users = body.postId?.let { postStartRespository.findByPostId(it) }
               val has = users?.any { it.id == body.userId }
 
-    return BaseResult.FAIL()
+        return BaseResult.FAIL()
 
         }else{
             return  BaseResult.FAIL("用户不存在")

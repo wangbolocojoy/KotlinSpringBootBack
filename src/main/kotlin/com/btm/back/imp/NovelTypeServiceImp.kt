@@ -14,7 +14,15 @@ class NovelTypeServiceImp : NovelTypeService {
     @Autowired
     lateinit var novelTypeRespository: NovelTypeRespository
     private val logger: Logger = LoggerFactory.getLogger(NovelTypeServiceImp::class.java)
-
+    
+    /** 
+    * @Description: 获取小说类型 
+    * @Param:  
+    * @return:  
+    * @Author: hero
+    * @Date: 2020-06-26 
+    * @Time: 01:18 
+    **/
     override fun getNovelTypes(body: ReqBody?): BaseResult {
         val list = novelTypeRespository.findAll()
         return BaseResult.SECUESS(list)

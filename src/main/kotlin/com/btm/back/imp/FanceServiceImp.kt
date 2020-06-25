@@ -14,6 +14,9 @@ class FanceServiceImp :FanceService{
     @Autowired
     lateinit var fanceRespository: FanceRespository
     private val logger: Logger = LoggerFactory.getLogger(FanceServiceImp::class.java)
+    /**
+    * 获取粉丝列表
+    * */
     override fun getFanceList(body: ReqBody): BaseResult {
         val  fance = body.id?.let { fanceRespository.findByUserId(it) }
         return if (fance.isNullOrEmpty()){
