@@ -28,14 +28,14 @@ class PostStartServiceIml : PostStartService {
 
     @Autowired
     lateinit var userRespository: UserRespository
-    
-    /** 
-    * @Description: 点赞 
-    * @Param:  
-    * @return:  
+
+    /**
+    * @Description: 点赞
+    * @Param:
+    * @return:
     * @Author: hero
-    * @Date: 2020-06-26 
-    * @Time: 01:20 
+    * @Date: 2020-06-26
+    * @Time: 01:20
     **/
     override fun start(body: PostBody): BaseResult {
 
@@ -60,14 +60,14 @@ class PostStartServiceIml : PostStartService {
         }
 
     }
-    
-    /** 
-    * @Description: 取消点赞 
-    * @Param:  
-    * @return:  
+
+    /**
+    * @Description: 取消点赞
+    * @Param:
+    * @return:
     * @Author: hero
-    * @Date: 2020-06-26 
-    * @Time: 01:20 
+    * @Date: 2020-06-26
+    * @Time: 01:20
     **/
     override fun unStart(body: PostBody): BaseResult {
         val p = postStartRespository.findByPostId(body.postId ?: 0)
@@ -82,14 +82,14 @@ class PostStartServiceIml : PostStartService {
         postRespository.save(po)
         return BaseResult.SECUESS()
     }
-    
-    /** 
-    * @Description: 获取点赞列表 
-    * @Param:  
-    * @return:  
+
+    /**
+    * @Description: 获取点赞列表
+    * @Param:
+    * @return:
     * @Author: hero
-    * @Date: 2020-06-26 
-    * @Time: 01:22 
+    * @Date: 2020-06-26
+    * @Time: 01:25
     **/
     override fun getPostStartList(body: PostBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)

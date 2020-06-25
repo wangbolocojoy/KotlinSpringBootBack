@@ -35,11 +35,7 @@ interface UserService {
      * 更新用户头像
      */
     fun updateIcon(id: Int,uploadType:String,uploadFile:MultipartFile?):BaseResult
-    fun test(): BaseResult
-    /**
-     * 发消息
-     */
-    fun sendPost(body: ReqBody)
+
 
     fun searchfollow(body: ReqBody):BaseResult
 

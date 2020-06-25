@@ -26,13 +26,13 @@ class FollowServiceImp : FollowService {
     @Autowired
     lateinit var userRespository: UserRespository
     private val logger: Logger = LoggerFactory.getLogger(FollowServiceImp::class.java)
-    
-    /** 
-    * @Description: 获取关注列表 
-    * @Param:  
-    * @return:  
+
+    /**
+    * @Description: 获取关注列表
+    * @Param:
+    * @return:
     * @Author: hero
-    * @Date: 2020-06-26 
+    * @Date: 2020-06-26
     **/
     override fun getFollowList(body: ReqBody): BaseResult {
         val follow = body.userId?.let { followRespository.findByUserId(it) }
@@ -54,13 +54,13 @@ class FollowServiceImp : FollowService {
         }
     }
 
-   
-   /** 
-   * @Description: 获取粉丝列表 
-   * @Param:  
-   * @return:  
+
+   /**
+   * @Description: 获取粉丝列表
+   * @Param:
+   * @return:
    * @Author: hero
-   * @Date: 2020-06-26 
+   * @Date: 2020-06-26
    **/
     override fun getFanceList(body: ReqBody): BaseResult {
         val fancelist = body.userId?.let { followRespository.findByFollowId(it) }

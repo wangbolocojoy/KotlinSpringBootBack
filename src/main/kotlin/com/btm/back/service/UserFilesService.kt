@@ -6,9 +6,6 @@ import com.btm.back.utils.BaseResult
 import org.springframework.web.multipart.MultipartFile
 
 interface UserFilesService {
-    fun saveFiles(body: FileBody):BaseResult
-    fun getfileByFileId(body: ReqBody):BaseResult
-    fun getfileByUserId(body: ReqBody):BaseResult
-    fun deleteFileByFileId(body: ReqBody):BaseResult
+
     fun uploadFiles(userId: Int?,latitude:String?,longitude:String?,postPublic:Boolean?,postDetail:String?,postAddress:String?,uploadType:String?,uploadFile: ArrayList<MultipartFile>?):BaseResult
 }

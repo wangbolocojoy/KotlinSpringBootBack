@@ -34,32 +34,13 @@ class UserFilesServiceImp:UserFilesService{
 
     private val logger: Logger = LoggerFactory.getLogger(UserFilesServiceImp::class.java)
 
-    override fun saveFiles(body: FileBody): BaseResult {
-
-        var userfile = UserFiles()
-
-        return BaseResult.SECUESS()
-    }
-
-    override fun getfileByFileId(body: ReqBody): BaseResult {
-        return BaseResult.SECUESS()
-    }
-
-    override fun getfileByUserId(body: ReqBody): BaseResult {
-        return BaseResult.SECUESS()
-    }
-
-    override fun deleteFileByFileId(body: ReqBody): BaseResult {
-        return BaseResult.SECUESS()
-    }
-    
-    /** 
-    * @Description: 发帖 
-    * @Param:  
-    * @return:  
+    /**
+    * @Description: 发帖
+    * @Param:
+    * @return:
     * @Author: hero
-    * @Date: 2020-06-26 
-    * @Time: 01:22 
+    * @Date: 2020-06-26
+    * @Time: 01:26
     **/
     override fun uploadFiles(userId: Int?,latitude:String?,longitude:String?, postPublic:Boolean?, postDetail: String?, postAddress: String?, uploadType: String?, uploadFile: ArrayList<MultipartFile>?): BaseResult {
         return if (userId == null || uploadType == null ||postDetail == null || uploadFile == null){
