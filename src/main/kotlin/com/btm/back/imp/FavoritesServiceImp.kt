@@ -4,14 +4,14 @@ import com.btm.back.bean.PostBody
 import com.btm.back.bean.ReqBody
 import com.btm.back.dto.Favorites
 import com.btm.back.dto.PostStart
+import com.btm.back.dto.UserFiles
 import com.btm.back.helper.CopierUtil
-import com.btm.back.repository.FavoritesRespository
-import com.btm.back.repository.PostRespository
-import com.btm.back.repository.PostStartRespository
-import com.btm.back.repository.UserRespository
+import com.btm.back.repository.*
 import com.btm.back.service.FavoritesService
 import com.btm.back.utils.BaseResult
+import com.btm.back.vo.PostAuthorVo
 import com.btm.back.vo.PostVO
+import com.btm.back.vo.UserFilesVO
 import com.btm.back.vo.UserVO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -28,6 +28,11 @@ class FavoritesServiceImp :FavoritesService{
     @Autowired
     lateinit var postRespository: PostRespository
 
+    @Autowired
+    lateinit var userFilesRespository: UserFilesRespository
+
+    @Autowired
+    lateinit var userRespository: UserRespository
     /**
     * 收藏
     * */
@@ -78,8 +83,19 @@ class FavoritesServiceImp :FavoritesService{
         collectionList.forEach {
             val post = postRespository.findById(it.postId ?:0)
             if (post != null){
-                val uvo = CopierUtil.copyProperties(it, PostVO::class.java)
-                uvo?.let { it1 -> list.add(it1) }
+                val pvo = CopierUtil.copyProperties(it, PostVO::class.java)
+                val user = userRespository.findById(it.userId?:0)
+                if (user != null){
+                    pvo?.author = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
+                }
+                val images = ArrayList<UserFilesVO>()
+                val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
+                file?.map { it3 ->
+                    val fvo = CopierUtil.copyProperties(it3,UserFilesVO::class.java)
+                    fvo?.let { it1 -> images.add(it1) }
+                }
+                pvo?.postImages = images
+                pvo?.let { it1 -> list.add(it1) }
             }
         }
         return BaseResult.SECUESS(list)
