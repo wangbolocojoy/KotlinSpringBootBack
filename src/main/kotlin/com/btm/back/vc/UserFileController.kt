@@ -22,7 +22,7 @@ class UserFileController {
     @UserLoginToken
     @RequestMapping(value = ["upLoadFiles"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    fun upLoadFiles( userId:Int, postPublic:Boolean,postDetail:String, postAddress:String,uploadType:String, uploadFiles:ArrayList<MultipartFile>? ) = userFilesServiceImp.uploadFiles(userId,postPublic,postDetail,postAddress,uploadType,uploadFiles)
+    fun upLoadFiles( userId:Int,latitude:String?,longitude:String?, postPublic:Boolean,postDetail:String, postAddress:String?,uploadType:String, uploadFiles:ArrayList<MultipartFile>? ) = userFilesServiceImp.uploadFiles(userId,longitude,longitude,postPublic,postDetail,postAddress,uploadType,uploadFiles)
 
 
 

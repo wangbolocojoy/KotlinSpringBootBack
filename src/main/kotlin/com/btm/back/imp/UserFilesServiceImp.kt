@@ -53,7 +53,7 @@ class UserFilesServiceImp:UserFilesService{
         return BaseResult.SECUESS()
     }
 
-    override fun uploadFiles(userId: Int?, postPublic:Boolean?, postDetail: String?, postAddress: String?, uploadType: String?, uploadFile: ArrayList<MultipartFile>?): BaseResult {
+    override fun uploadFiles(userId: Int?,latitude:String?,longitude:String?, postPublic:Boolean?, postDetail: String?, postAddress: String?, uploadType: String?, uploadFile: ArrayList<MultipartFile>?): BaseResult {
         return if (userId == null || uploadType == null ||postDetail == null || uploadFile == null){
             BaseResult.FAIL("参数不能为空")
         }else{
@@ -64,6 +64,8 @@ class UserFilesServiceImp:UserFilesService{
             post.postPublic = postPublic ?: false
             post.postStarts =  0
             post.creatTime = Date(System.currentTimeMillis())
+            post.latitude = latitude
+            post.longitude = longitude
             postRespository.save(post)
             val user = userRespository.findById(userId )
             user?.postNum =(user?.postNum?:0)+1

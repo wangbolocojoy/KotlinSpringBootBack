@@ -10,5 +10,5 @@ interface UserFilesService {
     fun getfileByFileId(body: ReqBody):BaseResult
     fun getfileByUserId(body: ReqBody):BaseResult
     fun deleteFileByFileId(body: ReqBody):BaseResult
-    fun uploadFiles(userId: Int?,postPublic:Boolean?,postDetail:String?,postAddress:String?,uploadType:String?,uploadFile: ArrayList<MultipartFile>?):BaseResult
+    fun uploadFiles(userId: Int?,latitude:String?,longitude:String?,postPublic:Boolean?,postDetail:String?,postAddress:String?,uploadType:String?,uploadFile: ArrayList<MultipartFile>?):BaseResult
 }
