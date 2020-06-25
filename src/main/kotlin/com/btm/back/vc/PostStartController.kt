@@ -1,7 +1,6 @@
 package com.btm.back.vc
 
 import com.btm.back.bean.PostBody
-import com.btm.back.imp.PostServiceIml
 import com.btm.back.imp.PostStartServiceIml
 import com.btm.back.utils.PassToken
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +16,12 @@ class PostStartController {
     lateinit var postStartServiceIml: PostStartServiceIml
 
     @PassToken
-    @RequestMapping(value = ["sendPost"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["start"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    fun sendPost(@RequestBody body: PostBody) = postStartServiceIml.start(body)
+    fun start(@RequestBody body: PostBody) = postStartServiceIml.start(body)
+
+    @PassToken
+    @RequestMapping(value = ["unStart"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    fun unStart(@RequestBody body: PostBody) = postStartServiceIml.unStart(body)
 }
