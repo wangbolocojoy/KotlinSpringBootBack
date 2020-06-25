@@ -12,8 +12,10 @@ class PostVO {
     var postStarts:Int? = null
     var author:PostAuthorVo? = null
     var postImages:List<UserFilesVO>? = null
+    var latitude:String? = null
+    var longitude:String? = null
     override fun toString(): String {
-        return "PostVO(id=$id, userId=$userId, postDetail=$postDetail, postAddress=$postAddress, postPublic=$postPublic, creatTime=$creatTime, postStarts=$postStarts, author=$author, postImages=$postImages)"
+        return "PostVO(id=$id, userId=$userId, postDetail=$postDetail, postAddress=$postAddress, postPublic=$postPublic, creatTime=$creatTime, postStarts=$postStarts, author=$author, postImages=$postImages, latitude=$latitude, longitude=$longitude)"
     }
 
 
