@@ -9,4 +9,5 @@ data class PostBody(var postTitle: String? ,
                     var postImages: ArrayList<PostImagesBody>? ,
                     var postPublic:Boolean?,
                     var userId:Int?,
+                    var postId:Int?,
                     var postStart:Int?): abstractObjectToString(),Serializable

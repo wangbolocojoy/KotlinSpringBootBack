@@ -1,23 +1,17 @@
 package com.btm.back.dto
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import java.util.*
 import javax.persistence.*
 
-
 @Entity
-@Table(name = "Post")
+@Table(name = "PostStart")
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
-class Post  {
+class PostStart  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
     var userId: Int? = null
-    var postDetail:String? = null
-    var postAddress:String? = null
-    var postPublic:Boolean? = false
-    var postStarts:Int? = 0
-    var creatTime:Date? = null
+    var postId:Int? = null
+
 
 }

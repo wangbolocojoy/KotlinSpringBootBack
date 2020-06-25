@@ -18,16 +18,11 @@ class UserFileController {
     @Throws(java.lang.Exception::class)
     fun upLoadFile(@RequestBody b: FileBody,filelist :MultipartFile) = userFilesServiceImp.saveFiles(b)
 
+
     @UserLoginToken
     @RequestMapping(value = ["upLoadFiles"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    fun upLoadFiles(@RequestParam id:Int, @RequestParam postId:Int,@RequestParam uploadtype:String, uploadFiles:ArrayList<MultipartFile>? ) = userFilesServiceImp.uploadFiles(id,postId,uploadtype,uploadFiles)
-
-
-    @UserLoginToken
-    @RequestMapping(value = ["upLoadFiless"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    fun upLoadFiless( id:Int,  postId:Int, uploadtype:String, uploadFiles:ArrayList<MultipartFile>? ) = userFilesServiceImp.uploadFiles(id,postId,uploadtype,uploadFiles)
+    fun upLoadFiles( userId:Int, postPublic:Boolean,postDetail:String, postAddress:String,uploadType:String, uploadFiles:ArrayList<MultipartFile>? ) = userFilesServiceImp.uploadFiles(userId,postPublic,postDetail,postAddress,uploadType,uploadFiles)
 
 
 

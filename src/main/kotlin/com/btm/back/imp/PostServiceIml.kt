@@ -5,6 +5,7 @@ import com.btm.back.bean.PostBody
 import com.btm.back.dto.Post
 import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.PostRespository
+import com.btm.back.repository.PostStartRespository
 import com.btm.back.repository.UserFilesRespository
 import com.btm.back.repository.UserRespository
 import com.btm.back.service.PostService
@@ -20,6 +21,9 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 @Transactional
 @Service
@@ -31,17 +35,22 @@ class PostServiceIml:PostService{
     lateinit var userRespository: UserRespository
 
     @Autowired
+    lateinit var postStartRespository: PostStartRespository
+
+    @Autowired
     lateinit var userFilesRespository: UserFilesRespository
+
     private val logger: Logger = LoggerFactory.getLogger(PostServiceIml::class.java)
     override fun sendPost(body: PostBody): BaseResult {
         return if (body.userId != null) {
             val post = Post()
             post.userId = body.userId
-            post.postTitle = body.postTitle
             post.postAddress = body.postAddress
             post.postDetail = body.postDetail
             post.postPublic = body.postPublic ?: false
             post.postStarts = body.postStart ?: 0
+            val smp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            post.creatTime = Date(System.currentTimeMillis())
             postRespository.save(post)
             val user = userRespository.findById(body.userId ?:0)
             user?.postNum =(user?.postNum?:0)+1
@@ -58,12 +67,12 @@ class PostServiceIml:PostService{
 
     override fun getPostByUserId(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
-        val list = postRespository.findAllByUserId(body.userId ?:0,pageable)
-        return if (list.isEmpty){
+        val list = postRespository.findByUserIdOrderByCreatTimeDesc(body.userId ?:0,pageable)
+        return if (list?.isEmpty == true){
             BaseResult.SECUESS("该用户暂时未发过帖子")
         }else{
             val images =ArrayList<PostVO>()
-            list.forEach {
+            list?.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
                 val user =  userRespository.findById(it.userId ?: 0)
@@ -78,6 +87,7 @@ class PostServiceIml:PostService{
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.postImages = listFvo
                 s?.author = postAuth
+                s?.creatTime = it.creatTime?.time
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取用户帖子成功$images")
@@ -87,12 +97,12 @@ class PostServiceIml:PostService{
 
     override fun getPosts(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
-        val list = postRespository.findAll(pageable)
-        return if (list.isEmpty){
+        val list = postRespository.findByOrderByCreatTimeDesc(pageable)
+        return if (list?.isEmpty == true){
             BaseResult.SECUESS("暂时没有帖子")
         }else{
             val images =ArrayList<PostVO>()
-            list.forEach {
+            list?.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
                 val user =  userRespository.findById(it.userId ?: 0)
@@ -108,6 +118,7 @@ class PostServiceIml:PostService{
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.author = postAuth
                 s?.postImages = listFvo
+                s?.creatTime = it.creatTime?.time
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取帖子成功$images")
@@ -136,5 +147,18 @@ class PostServiceIml:PostService{
         }
 
 
+    }
+
+    override fun updatePostLikeStartt(body: PageBody): BaseResult {
+        val user = body.userId?.let { userRespository.findById(it) }
+        if (user != null){
+              val users = body.postId?.let { postStartRespository.findByPostId(it) }
+              val has = users?.any { it.id == body.userId }
+
+    return BaseResult.FAIL()
+
+        }else{
+            return  BaseResult.FAIL("用户不存在")
+        }
     }
 }
