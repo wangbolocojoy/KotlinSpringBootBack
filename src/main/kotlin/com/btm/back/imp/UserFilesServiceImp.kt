@@ -52,7 +52,15 @@ class UserFilesServiceImp:UserFilesService{
     override fun deleteFileByFileId(body: ReqBody): BaseResult {
         return BaseResult.SECUESS()
     }
-
+    
+    /** 
+    * @Description: 发帖 
+    * @Param:  
+    * @return:  
+    * @Author: hero
+    * @Date: 2020-06-26 
+    * @Time: 01:22 
+    **/
     override fun uploadFiles(userId: Int?,latitude:String?,longitude:String?, postPublic:Boolean?, postDetail: String?, postAddress: String?, uploadType: String?, uploadFile: ArrayList<MultipartFile>?): BaseResult {
         return if (userId == null || uploadType == null ||postDetail == null || uploadFile == null){
             BaseResult.FAIL("参数不能为空")

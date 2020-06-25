@@ -23,6 +23,15 @@ class UserServiceImp :UserService{
     @Autowired
     lateinit var followRespository: FollowRespository
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImp::class.java)
+    
+    /** 
+    * @Description: 注册 
+    * @Param:  
+    * @return:  
+    * @Author: hero
+    * @Date: 2020-06-26 
+    * @Time: 01:22 
+    **/
     override fun register(body: ReqBody): BaseResult {
         val u= body.phone?.let { userrepository.findByPhone(it) }
         return if (u!=null){
@@ -39,7 +48,15 @@ class UserServiceImp :UserService{
             BaseResult.SECUESS(s)
         }
     }
-
+    
+    /** 
+    * @Description: 删除用户 
+    * @Param:  
+    * @return:  
+    * @Author: hero
+    * @Date: 2020-06-26 
+    * @Time: 01:22 
+    **/
     override fun deleteUser(id: Long) :BaseResult{
         val u= userrepository.findById(id)
         return if(u.isPresent){
@@ -51,7 +68,15 @@ class UserServiceImp :UserService{
 
 
     }
-
+    
+    /** 
+    * @Description: 登录 
+    * @Param: 参数
+    * @return: 返回数据 
+    * @Author: hero
+    * @Date: 2020-06-26 
+    * @Time: 01:23 
+    **/
     override fun login(body: ReqBody): BaseResult {
         val u= body.phone?.let { userrepository.findByAccount(it) }
         return if(u!=null){
@@ -66,12 +91,27 @@ class UserServiceImp :UserService{
             BaseResult.FAIL("请先注册账号")
         }
     }
-
+    
+    /** 
+    * @Description: 获取用户信息 
+    * @Param: 参数
+    * @return: 返回数据 
+    * @Author: hero
+    * @Date: 2020-06-26 
+    * @Time: 01:24 
+    **/
     override fun findUserById(phone: String):User? {
         val u=  userrepository.findByPhone(phone)
         return u
     }
-
+    /**
+     * @Description: 获取用户信息
+     * @Param: 参数
+     * @return: 返回数据
+     * @Author: hero
+     * @Date: 2020-06-26
+     * @Time: 01:24
+     **/
     override fun getuserinfo(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
         return if (u != null) {
@@ -85,7 +125,14 @@ class UserServiceImp :UserService{
     }
 
 
-
+    /**
+     * @Description: 更新用户信息
+     * @Param: 参数
+     * @return: 返回数据
+     * @Author: hero
+     * @Date: 2020-06-26
+     * @Time: 01:24
+     **/
     override fun updateUser(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
         if (u != null){
@@ -126,7 +173,14 @@ class UserServiceImp :UserService{
     }
 
 
-
+    /**
+     * @Description: 更新用户头像
+     * @Param: 参数
+     * @return: 返回数据
+     * @Author: hero
+     * @Date: 2020-06-26
+     * @Time: 01:24
+     **/
     override fun updateIcon(id: Int,uploadType:String, uploadFile:MultipartFile? ):BaseResult {
         val u=  userrepository.findById(id)
         if (null !=u ){
@@ -158,9 +212,15 @@ class UserServiceImp :UserService{
     override fun sendPost(body: ReqBody) {
     }
 
-    /**
-     * 查找关注
-     */
+   
+   /** 
+   * @Description: 查找用户 
+   * @Param: 参数
+   * @return: 返回数据 
+   * @Author: hero
+   * @Date: 2020-06-26 
+   * @Time: 01:24 
+   **/
     override fun searchfollow(body: ReqBody): BaseResult {
         val user = userrepository.findByPhone(body.phone ?:"")
         val follow = followRespository.findByFollowId(body.id?:0)

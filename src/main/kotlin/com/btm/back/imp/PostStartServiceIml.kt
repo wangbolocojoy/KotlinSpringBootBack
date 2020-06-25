@@ -82,7 +82,15 @@ class PostStartServiceIml : PostStartService {
         postRespository.save(po)
         return BaseResult.SECUESS()
     }
-
+    
+    /** 
+    * @Description: 获取点赞列表 
+    * @Param:  
+    * @return:  
+    * @Author: hero
+    * @Date: 2020-06-26 
+    * @Time: 01:22 
+    **/
     override fun getPostStartList(body: PostBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val startList = postStartRespository.findByPostId((body.postId ?: 0),pageable) ?: return BaseResult.FAIL("暂时没有点赞用户")
