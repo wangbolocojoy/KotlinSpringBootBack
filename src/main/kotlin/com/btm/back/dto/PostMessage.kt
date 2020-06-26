@@ -12,12 +12,10 @@ class PostMessage  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
     var userId: Int? = null
-    var postTitle: String? = null
-    var postDetail: String? = null
-    var postCreatTime: String? = null
-    var postImageId: Int? = null
-    var postAddress: String? = null
-    var postLikeStarts: Int? = null
-    var postLevaingMessage:Int? = null
+    var postId:Int? = null
+    var postMsgId:Int? = null
+    var postPostMessage: String? = null
+    var postMsgCreatTime: String? = null
+
 
 }

@@ -39,6 +39,10 @@ class PostServiceIml:PostService{
 
     @Autowired
     lateinit var favoritesRespository: FavoritesRespository
+
+    @Autowired
+    lateinit var postMessageRespository: PostMessageRespository
+
     private val logger: Logger = LoggerFactory.getLogger(PostServiceIml::class.java)
 
     /**
@@ -95,6 +99,8 @@ class PostServiceIml:PostService{
 
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
+                val poststartnum = postStartRespository.findByPostId(it.id?:0)
+                val msgList = postMessageRespository.findByPostId(body.postId ?:0)
                 val user =  userRespository.findById(it.userId ?: 0)
                 var postAuth:PostAuthorVo? = null
                 if (user!= null){
@@ -107,6 +113,8 @@ class PostServiceIml:PostService{
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.postImages = listFvo
                 s?.author = postAuth
+                s?.msgNum = msgList.size
+                s?.postStarts = poststartnum?.size ?: 0
                 s?.isStart = startList?.any { it5->
                      it5.postId == it.id
                 }
@@ -141,6 +149,8 @@ class PostServiceIml:PostService{
             list?.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
+                val poststartnum = postStartRespository.findByPostId(it.id?:0)
+                val msgList = postMessageRespository.findByPostId(body.postId ?:0)
                 val user =  userRespository.findById(it.userId ?: 0)
                 var postAuth : PostAuthorVo? = null
                 if (user!= null ){
@@ -149,11 +159,12 @@ class PostServiceIml:PostService{
                  file?.map {it2 ->
                      val s = CopierUtil.copyProperties(it2,UserFilesVO::class.java)
                      s?.let { it3 -> listFvo.add(it3) }
-
                 }
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.author = postAuth
                 s?.postImages = listFvo
+                s?.msgNum = msgList.size
+                s?.postStarts = poststartnum?.size ?:0
                 s?.isStart = startList?.any { it5->
                     it5.postId == it.id
                 }
