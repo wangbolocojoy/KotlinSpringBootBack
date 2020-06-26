@@ -1,0 +1,75 @@
+package com.btm.back.imp
+
+import com.btm.back.bean.MessageBody
+import com.btm.back.bean.PageBody
+import com.btm.back.dto.PostMessage
+import com.btm.back.helper.CopierUtil
+import com.btm.back.repository.PostMessageRespository
+import com.btm.back.service.PostMessageService
+import com.btm.back.utils.BaseResult
+import com.btm.back.vo.MessageVO
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
+import kotlin.collections.ArrayList
+
+@Transactional
+@Service
+class PostMessageServiceImp:PostMessageService {
+
+    @Autowired
+    lateinit var postMessageRespository: PostMessageRespository
+
+
+    override fun getPostMessagesByPostId(body: PageBody): BaseResult {
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        val msgList =  postMessageRespository.findByPostId(body.postId ?:0,pageable) ?: return BaseResult.FAIL("暂时没有评论")
+        val list = ArrayList<MessageVO>()
+        msgList.forEach {
+            val child  = postMessageRespository.findByPostId(it.postMsgId?:0)
+            val vo = CopierUtil.copyProperties(it,MessageVO::class.java)
+            vo?.chiledMessage = child
+            vo?.let { it1 -> list.add(it1) }
+        }
+        return  BaseResult.SECUESS(list)
+
+    }
+
+    override fun sendMessage(body: MessageBody): BaseResult {
+        return if (body.postMessage.isNullOrEmpty()|| body.userId == null || body.postId == null){
+            BaseResult.FAIL("评论信息不能为空")
+        }else{
+            val msg = PostMessage()
+            msg.postId = body.postId
+            msg.postMsgCreatTime = Date(System.currentTimeMillis())
+            msg.userId = body.userId
+            msg.messageStart = 0
+            msg.postMsgId = body.postMsgId
+            postMessageRespository.save(msg)
+            BaseResult.SECUESS("ok")
+        }
+    }
+
+    override fun deleteMessage(body: MessageBody): BaseResult {
+        if ( body.userId == null || body.postId == null){
+           return BaseResult.FAIL("参数不能为空")
+
+        }else{
+            val msg =postMessageRespository.findById(body.postMsgId?:0)
+            return if (msg.isEmpty || msg.isPresent){
+                BaseResult.FAIL("评论不存在")
+            }else{
+                if (body.userId == msg.get().userId){
+                    postMessageRespository.delete(msg.get())
+                    BaseResult.SECUESS("删除成功")
+                }else{
+                    BaseResult.FAIL("不能删除别人的评论")
+                }
+            }
+
+        }
+    }
+}

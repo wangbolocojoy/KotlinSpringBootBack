@@ -1,6 +1,7 @@
 package com.btm.back.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import java.util.*
 import javax.persistence.*
 
 
@@ -15,7 +16,8 @@ class PostMessage  {
     var postId:Int? = null
     var postMsgId:Int? = null
     var postPostMessage: String? = null
-    var postMsgCreatTime: String? = null
+    var postMsgCreatTime: Date? = null
+    var messageStart:Int? = 0
 
 
 }

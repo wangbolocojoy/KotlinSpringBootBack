@@ -33,6 +33,9 @@ class FavoritesServiceImp :FavoritesService{
 
     @Autowired
     lateinit var userRespository: UserRespository
+
+    @Autowired
+    lateinit var postStartRespository: PostStartRespository
     /**
     * 收藏
     * */
@@ -77,23 +80,29 @@ class FavoritesServiceImp :FavoritesService{
    * @Date: 2020-06-26
    **/
     override fun getCollectionList(body: PostBody): BaseResult {
-        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 5)
         val collectionList = favoritesRespository.findByUserId((body.userId ?: 0),pageable) ?: return BaseResult.FAIL("暂时没有收藏任何东西")
         val list=ArrayList<PostVO>()
         collectionList.forEach {
             val post = postRespository.findById(it.postId ?:0)
             if (post != null){
+                val startList = postStartRespository.findByUserId(body.userId?:0)
                 val pvo = CopierUtil.copyProperties(it, PostVO::class.java)
                 val user = userRespository.findById(it.userId?:0)
                 if (user != null){
                     pvo?.author = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
                 }
+
                 val images = ArrayList<UserFilesVO>()
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 file?.map { it3 ->
                     val fvo = CopierUtil.copyProperties(it3,UserFilesVO::class.java)
                     fvo?.let { it1 -> images.add(it1) }
                 }
+                pvo?.isStart = startList?.any { it4->
+                    it4.postId == post.id
+                }
+                pvo?.isCollection = true
                 pvo?.postImages = images
                 pvo?.let { it1 -> list.add(it1) }
             }

@@ -113,7 +113,7 @@ class PostServiceIml:PostService{
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.postImages = listFvo
                 s?.author = postAuth
-                s?.msgNum = msgList.size
+                s?.msgNum = msgList?.size
                 s?.postStarts = poststartnum?.size ?: 0
                 s?.isStart = startList?.any { it5->
                      it5.postId == it.id
@@ -149,7 +149,6 @@ class PostServiceIml:PostService{
             list?.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
-                val poststartnum = postStartRespository.findByPostId(it.id?:0)
                 val msgList = postMessageRespository.findByPostId(body.postId ?:0)
                 val user =  userRespository.findById(it.userId ?: 0)
                 var postAuth : PostAuthorVo? = null
@@ -163,8 +162,7 @@ class PostServiceIml:PostService{
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.author = postAuth
                 s?.postImages = listFvo
-                s?.msgNum = msgList.size
-                s?.postStarts = poststartnum?.size ?:0
+                s?.msgNum = msgList?.size
                 s?.isStart = startList?.any { it5->
                     it5.postId == it.id
                 }

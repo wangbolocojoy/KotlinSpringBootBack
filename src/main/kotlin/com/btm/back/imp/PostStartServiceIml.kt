@@ -98,7 +98,7 @@ class PostStartServiceIml : PostStartService {
         startList.forEach {
             val user = userRespository.findById(it.userId ?:0)
             if (user != null){
-                val uvo = CopierUtil.copyProperties(it,UserVO::class.java)
+                val uvo = CopierUtil.copyProperties(user,UserVO::class.java)
                 uvo?.let { it1 -> list.add(it1) }
             }
         }
