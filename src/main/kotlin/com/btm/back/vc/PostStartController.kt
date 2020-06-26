@@ -49,4 +49,9 @@ class PostStartController {
     @Throws(java.lang.Exception::class)
     fun cancelCollection(@RequestBody body: PostBody) = favoritesServiceImp.cancelCollection(body)
 
+    @PassToken
+    @RequestMapping(value = ["getUserAllStartList"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    fun getUserAllStartList(@RequestBody body: PostBody) = postStartServiceIml.getUserStartList(body)
+
 }

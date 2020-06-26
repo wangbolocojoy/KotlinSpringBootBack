@@ -7,4 +7,5 @@ interface PostStartService {
     fun start(body: PostBody): BaseResult
     fun unStart(body: PostBody): BaseResult
     fun getPostStartList(body: PostBody): BaseResult
+    fun getUserStartList(body: PostBody): BaseResult
 }

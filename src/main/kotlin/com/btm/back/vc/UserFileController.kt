@@ -1,6 +1,5 @@
 package com.btm.back.vc
 
-import com.btm.back.bean.FileBody
 import com.btm.back.imp.UserFilesServiceImp
 import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,11 +12,6 @@ class UserFileController {
 
     @Autowired
     lateinit var userFilesServiceImp: UserFilesServiceImp
-    @UserLoginToken
-    @RequestMapping(value = ["upLoadFile"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    fun upLoadFile(@RequestBody b: FileBody,filelist :MultipartFile) = userFilesServiceImp.saveFiles(b)
-
 
     @UserLoginToken
     @RequestMapping(value = ["upLoadFiles"], method = [RequestMethod.POST])

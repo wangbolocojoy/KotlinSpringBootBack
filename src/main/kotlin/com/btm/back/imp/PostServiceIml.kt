@@ -4,10 +4,7 @@ import com.btm.back.bean.PageBody
 import com.btm.back.bean.PostBody
 import com.btm.back.dto.Post
 import com.btm.back.helper.CopierUtil
-import com.btm.back.repository.PostRespository
-import com.btm.back.repository.PostStartRespository
-import com.btm.back.repository.UserFilesRespository
-import com.btm.back.repository.UserRespository
+import com.btm.back.repository.*
 import com.btm.back.service.PostService
 import com.btm.back.utils.AliYunOssUtil
 import com.btm.back.utils.BaseResult
@@ -40,6 +37,8 @@ class PostServiceIml:PostService{
     @Autowired
     lateinit var userFilesRespository: UserFilesRespository
 
+    @Autowired
+    lateinit var favoritesRespository: FavoritesRespository
     private val logger: Logger = LoggerFactory.getLogger(PostServiceIml::class.java)
 
     /**
@@ -89,7 +88,11 @@ class PostServiceIml:PostService{
             BaseResult.SECUESS("该用户暂时未发过帖子")
         }else{
             val images =ArrayList<PostVO>()
+            val startList = postStartRespository.findByUserId(body.userId?:0)
+            val collList = favoritesRespository.findByUserId(body.userId?:0)
             list?.forEach {
+
+
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
                 val user =  userRespository.findById(it.userId ?: 0)
@@ -104,6 +107,12 @@ class PostServiceIml:PostService{
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.postImages = listFvo
                 s?.author = postAuth
+                s?.isStart = startList?.any { it5->
+                     it5.postId == it.id
+                }
+                s?.isCollection = collList?.any { it6->
+                    it6.postId == it.id
+                }
                 s?.creatTime = it.creatTime?.time
                 s?.let { it1 -> images.add(it1) }
             }
@@ -126,6 +135,8 @@ class PostServiceIml:PostService{
         return if (list?.isEmpty == true){
             BaseResult.SECUESS("暂时没有帖子")
         }else{
+            val startList = postStartRespository.findByUserId(body.userId?:0)
+            val collList = favoritesRespository.findByUserId(body.userId?:0)
             val images =ArrayList<PostVO>()
             list?.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
@@ -143,6 +154,12 @@ class PostServiceIml:PostService{
                 val s =CopierUtil.copyProperties(it,PostVO::class.java)
                 s?.author = postAuth
                 s?.postImages = listFvo
+                s?.isStart = startList?.any { it5->
+                    it5.postId == it.id
+                }
+                s?.isCollection = collList?.any { it6->
+                    it6.postId == it.id
+                }
                 s?.creatTime = it.creatTime?.time
                 s?.let { it1 -> images.add(it1) }
             }

@@ -105,5 +105,11 @@ class PostStartServiceIml : PostStartService {
         return BaseResult.SECUESS(list)
     }
 
+    override fun getUserStartList(body: PostBody): BaseResult {
+        val usl = postStartRespository.findByUserId(body.userId ?:0) ?: return BaseResult.FAIL("你还没有给别人点过赞")
+        return  BaseResult.SECUESS(usl)
+    }
+
+
 }
 
