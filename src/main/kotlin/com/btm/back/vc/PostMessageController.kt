@@ -1,5 +1,6 @@
 package com.btm.back.vc
 
+import com.btm.back.bean.MessageBody
 import com.btm.back.bean.PageBody
 import com.btm.back.imp.PostMessageServiceImp
 import com.btm.back.imp.PostServiceIml
@@ -26,12 +27,12 @@ class PostMessageController {
     @PassToken
     @RequestMapping(value = ["sendMessage"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    fun sendMessage(@RequestBody body: PageBody) = postMessageServiceImp.sendMessage(body)
+    fun sendMessage(@RequestBody body: MessageBody) = postMessageServiceImp.sendMessage(body)
 
 
     @PassToken
     @RequestMapping(value = ["deleteMessage"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    fun deleteMessage(@RequestBody body: PageBody) = postMessageServiceImp.deleteMessage(body)
+    fun deleteMessage(@RequestBody body: MessageBody) = postMessageServiceImp.deleteMessage(body)
 
 }
