@@ -1,5 +1,7 @@
 package com.btm.back.vo
 
+import java.util.*
+
 
 class MessageVO {
     var id: Int? = null
@@ -9,6 +11,6 @@ class MessageVO {
     var userNickName:String? = null
     var chiledMessage:List<MessageVO>? = null
     var message: String? = null
-    var postMsgCreatTime: String? = null
+    var postMsgCreatTime: Date? = null
     var messageStart:Int? = 0
 }

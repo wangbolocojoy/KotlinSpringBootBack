@@ -52,7 +52,7 @@ class UserFilesServiceImp:UserFilesService{
             post.postDetail = postDetail
             post.postPublic = postPublic ?: false
             post.postStarts =  0
-            post.creatTime = Date(System.currentTimeMillis())
+            post.creatTime = Date()
             post.latitude = latitude
             post.longitude = longitude
             postRespository.save(post)

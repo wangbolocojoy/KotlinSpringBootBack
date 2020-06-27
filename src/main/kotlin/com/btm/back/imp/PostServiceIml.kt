@@ -62,7 +62,7 @@ class PostServiceIml:PostService{
             post.postPublic = body.postPublic ?: false
             post.postStarts = body.postStart ?: 0
             val smp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-            post.creatTime = Date(System.currentTimeMillis())
+            post.creatTime = Date()
             postRespository.save(post)
             val user = userRespository.findById(body.userId ?:0)
             user?.postNum =(user?.postNum?:0)+1

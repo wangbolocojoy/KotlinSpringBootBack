@@ -60,14 +60,19 @@ class PostMessageServiceImp:PostMessageService {
         return if (body.postMessage.isNullOrEmpty()|| body.userId == null || body.postId == null){
             BaseResult.FAIL("评论信息不能为空")
         }else{
+            val user = userRespository.findById(body.userId ?: 0)?:return BaseResult.FAIL()
+            user.postNum = user.postNum?.plus(1)
+            userRespository.save(user)
             val msg = PostMessage()
             msg.postId = body.postId
-            msg.postMsgCreatTime = Date(System.currentTimeMillis())
+            msg.postMsgCreatTime = Date()
             msg.userId = body.userId
             msg.messageStart = 0
+            msg.message = body.postMessage
             msg.postMsgId = body.postMsgId
             postMessageRespository.save(msg)
-            BaseResult.SECUESS("ok")
+
+            BaseResult.SECUESS(msg)
         }
     }
 
@@ -81,6 +86,9 @@ class PostMessageServiceImp:PostMessageService {
                 BaseResult.FAIL("评论不存在")
             }else{
                 if (body.userId == msg.get().userId){
+                    val user = userRespository.findById(body.userId ?: 0)?:return BaseResult.FAIL()
+                    user.postNum = user.postNum?.minus(1)
+                    userRespository.save(user)
                     postMessageRespository.delete(msg.get())
                     BaseResult.SECUESS("删除成功")
                 }else{

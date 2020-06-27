@@ -49,7 +49,6 @@ object AliYunOssUtil {
             logger.info("putResult---  $putResult")
             logger.info("putResult.eTag---" + putResult.eTag)
 //            //生成过去的url
-//            var expiration = Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10)
 //            url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
             url = URL("https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/$fileoder")
             logger.info("save - success - pictureUrl -> $url")
@@ -90,7 +89,6 @@ object AliYunOssUtil {
                    val putResult = ossClient!!.putObject(OSSClientConstants.BACKET_NAME, fileoder, multipartFile.inputStream, objectMetadata)
                    logger.info("putResult.eTag --->     " + putResult.eTag)
 //            //生成过去的url
-//            var expiration = Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10)
 //            url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
                    url = URL("https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/$fileoder")
                    logger.info("save - success - pictureUrl -> $url")
@@ -253,12 +251,7 @@ object AliYunOssUtil {
         }
     }
 
-    fun getimgurl(key: String?): String {
-        val expiration = Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10)
-        ossClient = OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
-        val imgurl = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, key, expiration)
-        return imgurl.toString()
-    } //测试
+
 
 
 }

@@ -3,7 +3,6 @@ package com.btm.back.vc
 import com.btm.back.bean.MessageBody
 import com.btm.back.bean.PageBody
 import com.btm.back.imp.PostMessageServiceImp
-import com.btm.back.imp.PostServiceIml
 import com.btm.back.utils.PassToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody

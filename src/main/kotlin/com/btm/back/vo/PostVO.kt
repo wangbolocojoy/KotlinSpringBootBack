@@ -1,5 +1,6 @@
 package com.btm.back.vo
 
+import java.util.*
 
 
 class PostVO {
@@ -8,7 +9,7 @@ class PostVO {
     var postDetail:String? = null
     var postAddress:String? = null
     var postPublic:Boolean? = null
-    var creatTime:Long? = null
+    var creatTime: Date? = null
     var postStarts:Int? = 0
     var author:PostAuthorVo? = null
     var postImages:List<UserFilesVO>? = null
