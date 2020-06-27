@@ -5,6 +5,7 @@ import com.btm.back.bean.PageBody
 import com.btm.back.dto.PostMessage
 import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.PostMessageRespository
+import com.btm.back.repository.PostRespository
 import com.btm.back.repository.UserRespository
 import com.btm.back.service.PostMessageService
 import com.btm.back.utils.BaseResult
@@ -23,6 +24,9 @@ class PostMessageServiceImp:PostMessageService {
 
     @Autowired
     lateinit var postMessageRespository: PostMessageRespository
+
+    @Autowired
+    lateinit var postRespository: PostRespository
 
     @Autowired
     lateinit var userRespository: UserRespository
@@ -60,9 +64,9 @@ class PostMessageServiceImp:PostMessageService {
         return if (body.postMessage.isNullOrEmpty()|| body.userId == null || body.postId == null){
             BaseResult.FAIL("评论信息不能为空")
         }else{
-            val user = userRespository.findById(body.userId ?: 0)?:return BaseResult.FAIL()
-            user.postNum = user.postNum?.plus(1)
-            userRespository.save(user)
+            val post = postRespository.findById(body.postId ?: 0)?:return BaseResult.FAIL()
+            post.postMessageNum= post.postMessageNum?.plus(1)
+            postRespository.save(post)
             val msg = PostMessage()
             msg.postId = body.postId
             msg.postMsgCreatTime = Date()
@@ -71,7 +75,6 @@ class PostMessageServiceImp:PostMessageService {
             msg.message = body.postMessage
             msg.postMsgId = body.postMsgId
             postMessageRespository.save(msg)
-
             BaseResult.SECUESS(msg)
         }
     }
@@ -86,9 +89,9 @@ class PostMessageServiceImp:PostMessageService {
                 BaseResult.FAIL("评论不存在")
             }else{
                 if (body.userId == msg.get().userId){
-                    val user = userRespository.findById(body.userId ?: 0)?:return BaseResult.FAIL()
-                    user.postNum = user.postNum?.minus(1)
-                    userRespository.save(user)
+                    val post = postRespository.findById(body.postId ?: 0)?:return BaseResult.FAIL()
+                    post.postMessageNum= post.postMessageNum?.minus(1)
+                    postRespository.save(post)
                     postMessageRespository.delete(msg.get())
                     BaseResult.SECUESS("删除成功")
                 }else{

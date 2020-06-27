@@ -21,4 +21,5 @@ class Post  {
     var creatTime:Date? = null
     var latitude:String? = null
     var longitude:String? = null
+    var postMessageNum:Int? = 0
 }
