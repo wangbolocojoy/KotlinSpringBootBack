@@ -121,7 +121,7 @@ class PostServiceIml:PostService{
                 s?.isCollection = collList?.any { it6->
                     it6.postId == it.id
                 }
-                s?.creatTime = it.creatTime?.time
+                s?.creatTime = it.creatTime
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取用户帖子成功$images")
@@ -169,7 +169,7 @@ class PostServiceIml:PostService{
                 s?.isCollection = collList?.any { it6->
                     it6.postId == it.id
                 }
-                s?.creatTime = it.creatTime?.time
+                s?.creatTime = it.creatTime
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取帖子成功$images")
