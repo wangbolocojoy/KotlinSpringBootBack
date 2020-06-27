@@ -5,6 +5,7 @@ import com.btm.back.bean.PageBody
 import com.btm.back.dto.PostMessage
 import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.PostMessageRespository
+import com.btm.back.repository.UserRespository
 import com.btm.back.service.PostMessageService
 import com.btm.back.utils.BaseResult
 import com.btm.back.vo.MessageVO
@@ -23,15 +24,32 @@ class PostMessageServiceImp:PostMessageService {
     @Autowired
     lateinit var postMessageRespository: PostMessageRespository
 
+    @Autowired
+    lateinit var userRespository: UserRespository
 
     override fun getPostMessagesByPostId(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val msgList =  postMessageRespository.findByPostId(body.postId ?:0,pageable) ?: return BaseResult.FAIL("暂时没有评论")
         val list = ArrayList<MessageVO>()
+
         msgList.forEach {
+            val list1 = ArrayList<MessageVO>()
             val child  = postMessageRespository.findByPostId(it.postMsgId?:0)
+            val user = userRespository.findById(it.userId ?:0)
+
+            child?.forEach { it1->
+                val voo = CopierUtil.copyProperties(it1,MessageVO::class.java)
+                val user1 = userRespository.findById(it1.userId ?:0)
+                voo?.userIcon = user1?.icon
+                voo?.userNickName = user1?.nickName
+                voo?.messageStart = 0
+                voo?.let { it2 -> list1.add(it2) }
+            }
             val vo = CopierUtil.copyProperties(it,MessageVO::class.java)
-            vo?.chiledMessage = child
+            vo?.userIcon = user?.icon
+            vo?.userNickName = user?.nickName
+            vo?.messageStart = 0
+            vo?.chiledMessage = list1
             vo?.let { it1 -> list.add(it1) }
         }
         return  BaseResult.SECUESS(list)

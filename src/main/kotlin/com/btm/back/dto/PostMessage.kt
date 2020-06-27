@@ -15,7 +15,7 @@ class PostMessage  {
     var userId: Int? = null
     var postId:Int? = null
     var postMsgId:Int? = null
-    var postPostMessage: String? = null
+    var message: String? = null
     var postMsgCreatTime: Date? = null
     var messageStart:Int? = 0
 
