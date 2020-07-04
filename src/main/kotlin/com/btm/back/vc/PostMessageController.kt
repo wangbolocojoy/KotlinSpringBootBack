@@ -34,4 +34,10 @@ class PostMessageController {
     @Throws(java.lang.Exception::class)
     fun deleteMessage(@RequestBody body: MessageBody) = postMessageServiceImp.deleteMessage(body)
 
+    @PassToken
+    @RequestMapping(value = ["getUserMessages"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    fun getUserMessages(@RequestBody body: PageBody) = postMessageServiceImp.getMyMassages(body)
+
+
 }

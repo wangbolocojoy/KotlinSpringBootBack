@@ -9,4 +9,6 @@ interface PostMessageRespository : JpaRepository<PostMessage,Int>{
     fun findByPostId(postId:Int):List<PostMessage>?
     fun findByPostIdOrderByPostMsgCreatTimeDesc(postId:Int,pageable: Pageable):List<PostMessage>?
     fun findByPostIdOrderByPostMsgCreatTimeDesc(postId:Int):List<PostMessage>?
+    fun findByUserIdOrderByPostMsgCreatTimeDesc(userId:Int):List<PostMessage>?
+    fun findByUserIdOrderByPostMsgCreatTimeDesc(userId:Int,pageable: Pageable):List<PostMessage>?
 }

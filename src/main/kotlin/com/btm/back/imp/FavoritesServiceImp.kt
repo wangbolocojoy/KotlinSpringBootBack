@@ -12,6 +12,7 @@ import com.btm.back.vo.UserFilesVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -42,6 +43,7 @@ class FavoritesServiceImp :FavoritesService{
      *
     * 收藏
     * */
+    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun collection(body: PostBody): BaseResult {
         return if (body.userId != null && body.postId != null) {
             val p = favoritesRespository.findByPostId(body.postId ?: 0)
@@ -62,6 +64,7 @@ class FavoritesServiceImp :FavoritesService{
     /**
     * 取消收藏
     * */
+    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun cancelCollection(body: PostBody): BaseResult {
         val p = favoritesRespository.findByPostId(body.postId ?: 0)
         p?.forEach {
@@ -82,6 +85,7 @@ class FavoritesServiceImp :FavoritesService{
    * @Author: hero
    * @Date: 2020-06-26
    **/
+
     override fun getCollectionList(body: PostBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 5)
         val collectionList = favoritesRespository.findByUserId((body.userId ?: 0),pageable) ?: return BaseResult.FAIL("暂时没有收藏任何东西")

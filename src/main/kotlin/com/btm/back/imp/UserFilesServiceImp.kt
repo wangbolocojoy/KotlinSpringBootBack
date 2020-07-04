@@ -1,6 +1,7 @@
 package com.btm.back.imp
 
 import com.btm.back.bean.FileBody
+import com.btm.back.bean.PageBody
 import com.btm.back.bean.ReqBody
 import com.btm.back.dto.Post
 import com.btm.back.dto.UserFiles
@@ -15,6 +16,8 @@ import com.btm.back.vo.PostVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.text.SimpleDateFormat
@@ -70,5 +73,12 @@ class UserFilesServiceImp:UserFilesService{
 
         }
     }
+
+    override fun getMyAllImages(body: PageBody): BaseResult {
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        val images = body.userId?.let { userFilesRespository.findByUserIdOrderByIdDesc(it,pageable) } ?: BaseResult.FAIL()
+        return BaseResult.SECUESS(images)
+    }
+
 
 }

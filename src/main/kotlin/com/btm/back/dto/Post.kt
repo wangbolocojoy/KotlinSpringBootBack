@@ -2,6 +2,7 @@ package com.btm.back.dto
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.*
 import javax.persistence.*
 
@@ -9,6 +10,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "Post")
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
+@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class Post  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

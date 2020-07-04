@@ -16,6 +16,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
@@ -58,7 +59,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:18
     **/
-    @CachePut("getPosts")
+    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun sendPost(body: PostBody): BaseResult {
         return if (body.userId != null) {
             val post = Post()
@@ -93,6 +94,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:18
     **/
+    @Cacheable(cacheNames = ["getPostByUserId"])
     override fun getPostByUserId(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val list = postRespository.findByUserIdOrderByCreatTimeDesc(body.userId ?:0,pageable)
@@ -143,7 +145,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:19
     **/
-    @Cacheable("getPosts")
+    @Cacheable(cacheNames = ["getPosts"])
     override fun getPosts(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
         val list = postRespository.findByOrderByCreatTimeDesc(pageable)
@@ -192,12 +194,19 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:19
     **/
+    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun deletePost(body: PageBody): BaseResult {
         val post = body.postId?.let { postRespository.findById(it) }
         return if (post != null&& body.userId != null){
-
+            val starts = postStartRespository.findByPostId(body.postId?:0)
+            starts?.let { postStartRespository.deleteAll(it) }
+            val favs = favoritesRespository.findByPostId(body.postId?:0)
+            favs?.let { favoritesRespository.deleteAll(it) }
             val list = userFilesRespository.findAllByPostId(body.postId ?:0)
+            val msgs = postMessageRespository.findByPostId(body.postId ?:0)
+            msgs?.let { postMessageRespository.deleteAll(it) }
             AliYunOssUtil.deleteFiles(body.userId.toString(),list)
+            list?.let { userFilesRespository.deleteAll(it) }
             postRespository.delete(post)
             val user = userRespository.findById(body.userId ?: 0)
             if (user?.postNum?:0  >= 1){
@@ -223,6 +232,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:19
     **/
+    @CachePut(cacheNames= ["getPostByUserId","getPosts"],key = "#body.postId")
     override fun updatePostLikeStartt(body: PageBody): BaseResult {
         val user = body.userId?.let { userRespository.findById(it) }
         if (user != null){

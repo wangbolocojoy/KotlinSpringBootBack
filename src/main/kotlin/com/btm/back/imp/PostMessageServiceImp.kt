@@ -13,6 +13,9 @@ import com.btm.back.vo.MessageVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -22,6 +25,7 @@ import kotlin.collections.ArrayList
 
 @Transactional
 @Service
+@CacheConfig(keyGenerator = "keyGenerator")
 class PostMessageServiceImp:PostMessageService {
 
     @Autowired
@@ -35,7 +39,7 @@ class PostMessageServiceImp:PostMessageService {
 
     private val logger: Logger = LoggerFactory.getLogger(PostMessageServiceImp::class.java)
 
-
+    @Cacheable(cacheNames = ["getPostMessagesByPostId"])
     override fun getPostMessagesByPostId(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val msgList =  postMessageRespository.findByPostIdOrderByPostMsgCreatTimeDesc(body.postId ?:0,pageable) ?: return BaseResult.FAIL("暂时没有评论")
@@ -65,7 +69,7 @@ class PostMessageServiceImp:PostMessageService {
         return  BaseResult.SECUESS(list)
 
     }
-
+    @CacheEvict(cacheNames = ["getPosts","getPostByUserId","getPostMessagesByPostId"],allEntries = true)
     override fun sendMessage(body: MessageBody): BaseResult {
         return if (body.postMessage.isNullOrEmpty()|| body.userId == null || body.postId == null){
             BaseResult.FAIL("评论信息不能为空")
@@ -84,7 +88,7 @@ class PostMessageServiceImp:PostMessageService {
             BaseResult.SECUESS(msg)
         }
     }
-
+    @CacheEvict(cacheNames = ["getPosts","getPostByUserId","getPostMessagesByPostId"],allEntries = true)
     override fun deleteMessage(body: MessageBody): BaseResult {
         if ( body.userId == null || body.postId == null){
            return BaseResult.FAIL("参数不能为空")
@@ -106,5 +110,20 @@ class PostMessageServiceImp:PostMessageService {
             }
 
         }
+    }
+
+    override fun getMyMassages(body: PageBody): BaseResult {
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        val msgList =  postMessageRespository.findByUserIdOrderByPostMsgCreatTimeDesc(body.userId ?:0,pageable) ?: return BaseResult.FAIL("暂时没有评论")
+        val list = ArrayList<MessageVO>()
+        val user = userRespository.findById(body.userId ?:0)
+        msgList.forEach {
+            val vo = CopierUtil.copyProperties(it,MessageVO::class.java)
+            vo?.userIcon = user?.icon
+            vo?.userNickName = user?.nickName
+            vo?.messageStart = 0
+            vo?.let { it1 -> list.add(it1) }
+        }
+           return  BaseResult.SECUESS(list)
     }
 }

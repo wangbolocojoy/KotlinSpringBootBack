@@ -8,4 +8,5 @@ interface PostMessageService {
     fun getPostMessagesByPostId(body: PageBody): BaseResult
     fun sendMessage(body: MessageBody): BaseResult
     fun deleteMessage(body: MessageBody): BaseResult
+    fun getMyMassages(body: PageBody): BaseResult
 }

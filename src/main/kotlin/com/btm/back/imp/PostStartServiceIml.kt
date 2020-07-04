@@ -11,6 +11,9 @@ import com.btm.back.service.PostStartService
 import com.btm.back.utils.BaseResult
 import com.btm.back.vo.UserVO
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 @Service
+@CacheConfig(keyGenerator = "keyGenerator")
 class PostStartServiceIml : PostStartService {
 
     @Autowired
@@ -37,6 +41,7 @@ class PostStartServiceIml : PostStartService {
     * @Date: 2020-06-26
     * @Time: 01:20
     **/
+    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun start(body: PostBody): BaseResult {
 
         return if (body.userId != null && body.postId != null) {
@@ -69,6 +74,7 @@ class PostStartServiceIml : PostStartService {
     * @Date: 2020-06-26
     * @Time: 01:20
     **/
+    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun unStart(body: PostBody): BaseResult {
         val p = postStartRespository.findByPostId(body.postId ?: 0)
         val po = postRespository.findById(body.postId ?:0) ?: return BaseResult.FAIL("帖子不存在")
