@@ -94,7 +94,7 @@ class PostMessageServiceImp:PostMessageService {
            return BaseResult.FAIL("参数不能为空")
 
         }else{
-            val msg =postMessageRespository.findById(body.postMsgId?:0)
+            val msg =postMessageRespository.findById(body.postId?:0)
             return if (msg.isEmpty || msg.isPresent){
                 BaseResult.FAIL("评论不存在")
             }else{
