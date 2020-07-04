@@ -1,5 +1,7 @@
 package com.btm.back.vo
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class UserVO {
     var id: Int? = null
     var realName: String? = null
@@ -15,8 +17,11 @@ class UserVO {
     var token: String? = null
     var easyInfo:String? = null
     var address:String? = null
+    var creatTime: String? = null
+    var birthDay: String? = null
+    var constellation:String? = null
     override fun toString(): String {
-        return "UserVO(id=$id, realName=$realName, phone=$phone, nickName=$nickName, account=$account, userSex=$userSex, icon=$icon, likeStarts=$likeStarts, postNum=$postNum, fances=$fances, follows=$follows, token=$token, easyInfo=$easyInfo, address=$address)"
+        return "UserVO(id=$id, realName=$realName, phone=$phone, nickName=$nickName, account=$account, userSex=$userSex, icon=$icon, likeStarts=$likeStarts, postNum=$postNum, fances=$fances, follows=$follows, token=$token, easyInfo=$easyInfo, address=$address, creatTime=$creatTime, birthDay=$birthDay, constellation=$constellation)"
     }
 
 

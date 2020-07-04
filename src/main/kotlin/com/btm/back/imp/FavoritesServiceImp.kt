@@ -1,10 +1,7 @@
 package com.btm.back.imp
 
 import com.btm.back.bean.PostBody
-import com.btm.back.bean.ReqBody
 import com.btm.back.dto.Favorites
-import com.btm.back.dto.PostStart
-import com.btm.back.dto.UserFiles
 import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.*
 import com.btm.back.service.FavoritesService
@@ -12,7 +9,8 @@ import com.btm.back.utils.BaseResult
 import com.btm.back.vo.PostAuthorVo
 import com.btm.back.vo.PostVO
 import com.btm.back.vo.UserFilesVO
-import com.btm.back.vo.UserVO
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -36,7 +34,12 @@ class FavoritesServiceImp :FavoritesService{
 
     @Autowired
     lateinit var postStartRespository: PostStartRespository
+
+    private val logger: Logger = LoggerFactory.getLogger(FavoritesServiceImp::class.java)
+
     /**
+     *
+     *
     * 收藏
     * */
     override fun collection(body: PostBody): BaseResult {
@@ -87,14 +90,15 @@ class FavoritesServiceImp :FavoritesService{
             val post = postRespository.findById(it.postId ?:0)
             if (post != null){
                 val startList = postStartRespository.findByUserId(body.userId?:0)
-                val pvo = CopierUtil.copyProperties(it, PostVO::class.java)
-                val user = userRespository.findById(it.userId?:0)
+                val pvo = CopierUtil.copyProperties(post, PostVO::class.java)
+                logger.info(pvo.toString())
+                val user = userRespository.findById(post.userId?:0)
                 if (user != null){
                     pvo?.author = CopierUtil.copyProperties(user,PostAuthorVo::class.java)
                 }
 
                 val images = ArrayList<UserFilesVO>()
-                val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
+                val file = post.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 file?.map { it3 ->
                     val fvo = CopierUtil.copyProperties(it3,UserFilesVO::class.java)
                     fvo?.let { it1 -> images.add(it1) }

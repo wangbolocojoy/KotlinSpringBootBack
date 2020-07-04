@@ -1,5 +1,7 @@
 package com.btm.back.utils
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class BaseResult {
     var status //状态码
             : Int? = null

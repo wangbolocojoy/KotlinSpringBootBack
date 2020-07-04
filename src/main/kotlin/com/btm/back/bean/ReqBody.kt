@@ -2,6 +2,7 @@ package com.btm.back.bean
 
 import com.btm.back.utils.abstractObjectToString
 import java.io.Serializable
+import java.util.*
 
 data class ReqBody( var phone: String? ,
                     var password: String? ,
@@ -9,8 +10,10 @@ data class ReqBody( var phone: String? ,
                     var realName: String?,
                     var nickName: String? ,
                     var account: String? ,
+                    var constellation: String? ,
                     var address: String? ,
                     var easyInfo: String? ,
+                    var birthDay: String? ,
                     var userSex: Boolean? ,
                     var userId:Int?,
                     var followId:Int?,
@@ -24,6 +27,7 @@ data class ReqBody( var phone: String? ,
                     var pageSize:Int? ,
                     var type:Int? ,
                     var uploadType: String?,
+                    var msgcode: String?,
                     var id:Int? ,
                     var article_Id: Int?,
                     var article_Title: String?,

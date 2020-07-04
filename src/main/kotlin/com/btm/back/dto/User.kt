@@ -1,11 +1,15 @@
 package com.btm.back.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import java.io.Serializable
+import java.util.*
 import javax.persistence.*
 
 @Entity
 @Table(name = "User")
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
+@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +30,11 @@ class User {
     var address:String? = null
     var originalFileName:String? = null
     var isFollow:Boolean? = false
+    var creatTime:Date? = null
+    var birthDay:String? = null
+    var constellation:String? = null
+    var userIdentifier:String? = null
+
 
 
 

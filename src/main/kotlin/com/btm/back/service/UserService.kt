@@ -9,7 +9,7 @@ interface UserService {
      * 注册
      */
     fun register(body: ReqBody): BaseResult
-
+    fun sendmsg(body: ReqBody): BaseResult
     /**
      * 删除用户
      */

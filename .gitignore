@@ -62,3 +62,4 @@ src/main/kotlin/com/btm/back/utils/OSSClientConstants.kt
 /src/main/resources/application-debug.yml
 /src/main/resources/application-relase.yml
 /src/main/resources/logback-spring.xml
+/src/main/kotlin/com/btm/back/utils/RonglianConstants.kt

@@ -19,6 +19,12 @@ class UserController  {
     @RequestMapping(value = ["register"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun register(@Valid @RequestBody u: ReqBody) = userServiceImp.register(u)
+
+    @PassToken
+    @RequestMapping(value = ["sendMsg"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun sendmsg(@Valid @RequestBody u: ReqBody) = userServiceImp.sendmsg(u)
+
     @PassToken
     @RequestMapping(value = ["login"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)

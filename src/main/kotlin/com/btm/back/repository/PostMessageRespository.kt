@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface PostMessageRespository : JpaRepository<PostMessage,Int>{
     fun findByPostId(postId:Int,pageable: Pageable):List<PostMessage>?
     fun findByPostId(postId:Int):List<PostMessage>?
+    fun findByPostIdOrderByPostMsgCreatTimeDesc(postId:Int,pageable: Pageable):List<PostMessage>?
+    fun findByPostIdOrderByPostMsgCreatTimeDesc(postId:Int):List<PostMessage>?
 }

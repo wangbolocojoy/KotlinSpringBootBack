@@ -10,6 +10,8 @@ import com.btm.back.repository.UserRespository
 import com.btm.back.service.PostMessageService
 import com.btm.back.utils.BaseResult
 import com.btm.back.vo.MessageVO
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -31,14 +33,17 @@ class PostMessageServiceImp:PostMessageService {
     @Autowired
     lateinit var userRespository: UserRespository
 
+    private val logger: Logger = LoggerFactory.getLogger(PostMessageServiceImp::class.java)
+
+
     override fun getPostMessagesByPostId(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
-        val msgList =  postMessageRespository.findByPostId(body.postId ?:0,pageable) ?: return BaseResult.FAIL("暂时没有评论")
+        val msgList =  postMessageRespository.findByPostIdOrderByPostMsgCreatTimeDesc(body.postId ?:0,pageable) ?: return BaseResult.FAIL("暂时没有评论")
         val list = ArrayList<MessageVO>()
 
         msgList.forEach {
             val list1 = ArrayList<MessageVO>()
-            val child  = postMessageRespository.findByPostId(it.postMsgId?:0)
+            val child  = postMessageRespository.findByPostIdOrderByPostMsgCreatTimeDesc(it.postMsgId?:0)
             val user = userRespository.findById(it.userId ?:0)
 
             child?.forEach { it1->
@@ -55,6 +60,7 @@ class PostMessageServiceImp:PostMessageService {
             vo?.messageStart = 0
             vo?.chiledMessage = list1
             vo?.let { it1 -> list.add(it1) }
+            logger.info(vo.toString())
         }
         return  BaseResult.SECUESS(list)
 

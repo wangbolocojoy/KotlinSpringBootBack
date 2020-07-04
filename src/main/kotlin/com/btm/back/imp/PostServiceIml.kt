@@ -4,6 +4,7 @@ import com.btm.back.bean.PageBody
 import com.btm.back.bean.PostBody
 import com.btm.back.dto.Post
 import com.btm.back.helper.CopierUtil
+import com.btm.back.helper.toCreatTimeString
 import com.btm.back.repository.*
 import com.btm.back.service.PostService
 import com.btm.back.utils.AliYunOssUtil
@@ -14,6 +15,9 @@ import com.btm.back.vo.UserFilesVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -24,6 +28,7 @@ import kotlin.collections.ArrayList
 
 @Transactional
 @Service
+@CacheConfig(keyGenerator = "keyGenerator") //这是本类统一key生成策略
 class PostServiceIml:PostService{
     @Autowired
     lateinit var postRespository: PostRespository
@@ -53,6 +58,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:18
     **/
+    @CachePut("getPosts")
     override fun sendPost(body: PostBody): BaseResult {
         return if (body.userId != null) {
             val post = Post()
@@ -97,8 +103,6 @@ class PostServiceIml:PostService{
             val startList = postStartRespository.findByUserId(body.userId?:0)
             val collList = favoritesRespository.findByUserId(body.userId?:0)
             list?.forEach {
-
-
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
                 val poststartnum = postStartRespository.findByPostId(it.id?:0)
@@ -123,7 +127,7 @@ class PostServiceIml:PostService{
                 s?.isCollection = collList?.any { it6->
                     it6.postId == it.id
                 }
-                s?.creatTime = it.creatTime
+                s?.creatTime = it.creatTime?.toCreatTimeString()
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取用户帖子成功$images")
@@ -139,6 +143,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:19
     **/
+    @Cacheable("getPosts")
     override fun getPosts(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
         val list = postRespository.findByOrderByCreatTimeDesc(pageable)
@@ -171,7 +176,7 @@ class PostServiceIml:PostService{
                 s?.isCollection = collList?.any { it6->
                     it6.postId == it.id
                 }
-                s?.creatTime = it.creatTime
+                s?.creatTime = it.creatTime?.toCreatTimeString()
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取帖子成功$images")
