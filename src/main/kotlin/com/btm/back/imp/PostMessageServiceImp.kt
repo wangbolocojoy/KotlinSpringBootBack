@@ -71,19 +71,26 @@ class PostMessageServiceImp:PostMessageService {
     }
     @CacheEvict(cacheNames = ["getPosts","getPostByUserId","getPostMessagesByPostId"],allEntries = true)
     override fun sendMessage(body: MessageBody): BaseResult {
-        return if (body.postMessage.isNullOrEmpty()|| body.userId == null ){
+        return if (body.postMessage.isNullOrEmpty()|| body.userId == null || body.postId ==null){
             BaseResult.FAIL("评论信息不能为空")
         }else{
             val post = postRespository.findById(body.postId ?: 0)?:return BaseResult.FAIL()
             post.postMessageNum= post.postMessageNum?.plus(1)
             postRespository.save(post)
+
             val msg = PostMessage()
-            msg.postId = body.postId
+            if (body.postMsgId == null){
+                msg.postId = body.postId
+            }else{
+                msg.postId = null
+            }
             msg.postMsgCreatTime = Date()
             msg.userId = body.userId
             msg.messageStart = 0
             msg.message = body.postMessage
+            msg.replyNickName = body.replyNickName
             msg.postMsgId = body.postMsgId
+            msg.replyUserId = body.replyUserId
             postMessageRespository.save(msg)
             BaseResult.SECUESS(msg)
         }
@@ -92,7 +99,6 @@ class PostMessageServiceImp:PostMessageService {
     override fun deleteMessage(body: MessageBody): BaseResult {
         return if ( body.userId == null || body.id == null || body.postId ==null){
             BaseResult.FAIL("参数不能为空")
-
         }else{
 
             val msg  = postMessageRespository.findById(body.id ?:0)

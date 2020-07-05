@@ -20,6 +20,8 @@ class PostMessage  {
     var message: String? = null
     var postMsgCreatTime: Date? = null
     var messageStart:Int? = 0
+    var replyUserId:Int? = 0
+    var replyNickName:String? = null
 
 
 }

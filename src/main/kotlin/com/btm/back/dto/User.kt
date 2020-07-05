@@ -34,6 +34,8 @@ class User {
     var birthDay:String? = null
     var constellation:String? = null
     var userIdentifier:String? = null
+    var province:String? = null
+    var city:String? = null
 
 
 

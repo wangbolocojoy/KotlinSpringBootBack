@@ -6,6 +6,8 @@ import java.util.*
 
 data class ReqBody( var phone: String? ,
                     var password: String? ,
+                    var province: String? ,
+                    var city: String? ,
                     var novelName:String?,
                     var realName: String?,
                     var nickName: String? ,

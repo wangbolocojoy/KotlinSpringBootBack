@@ -14,8 +14,11 @@ class MessageVO {
     var message: String? = null
     var postMsgCreatTime: Date? = null
     var messageStart:Int? = 0
+    var replyUserId:Int? = 0
+    var replyNickName:String? = null
     override fun toString(): String {
-        return "MessageVO(id=$id, userId=$userId, postId=$postId, userIcon=$userIcon, userNickName=$userNickName, chiledMessage=$chiledMessage, message=$message, postMsgCreatTime=$postMsgCreatTime, messageStart=$messageStart)"
+        return "MessageVO(id=$id, userId=$userId, postId=$postId, userIcon=$userIcon, userNickName=$userNickName, chiledMessage=$chiledMessage, message=$message, postMsgCreatTime=$postMsgCreatTime, messageStart=$messageStart, replyUserId=$replyUserId, replyNickName=$replyNickName)"
     }
+
 
 }

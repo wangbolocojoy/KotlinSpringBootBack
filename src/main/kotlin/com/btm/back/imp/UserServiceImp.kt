@@ -224,6 +224,12 @@ class UserServiceImp :UserService{
             if (null != body.constellation){
                 u.constellation = body.constellation
             }
+            if (null != body.province){
+                u.province = body.province
+            }
+            if (null != body.city){
+                u.city = body.city
+            }
 
             userrepository.save(u)
             val s = CopierUtil.copyProperties(u,UserVO::class.java)

@@ -5,8 +5,10 @@ import java.io.Serializable
 
 data class MessageBody(
                     var postMessage:String?,
+                    var replyNickName:String?,
                     var userId:Int?,
                     var id:Int?,
                     var postId:Int?,
+                    var replyUserId:Int?,
                     var postMsgId:Int?,
                     var messageStart:Int?): abstractObjectToString(), Serializable
