@@ -10,6 +10,7 @@ import com.btm.back.repository.UserRespository
 import com.btm.back.service.PostMessageService
 import com.btm.back.utils.BaseResult
 import com.btm.back.vo.MessageVO
+import com.btm.back.vo.SendMsgVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,9 +48,8 @@ class PostMessageServiceImp:PostMessageService {
 
         msgList.forEach {
             val list1 = ArrayList<MessageVO>()
-            val child  = postMessageRespository.findByPostIdOrderByPostMsgCreatTimeDesc(it.postMsgId?:0)
+            val child  = postMessageRespository.findByPostMsgIdOrderByPostMsgCreatTimeDesc(it.id?:0)
             val user = userRespository.findById(it.userId ?:0)
-
             child?.forEach { it1->
                 val voo = CopierUtil.copyProperties(it1,MessageVO::class.java)
                 val user1 = userRespository.findById(it1.userId ?:0)
@@ -71,7 +71,7 @@ class PostMessageServiceImp:PostMessageService {
     }
     @CacheEvict(cacheNames = ["getPosts","getPostByUserId","getPostMessagesByPostId"],allEntries = true)
     override fun sendMessage(body: MessageBody): BaseResult {
-        return if (body.postMessage.isNullOrEmpty()|| body.userId == null || body.postId == null){
+        return if (body.postMessage.isNullOrEmpty()|| body.userId == null ){
             BaseResult.FAIL("评论信息不能为空")
         }else{
             val post = postRespository.findById(body.postId ?: 0)?:return BaseResult.FAIL()
@@ -90,23 +90,21 @@ class PostMessageServiceImp:PostMessageService {
     }
     @CacheEvict(cacheNames = ["getPosts","getPostByUserId","getPostMessagesByPostId"],allEntries = true)
     override fun deleteMessage(body: MessageBody): BaseResult {
-        if ( body.userId == null || body.postId == null){
-           return BaseResult.FAIL("参数不能为空")
+        return if ( body.userId == null || body.id == null || body.postId ==null){
+            BaseResult.FAIL("参数不能为空")
 
         }else{
-            val msg =postMessageRespository.findById(body.postId?:0)
-            return if (msg.isEmpty || msg.isPresent){
-                BaseResult.FAIL("评论不存在")
+
+            val msg  = postMessageRespository.findById(body.id ?:0)
+            if (msg != null && msg.userId == body.userId){
+              val post = postRespository.findById(body.postId ?:0)
+                post?.postMessageNum = post?.postMessageNum?.minus(1)
+                post?.let { postRespository.save(it) }
+                val user = userRespository.findById(body.userId ?:0)
+                postMessageRespository.delete(msg)
+                BaseResult.SECUESS()
             }else{
-                if (body.userId == msg.get().userId){
-                    val post = postRespository.findById(body.postId ?: 0)?:return BaseResult.FAIL()
-                    post.postMessageNum= post.postMessageNum?.minus(1)
-                    postRespository.save(post)
-                    postMessageRespository.delete(msg.get())
-                    BaseResult.SECUESS("删除成功")
-                }else{
-                    BaseResult.FAIL("不能删除别人的评论")
-                }
+                BaseResult.FAIL("删除失败")
             }
 
         }
