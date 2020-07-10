@@ -4,6 +4,7 @@ import com.btm.back.bean.PageBody
 import com.btm.back.bean.PostBody
 import com.btm.back.imp.PostServiceIml
 import com.btm.back.utils.PassToken
+import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,23 +17,23 @@ class PostController {
     @Autowired
     lateinit var postServiceIml: PostServiceIml
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["sendPost"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun sendPost(@RequestBody body: PostBody) = postServiceIml.sendPost(body)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getPostsByUserId"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getPostsByUserId(@RequestBody body: PageBody) = postServiceIml.getPostByUserId(body)
 
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getPosts"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getPosts(@RequestBody body: PageBody) = postServiceIml.getPosts(body)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["deletePost"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun deletePost(@RequestBody body: PageBody) = postServiceIml.deletePost(body)

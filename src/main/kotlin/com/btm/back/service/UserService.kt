@@ -16,6 +16,14 @@ interface UserService {
     fun deleteUser(id: Long) :BaseResult
 
     /**
+    * @Description:  修改密码
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-07-06
+    **/
+    fun updatePassWord(body: ReqBody):BaseResult
+    /**
      * 登录
      */
     fun login(body: ReqBody):BaseResult

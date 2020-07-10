@@ -19,11 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-
+@Transactional
 @Service
 class UserFilesServiceImp:UserFilesService{
     @Autowired
@@ -66,7 +67,13 @@ class UserFilesServiceImp:UserFilesService{
             if (post.id != null){
             val list = AliYunOssUtil.uploadToAliyunFiles(userId,post.id ?:0,userFilesRespository,uploadFile = uploadFile,userid = userId.toString())
                 logger.info("上传成功$list")
-                BaseResult.SECUESS("发帖成功")
+                val pvo = CopierUtil.copyProperties(post,PostVO::class.java)
+                pvo?.postImages = list
+                pvo?.isStart = false
+                pvo?.isCollection = false
+                pvo?.msgNum = 0
+                BaseResult.SECUESS(pvo)
+
             }else{
                 return  BaseResult.FAIL("发帖失败")
             }

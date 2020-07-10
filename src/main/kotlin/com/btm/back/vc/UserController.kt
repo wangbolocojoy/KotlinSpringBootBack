@@ -30,6 +30,12 @@ class UserController  {
     @Throws(java.lang.Exception::class)
     private fun login(@Valid @RequestBody u: ReqBody)= userServiceImp.login(u)
 
+
+    @PassToken
+    @RequestMapping(value = ["updatePassWord"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun updatePassWord(@Valid @RequestBody u: ReqBody)= userServiceImp.updatePassWord(u)
+
     @UserLoginToken
     @RequestMapping(value = ["getUseInfo"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)

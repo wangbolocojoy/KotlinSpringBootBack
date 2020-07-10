@@ -9,6 +9,7 @@ data class MessageBody(
                     var userId:Int?,
                     var id:Int?,
                     var postId:Int?,
+                    var msgId:Int?,
                     var replyUserId:Int?,
                     var postMsgId:Int?,
                     var messageStart:Int?): abstractObjectToString(), Serializable

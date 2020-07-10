@@ -29,7 +29,7 @@ import kotlin.collections.ArrayList
 
 @Transactional
 @Service
-@CacheConfig(keyGenerator = "keyGenerator") //这是本类统一key生成策略
+//@CacheConfig(keyGenerator = "keyGenerator") //这是本类统一key生成策略
 class PostServiceIml:PostService{
     @Autowired
     lateinit var postRespository: PostRespository
@@ -59,7 +59,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:18
     **/
-    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
+//    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun sendPost(body: PostBody): BaseResult {
         return if (body.userId != null) {
             val post = Post()
@@ -94,7 +94,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:18
     **/
-    @Cacheable(cacheNames = ["getPostByUserId"])
+//    @Cacheable(cacheNames = ["getPostByUserId"])
     override fun getPostByUserId(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val list = postRespository.findByUserIdOrderByCreatTimeDesc(body.userId ?:0,pageable)
@@ -145,7 +145,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:19
     **/
-    @Cacheable(cacheNames = ["getPosts"])
+//    @Cacheable(cacheNames = ["getPosts"])
     override fun getPosts(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
         val list = postRespository.findByOrderByCreatTimeDesc(pageable)
@@ -194,7 +194,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:19
     **/
-    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
+//    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun deletePost(body: PageBody): BaseResult {
         val post = body.postId?.let { postRespository.findById(it) }
         return if (post != null&& body.userId != null){
@@ -232,17 +232,17 @@ class PostServiceIml:PostService{
     * @Date: 2020-06-26
     * @Time: 01:19
     **/
-    @CachePut(cacheNames= ["getPostByUserId","getPosts"],key = "#body.postId")
+//    @CachePut(cacheNames= ["getPostByUserId","getPosts"],key = "#body.postId")
     override fun updatePostLikeStartt(body: PageBody): BaseResult {
         val user = body.userId?.let { userRespository.findById(it) }
-        if (user != null){
-              val users = body.postId?.let { postStartRespository.findByPostId(it) }
-              val has = users?.any { it.id == body.userId }
+        return if (user != null){
+            val users = body.postId?.let { postStartRespository.findByPostId(it) }
+            val has = users?.any { it.id == body.userId }
 
-        return BaseResult.FAIL()
+            BaseResult.FAIL()
 
         }else{
-            return  BaseResult.FAIL("用户不存在")
+            BaseResult.FAIL("用户不存在")
         }
     }
 }

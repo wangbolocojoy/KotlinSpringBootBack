@@ -4,6 +4,7 @@ import com.btm.back.bean.PostBody
 import com.btm.back.imp.FavoritesServiceImp
 import com.btm.back.imp.PostStartServiceIml
 import com.btm.back.utils.PassToken
+import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,38 +19,38 @@ class PostStartController {
 
     @Autowired
     lateinit var favoritesServiceImp: FavoritesServiceImp
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["start"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun start(@RequestBody body: PostBody) = postStartServiceIml.start(body)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["unStart"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun unStart(@RequestBody body: PostBody) = postStartServiceIml.unStart(body)
 
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getPostStartList"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getPostStartList(@RequestBody body: PostBody) = postStartServiceIml.getPostStartList(body)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["collection"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun collection(@RequestBody body: PostBody) = favoritesServiceImp.collection(body)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getCollectionList"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getCollectionList(@RequestBody body: PostBody) = favoritesServiceImp.getCollectionList(body)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["cancelCollection"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun cancelCollection(@RequestBody body: PostBody) = favoritesServiceImp.cancelCollection(body)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getUserAllStartList"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getUserAllStartList(@RequestBody body: PostBody) = postStartServiceIml.getUserStartList(body)

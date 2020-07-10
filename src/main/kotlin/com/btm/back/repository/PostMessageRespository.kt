@@ -9,11 +9,12 @@ import org.springframework.data.repository.query.Param
 interface PostMessageRespository : JpaRepository<PostMessage,Long>{
     fun findByPostId(postId:Int,pageable: Pageable):List<PostMessage>?
     fun findByPostId(postId:Int):List<PostMessage>?
-    fun findById(@Param("id") id:Int): PostMessage?
+    fun findById( id:Int): PostMessage?
     fun findByPostIdOrderByPostMsgCreatTimeDesc(postId:Int,pageable: Pageable):List<PostMessage>?
     fun findByPostMsgIdOrderByPostMsgCreatTimeDesc(postId:Int,pageable: Pageable):List<PostMessage>?
     fun findByPostIdOrderByPostMsgCreatTimeDesc(postId:Int):List<PostMessage>?
     fun findByPostMsgIdOrderByPostMsgCreatTimeDesc(postId:Int):List<PostMessage>?
+    fun findByPostMsgIdOrderByPostMsgCreatTimeAsc(postId:Int):List<PostMessage>?
     fun findByUserIdOrderByPostMsgCreatTimeDesc(userId:Int):List<PostMessage>?
     fun findByUserIdOrderByPostMsgCreatTimeDesc(userId:Int,pageable: Pageable):List<PostMessage>?
 }

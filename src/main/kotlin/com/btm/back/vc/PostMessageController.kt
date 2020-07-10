@@ -4,6 +4,7 @@ import com.btm.back.bean.MessageBody
 import com.btm.back.bean.PageBody
 import com.btm.back.imp.PostMessageServiceImp
 import com.btm.back.utils.PassToken
+import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,27 +18,38 @@ class PostMessageController {
     lateinit  var postMessageServiceImp: PostMessageServiceImp
 
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getMessages"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getMessages(@RequestBody body: PageBody) = postMessageServiceImp.getPostMessagesByPostId(body)
 
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["sendMessage"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun sendMessage(@RequestBody body: MessageBody) = postMessageServiceImp.sendMessage(body)
 
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["deleteMessage"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun deleteMessage(@RequestBody body: MessageBody) = postMessageServiceImp.deleteMessage(body)
 
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["getUserMessages"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getUserMessages(@RequestBody body: PageBody) = postMessageServiceImp.getMyMassages(body)
+
+    @UserLoginToken
+    @RequestMapping(value = ["startMassage"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    fun startMassage(@RequestBody body: PageBody) = postMessageServiceImp.getMyMassages(body)
+
+    @UserLoginToken
+    @RequestMapping(value = ["unStartMassage"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    fun unStartMassage(@RequestBody body: PageBody) = postMessageServiceImp.getMyMassages(body)
+
 
 
 }

@@ -20,7 +20,7 @@ import org.springframework.cache.annotation.EnableCaching
  *
  **/
 @SpringBootApplication
-@EnableCaching
+//@EnableCaching
 class BackApplication
 
 fun main(args: Array<String>) {

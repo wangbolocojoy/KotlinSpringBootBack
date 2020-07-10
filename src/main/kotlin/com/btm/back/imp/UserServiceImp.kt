@@ -20,14 +20,15 @@ import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.time.Duration
 import java.util.*
 import kotlin.random.Random
 
-
+@Transactional
 @Service
-@CacheConfig(keyGenerator = "keyGenerator" ,cacheNames = ["UserServiceImp"]) //这是本类统一key生成策略
+//@CacheConfig(keyGenerator = "keyGenerator" ,cacheNames = ["UserServiceImp"]) //这是本类统一key生成策略
 class UserServiceImp :UserService{
     @Autowired
     lateinit var userrepository: UserRespository
@@ -78,29 +79,45 @@ class UserServiceImp :UserService{
 
     override fun sendmsg(body: ReqBody): BaseResult {
         val u= body.phone?.let { userrepository.findByPhone(it) }
-        return if (u!=null){
-            BaseResult.FAIL("此号码已经注册请直接登录")
-        }else{
-            val code = Random.nextInt(100000,999999).toString()
-            logger.info("验证码$code")
-           val no = body.phone?.let { redisTemplate.opsForValue().set(it,code, Duration.ofMinutes(5)) }
-            System.out.print("redis储存是否成功"+no)
-            val phone = body.phone
-            val data = arrayOf(code,"5")
-            val result: HashMap<String, Any> = RonglianConstants.instance.sendTemplateSMS(phone,RonglianConstants.tempId,data)
-            if ("000000" == result["statusCode"]) { //正常返回输出data包体信息（map）
-                val data = result["data"] as HashMap<String, Any>?
-                val keySet: Set<String> = data!!.keys
-                for (key in keySet) {
-                    val `object` = data[key]
+        if (body.msgType == 1){
+            return if (u!=null){
+                BaseResult.FAIL("此号码已经注册请直接登录")
+            }else{
+                val code = Random.nextInt(100000,999999).toString()
+                logger.info("验证码$code")
+                val no = body.phone?.let { redisTemplate.opsForValue().set(it,code, Duration.ofMinutes(5)) }
+                System.out.print("redis储存是否成功"+no)
+                val phone = body.phone
+                val data = arrayOf(code,"5")
+                val result: HashMap<String, Any> = RonglianConstants.instance.sendTemplateSMS(phone,RonglianConstants.tempId,data)
+                if ("000000" == result["statusCode"]) { //正常返回输出data包体信息（map）
+                    BaseResult.SECUESS()
+                } else { //异常返回输出错误码和错误信息
+                    println("错误码=" + result["statusCode"] + " 错误信息= " + result["statusMsg"])
+                    BaseResult.FAIL(result["statusMsg"])
                 }
-                BaseResult.SECUESS()
-            } else { //异常返回输出错误码和错误信息
-                println("错误码=" + result["statusCode"] + " 错误信息= " + result["statusMsg"])
-                BaseResult.FAIL(result["statusMsg"])
-            }
 
+            }
+        }else{
+           return if ( u != null){
+                val code = Random.nextInt(100000,999999).toString()
+                logger.info("验证码$code")
+                val no = body.phone?.let { redisTemplate.opsForValue().set(it,code, Duration.ofMinutes(5)) }
+                System.out.print("redis储存是否成功"+no)
+                val phone = body.phone
+                val data = arrayOf(code,"5")
+                val result: HashMap<String, Any> = RonglianConstants.instance.sendTemplateSMS(phone,RonglianConstants.tempId,data)
+                if ("000000" == result["statusCode"]) { //正常返回输出data包体信息（map）
+                    BaseResult.SECUESS()
+                } else { //异常返回输出错误码和错误信息
+                    println("错误码=" + result["statusCode"] + " 错误信息= " + result["statusMsg"])
+                    BaseResult.FAIL(result["statusMsg"])
+                }
+            }else{
+               BaseResult.FAIL("请先注册账号")
+            }
         }
+
     }
 
     /**
@@ -121,6 +138,28 @@ class UserServiceImp :UserService{
         }
 
 
+    }
+
+    override fun updatePassWord(body: ReqBody): BaseResult {
+        if (body.password == null){
+            return  BaseResult.FAIL("密码不能为空")
+        }
+        val user = body.phone?.let { userrepository.findByPhone(it) }
+        val code = body.phone?.let { redisTemplate.opsForValue().get(it) }
+        return if (user != null ){
+            if (body.msgcode == code){
+                body.phone?.let { redisTemplate.delete(it) }
+                user.password = body.password
+                user.token = TokenService.getToken(user)
+                userrepository.save(user)
+                val s = CopierUtil.copyProperties(user,UserVO::class.java)
+                BaseResult.SECUESS(s)
+            }else {
+                BaseResult.FAIL("验证码错误")
+            }
+        }else{
+            BaseResult.FAIL("用户不存在")
+        }
     }
 
     /**
@@ -165,7 +204,7 @@ class UserServiceImp :UserService{
      * @Date: 2020-06-26
      * @Time: 01:24
      **/
-    @Cacheable
+//    @Cacheable
     override fun getuserinfo(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
         return if (u != null) {
@@ -187,7 +226,7 @@ class UserServiceImp :UserService{
      * @Date: 2020-06-26
      * @Time: 01:24
      **/
-    @CacheEvict(key = "#body.id")
+//    @CacheEvict(key = "#body.id")
     override fun updateUser(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
         if (u != null){
@@ -249,7 +288,7 @@ class UserServiceImp :UserService{
      * @Date: 2020-06-26
      * @Time: 01:24
      **/
-    @CacheEvict(key = "#id")
+//    @CacheEvict(key = "#id")
     override fun updateIcon(id: Int,uploadType:String, uploadFile:MultipartFile? ):BaseResult {
         val u=  userrepository.findById(id)
         if (null !=u ){
@@ -281,7 +320,7 @@ class UserServiceImp :UserService{
    * @Date: 2020-06-26
    * @Time: 01:26
    **/
-   @CachePut
+//   @CachePut
     override fun searchfollow(body: ReqBody): BaseResult {
         val user = userrepository.findByPhone(body.phone ?:"")
         val follow = followRespository.findByFollowId(body.id?:0)

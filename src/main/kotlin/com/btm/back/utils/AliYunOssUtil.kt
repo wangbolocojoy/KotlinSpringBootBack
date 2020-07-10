@@ -2,8 +2,10 @@ package com.btm.back.utils
 import com.aliyun.oss.OSSClient
 import com.aliyun.oss.model.ObjectMetadata
 import com.btm.back.dto.UserFiles
+import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.UserFilesRespository
 import com.btm.back.utils.OSSClientConstants
+import com.btm.back.vo.UserFilesVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.multipart.MultipartFile
@@ -65,11 +67,11 @@ object AliYunOssUtil {
         return url.toString()
     }
 
-    fun uploadToAliyunFiles(id:Int,postid:Int,userFilesRespository:UserFilesRespository,uploadFile: ArrayList<MultipartFile>? , userid:String): ArrayList<UserFiles> {
+    fun uploadToAliyunFiles(id:Int,postid:Int,userFilesRespository:UserFilesRespository,uploadFile: ArrayList<MultipartFile>? , userid:String): ArrayList<UserFilesVO> {
         ossClient = OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         var url: URL?
         var filepath :String?
-        var list = ArrayList<UserFiles>()
+        var list = ArrayList<UserFilesVO>()
         uploadFile?.forEachIndexed { index, multipartFile ->
            if (index <= 9) {
                try {
@@ -99,7 +101,9 @@ object AliYunOssUtil {
                    file.fileType = multipartFile.contentType
                    file.fileUrl = url.toString()
                    file.fileLikes = 0
-                   list.add(file)
+                   val fvo = CopierUtil.copyProperties(file,UserFilesVO::class.java)
+
+                   fvo?.let { list.add(it) }
                    userFilesRespository.save(file)
                } catch (e: IOException) {
                    e.printStackTrace()
