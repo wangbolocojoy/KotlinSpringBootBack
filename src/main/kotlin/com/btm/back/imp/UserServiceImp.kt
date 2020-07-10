@@ -1,8 +1,12 @@
 package com.btm.back.imp
 
 import com.btm.back.bean.ReqBody
+import com.btm.back.dto.Developer
+import com.btm.back.dto.FeedBack
 import com.btm.back.dto.User
 import com.btm.back.helper.CopierUtil
+import com.btm.back.repository.DeveloperRespository
+import com.btm.back.repository.FeedBackRespository
 import com.btm.back.repository.FollowRespository
 import com.btm.back.repository.UserRespository
 import com.btm.back.service.UserService
@@ -10,6 +14,7 @@ import com.btm.back.utils.AliYunOssUtil
 import com.btm.back.utils.BaseResult
 import com.btm.back.utils.RonglianConstants
 import com.btm.back.utils.TokenService
+import com.btm.back.vo.FeedBackVO
 import com.btm.back.vo.UserVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -18,12 +23,15 @@ import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.time.Duration
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 @Transactional
@@ -32,8 +40,17 @@ import kotlin.random.Random
 class UserServiceImp :UserService{
     @Autowired
     lateinit var userrepository: UserRespository
+
+    @Autowired
+    lateinit var developerRespository: DeveloperRespository
+
     @Autowired
     lateinit var followRespository: FollowRespository
+
+    @Autowired
+    lateinit var feedBackRespository: FeedBackRespository
+
+
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImp::class.java)
 
     @Autowired
@@ -333,6 +350,39 @@ class UserServiceImp :UserService{
         }else{
             BaseResult.FAIL("用户不存在")
         }
+    }
+
+    override fun getDeveloperInfo(body: ReqBody): BaseResult {
+        var developer = developerRespository.findById(1)
+        return BaseResult.SECUESS(developer)
+    }
+
+    override fun sendFeedBack(body: ReqBody): BaseResult {
+        if (body.userId == null || body.feedMsg ==null){
+            return  BaseResult.FAIL("参数不足")
+        }else{
+            val feedBack = FeedBack()
+            feedBack.backTime = Date()
+            feedBack.userId = body.userId
+            feedBack.userMsg = body.feedMsg
+            feedBackRespository.save(feedBack)
+            return  BaseResult.SECUESS()
+
+        }
+    }
+
+    override fun getFeedBack(body: ReqBody): BaseResult {
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        val feedBacks = feedBackRespository.findAll(pageable)
+        val list = ArrayList<FeedBackVO>()
+        feedBacks.forEach {
+           val user = it.userId?.let { it1 -> userrepository.findById(it1) }
+            val vo = CopierUtil.copyProperties(it,FeedBackVO::class.java)
+            vo?.userNickName = user?.nickName
+            vo?.userIcon = user?.icon
+            vo?.let { it1 -> list.add(it1) }
+        }
+        return  BaseResult.SECUESS(list)
     }
 
 

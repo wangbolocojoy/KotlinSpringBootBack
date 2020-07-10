@@ -47,5 +47,16 @@ interface UserService {
 
     fun searchfollow(body: ReqBody):BaseResult
 
+    /**
+    * @Description:
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-07-11
+    * @Time: 00:34
+    **/
+    fun getDeveloperInfo(body: ReqBody):BaseResult
 
+    fun sendFeedBack(body: ReqBody):BaseResult
+    fun getFeedBack(body: ReqBody):BaseResult
 }
