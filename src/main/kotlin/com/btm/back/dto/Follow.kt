@@ -8,7 +8,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "Follow")
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
-@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
+//@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

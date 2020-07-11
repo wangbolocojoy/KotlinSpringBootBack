@@ -9,7 +9,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "PostMessage")
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
-@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
+//@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class PostMessage  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
