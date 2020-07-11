@@ -352,21 +352,21 @@ class UserServiceImp :UserService{
         }
     }
 
-    override fun getDeveloperInfo(body: ReqBody): BaseResult {
+    override fun getDeveloperInfo(): BaseResult {
         var developer = developerRespository.findById(1)
         return BaseResult.SECUESS(developer)
     }
 
     override fun sendFeedBack(body: ReqBody): BaseResult {
-        if (body.userId == null || body.feedMsg ==null){
-            return  BaseResult.FAIL("参数不足")
+        return if (body.userId == null || body.feedMsg ==null){
+            BaseResult.FAIL("参数不足")
         }else{
             val feedBack = FeedBack()
             feedBack.backTime = Date()
             feedBack.userId = body.userId
             feedBack.userMsg = body.feedMsg
             feedBackRespository.save(feedBack)
-            return  BaseResult.SECUESS()
+            BaseResult.SECUESS()
 
         }
     }

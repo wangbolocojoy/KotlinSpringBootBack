@@ -76,6 +76,6 @@ class UserController  {
     @UserLoginToken
     @RequestMapping(value = ["getDeveloperInfo"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    private fun getDeveloperInfo(@RequestBody u: ReqBody) =userServiceImp.getDeveloperInfo(u)
+    private fun getDeveloperInfo() =userServiceImp.getDeveloperInfo()
 
 }

@@ -55,7 +55,7 @@ interface UserService {
     * @Date: 2020-07-11
     * @Time: 00:34
     **/
-    fun getDeveloperInfo(body: ReqBody):BaseResult
+    fun getDeveloperInfo():BaseResult
 
     fun sendFeedBack(body: ReqBody):BaseResult
     fun getFeedBack(body: ReqBody):BaseResult
