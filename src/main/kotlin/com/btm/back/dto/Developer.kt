@@ -14,4 +14,6 @@ class Developer{
     var developerQQ_: String? = null
     var developerWechat_: String? = null
     var developerEmail_: String? = null
+    var developerIcon_: String? = null
+
 }

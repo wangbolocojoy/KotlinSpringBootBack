@@ -73,4 +73,9 @@ class UserController  {
     @Throws(java.lang.Exception::class)
     private fun getFeedBack(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
 
+    @UserLoginToken
+    @RequestMapping(value = ["getDeveloperInfo"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getDeveloperInfo(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
+
 }

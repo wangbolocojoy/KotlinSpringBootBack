@@ -13,6 +13,7 @@ class MessageVO {
     var chiledMessage:List<MessageVO>? = null
     var message: String? = null
     var postMsgCreatTime: Date? = null
+    var isStart:Boolean? = false
     var messageStart:Int? = 0
     var replyUserId:Int? = 0
     var replyNickName:String? = null

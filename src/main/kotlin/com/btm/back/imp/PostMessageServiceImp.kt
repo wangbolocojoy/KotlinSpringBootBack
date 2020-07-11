@@ -54,19 +54,28 @@ class PostMessageServiceImp : PostMessageService {
 
         msgList.forEach {
             val list1 = ArrayList<MessageVO>()
+            val startList = it.id?.let { it4 -> messageStartRespository.findByMsgId(it4) }
 
             val child = postMessageRespository.findByPostMsgIdOrderByPostMsgCreatTimeAsc(it.id ?: 0)
             val user = userRespository.findById(it.userId ?: 0)
             child?.forEach { it1 ->
                 val voo = CopierUtil.copyProperties(it1, MessageVO::class.java)
+
                 val user1 = userRespository.findById(it1.userId ?: 0)
                 voo?.userIcon = user1?.icon
                 voo?.userNickName = user1?.nickName
+                val startList1 = it1.id?.let { it2 -> messageStartRespository.findByMsgId(it2) }
+                voo?.isStart = startList1?.any { it3->
+                    it3.userId == body.userId
+                }
                 voo?.let { it2 -> list1.add(it2) }
             }
             val vo = CopierUtil.copyProperties(it, MessageVO::class.java)
             vo?.userIcon = user?.icon
             vo?.userNickName = user?.nickName
+            vo?.isStart = startList?.any { it6->
+                it6.userId == body.userId
+            }
             vo?.chiledMessage = list1
             vo?.let { it1 -> list.add(it1) }
             logger.info(vo.toString())
