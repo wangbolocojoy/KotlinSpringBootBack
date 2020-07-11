@@ -43,12 +43,12 @@ class PostMessageController {
     @UserLoginToken
     @RequestMapping(value = ["startMassage"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    fun startMassage(@RequestBody body: PageBody) = postMessageServiceImp.getMyMassages(body)
+    fun startMassage(@RequestBody body: MessageBody) = postMessageServiceImp.startMassage(body)
 
     @UserLoginToken
     @RequestMapping(value = ["unStartMassage"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    fun unStartMassage(@RequestBody body: PageBody) = postMessageServiceImp.getMyMassages(body)
+    fun unStartMassage(@RequestBody body: MessageBody) = postMessageServiceImp.unStartMassage(body)
 
 
 

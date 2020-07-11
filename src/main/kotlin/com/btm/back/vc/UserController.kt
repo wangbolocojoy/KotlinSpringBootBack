@@ -66,16 +66,16 @@ class UserController  {
     @UserLoginToken
     @RequestMapping(value = ["sendFeedBack"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    private fun sendFeedBack(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
+    private fun sendFeedBack(@RequestBody u: ReqBody) =userServiceImp.sendFeedBack(u)
 
     @UserLoginToken
     @RequestMapping(value = ["getFeedBack"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    private fun getFeedBack(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
+    private fun getFeedBack(@RequestBody u: ReqBody) =userServiceImp.getFeedBack(u)
 
     @UserLoginToken
     @RequestMapping(value = ["getDeveloperInfo"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    private fun getDeveloperInfo(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
+    private fun getDeveloperInfo(@RequestBody u: ReqBody) =userServiceImp.getDeveloperInfo(u)
 
 }
