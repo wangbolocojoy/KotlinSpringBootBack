@@ -38,4 +38,10 @@ class PostController {
     @Throws(java.lang.Exception::class)
     fun deletePost(@RequestBody body: PageBody) = postServiceIml.deletePost(body)
 
+    @UserLoginToken
+    @RequestMapping(value = ["isHaveNewPost"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    fun isHaveNewPost(@RequestBody body: PageBody) = postServiceIml.isHaveNewPost(body)
+
+
 }

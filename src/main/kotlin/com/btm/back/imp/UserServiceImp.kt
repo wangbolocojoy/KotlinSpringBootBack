@@ -367,7 +367,6 @@ class UserServiceImp :UserService{
             feedBack.userMsg = body.feedMsg
             feedBackRespository.save(feedBack)
             BaseResult.SECUESS()
-
         }
     }
 

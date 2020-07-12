@@ -10,4 +10,5 @@ interface PostService {
     fun getPosts(body: PageBody): BaseResult
     fun deletePost(body: PageBody):BaseResult
     fun updatePostLikeStartt(body: PageBody):BaseResult
+    fun isHaveNewPost(body: PageBody):BaseResult
 }

@@ -149,13 +149,13 @@ class PostServiceIml:PostService{
     override fun getPosts(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
         val list = postRespository.findByOrderByCreatTimeDesc(pageable)
-        return if (list?.isEmpty == true){
+        return if (list.isNullOrEmpty()){
             BaseResult.SECUESS("暂时没有帖子")
         }else{
             val startList = postStartRespository.findByUserId(body.userId?:0)
             val collList = favoritesRespository.findByUserId(body.userId?:0)
             val images =ArrayList<PostVO>()
-            list?.forEach {
+            list.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
                 val msgList = postMessageRespository.findByPostId(body.postId ?:0)
@@ -244,5 +244,22 @@ class PostServiceIml:PostService{
         }else{
             BaseResult.FAIL("用户不存在")
         }
+    }
+
+    override fun isHaveNewPost(body: PageBody): BaseResult {
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 1)
+        val post = postRespository.findByOrderByCreatTimeDesc(pageable)
+        return if (post.isNullOrEmpty()){
+            BaseResult.FAIL()
+        }else{
+            if (body.postId == post[0].id){
+                BaseResult.SECUESS()
+            }else{
+                BaseResult.FAIL()
+
+            }
+        }
+
+
     }
 }
