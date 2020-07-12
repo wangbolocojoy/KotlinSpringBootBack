@@ -252,7 +252,7 @@ class PostServiceIml:PostService{
         return if (post.isNullOrEmpty()){
             BaseResult.FAIL()
         }else{
-            if (body.postId == post[0].id){
+            if (body.postId ?: 0 < post[0].id ?: 0){
                 BaseResult.SECUESS()
             }else{
                 BaseResult.FAIL()
