@@ -109,6 +109,7 @@ class FollowServiceImp : FollowService {
             user?.follows = follows +1
             user?.let { userRespository.save(it) }
             var fances = followuser?.fances?:0
+
             followuser?.fances =  fances +1
             followuser?.let { userRespository.save(it) }
             followRespository.save(follow1)
