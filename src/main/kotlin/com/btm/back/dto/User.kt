@@ -36,8 +36,9 @@ class User {
     var userIdentifier:String? = null
     var province:String? = null
     var city:String? = null
-    var isItBanned:Boolean = false
-    var isAdministrators:Boolean = false
+    var isItBanned:Boolean? = false
+    var isAdministrators:Boolean? = false
+
 
 
 

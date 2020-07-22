@@ -1,8 +1,6 @@
 package com.btm.back.dto
 
 
-import com.btm.back.bean.PageBody
-import com.btm.back.utils.BaseResult
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.util.*
 import javax.persistence.*
