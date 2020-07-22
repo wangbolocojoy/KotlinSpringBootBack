@@ -138,7 +138,7 @@ class PostServiceIml:PostService{
     * @Date: 2020-07-22
     * @Time: 20:43
     **/
-    override fun updatePost(body: PageBody): BaseResult {
+    override fun updatePosts(body: PageBody): BaseResult {
         if ( body.postList?.isNotEmpty()!!){
             body.postList!!.forEach {
                 var post = it.postId?.let { it1 -> postRespository.findById(it1) }

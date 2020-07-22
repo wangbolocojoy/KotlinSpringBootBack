@@ -13,7 +13,7 @@ interface PostService {
     fun updatePostLikeStartt(body: PageBody):BaseResult
     fun isHaveNewPost(body: PageBody):BaseResult
     fun getMyPosts(body: PageBody):BaseResult
-    fun updatePost(body: PageBody):BaseResult
+    fun updatePosts(body: PageBody):BaseResult
     fun reportPostByPostId(body: RestPostBody):BaseResult
     fun getReportList(body: PageBody):BaseResult
     fun getExamineList(body: PageBody):BaseResult
