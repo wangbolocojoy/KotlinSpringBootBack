@@ -36,22 +36,22 @@ class AuthenticationInterceptor : HandlerInterceptor {
             val userLoginToken = method.getAnnotation(UserLoginToken::class.java)
             if (userLoginToken.required) { // 执行认证
                 if (token == null) {
-                    throw RuntimeException("无token，请重新登录")
+                    throw KtErrorException(ErrorCodeEnum.TOKENISNULL)
                 }
                 // 获取 token 中的 user id
                 val userId: String
                 userId = try {
                     JWT.decode(token).audience[0]
                 } catch (j: JWTDecodeException) {
-                    throw RuntimeException("token解析错误")
+                    throw KtErrorException(ErrorCodeEnum.TOKENJSONERROR)
                 }
-                val user = userService!!.findUserById(userId) ?: throw RuntimeException("用户不存在，请重新登录")
+                val user = userService!!.findUserById(userId) ?: throw  KtErrorException(ErrorCodeEnum.USERISNOTFOUND)
                 // 验证 token
                 val jwtVerifier = JWT.require(Algorithm.HMAC256(user.password)).build()
                 try {
                     jwtVerifier.verify(token)
                 } catch (e: JWTVerificationException) {
-                    throw JWTVerificationException("token验证错误")
+                    throw KtErrorException(ErrorCodeEnum.TOKENERROR)
                 }
                 return true
             }

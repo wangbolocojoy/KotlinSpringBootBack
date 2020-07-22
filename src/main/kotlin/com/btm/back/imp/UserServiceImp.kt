@@ -82,6 +82,7 @@ class UserServiceImp :UserService{
                     user.likeStarts = 0
                     user.creatTime = Date()
                     user.userSex = false
+                    user.isItBanned = false
                     userrepository.save(user)
                     val s = CopierUtil.copyProperties(user,UserVO::class.java)
                     logger.info("注册成功--- $s ")
@@ -191,9 +192,14 @@ class UserServiceImp :UserService{
         val u= body.phone?.let { userrepository.findByAccount(it) }
         return if(u!=null){
             if(u.phone == body.phone&&u.password==body.password){
-                val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("登录成功--- $s ")
-                BaseResult.SECUESS(s)
+                if (u.isItBanned){
+                    BaseResult.SECUESS("该账号已被封禁")
+                }else{
+                    val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                    logger.info("登录成功--- $s ")
+                    BaseResult.SECUESS(s)
+                }
+
             }else{
                 BaseResult.FAIL("账号或密码错误")
             }

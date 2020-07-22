@@ -1,8 +1,9 @@
 package com.btm.back.dto
 
 
+import com.btm.back.bean.PageBody
+import com.btm.back.utils.BaseResult
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.*
 import javax.persistence.*
 
@@ -24,4 +25,6 @@ class Post  {
     var latitude:String? = null
     var longitude:String? = null
     var postMessageNum:Int? = 0
+    var postState:Int? = 0
+    var postReport:Int? = 0
 }

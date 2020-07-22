@@ -21,6 +21,7 @@ class UserVO {
     var birthDay: String? = null
     var constellation:String? = null
     var province:String? = null
+    var isItBanned:Boolean = false
     var city:String? = null
     override fun toString(): String {
         return "UserVO(id=$id, realName=$realName, phone=$phone, nickName=$nickName, account=$account, userSex=$userSex, icon=$icon, likeStarts=$likeStarts, postNum=$postNum, fances=$fances, follows=$follows, token=$token, easyInfo=$easyInfo, address=$address, creatTime=$creatTime, birthDay=$birthDay, constellation=$constellation, province=$province, city=$city)"
