@@ -1,7 +1,6 @@
 package com.btm.back.vo
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class UserVO {
     var id: Int? = null
     var realName: String? = null

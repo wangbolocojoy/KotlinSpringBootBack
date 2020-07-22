@@ -2,7 +2,6 @@ package com.btm.back.vo
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.io.Serializable
-@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class FollowVO :Serializable{
     var id: Int? = null
     var nickName: String? = null

@@ -4,7 +4,6 @@ import com.btm.back.dto.ReportPost
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 
-@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class PostVO {
     var id: Int? = null
     var userId: Int? = null
