@@ -59,4 +59,5 @@ interface UserService {
 
     fun sendFeedBack(body: ReqBody):BaseResult
     fun getFeedBack(body: ReqBody):BaseResult
+    fun getAllUser(body: ReqBody):BaseResult
 }

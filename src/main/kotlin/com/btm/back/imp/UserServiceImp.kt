@@ -192,7 +192,7 @@ class UserServiceImp :UserService{
         val u= body.phone?.let { userrepository.findByAccount(it) }
         return if(u!=null){
             if(u.phone == body.phone&&u.password==body.password){
-                if (u.isItBanned){
+                if (u.isItBanned == true){
                     BaseResult.SECUESS("该账号已被封禁")
                 }else{
                     val s = CopierUtil.copyProperties(u,UserVO::class.java)
@@ -388,6 +388,17 @@ class UserServiceImp :UserService{
             vo?.let { it1 -> list.add(it1) }
         }
         return  BaseResult.SECUESS(list)
+    }
+
+    override fun getAllUser(body: ReqBody): BaseResult {
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        val list = userrepository.findAll(pageable)
+        val listvo = ArrayList<UserVO>()
+        list.forEach {
+            val vo = CopierUtil.copyProperties(it,UserVO::class.java)
+            vo?.let { it1 -> listvo.add(it1) }
+        }
+        return BaseResult.SECUESS(listvo)
     }
 
 

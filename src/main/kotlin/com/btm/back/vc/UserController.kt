@@ -59,6 +59,11 @@ class UserController  {
     private fun deleteall(@RequestBody u: ReqBody) {}
 
     @UserLoginToken
+    @RequestMapping(value = ["getAllUser"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getAllUser(@RequestBody u: ReqBody) = userServiceImp.getAllUser(u)
+
+    @UserLoginToken
     @RequestMapping(value = ["searchfollow"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun searchfollow(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
