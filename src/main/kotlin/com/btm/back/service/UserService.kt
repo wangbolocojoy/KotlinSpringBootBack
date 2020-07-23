@@ -59,5 +59,24 @@ interface UserService {
 
     fun sendFeedBack(body: ReqBody):BaseResult
     fun getFeedBack(body: ReqBody):BaseResult
+
+    /**
+    * @Description: 获取所以用户
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-07-23
+    * @Time: 18:56
+    **/
     fun getAllUser(body: ReqBody):BaseResult
+
+    /**
+    * @Description: 批量封号
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-07-23
+    * @Time: 18:58
+    **/
+    fun setUserBanned(body: ReqBody):BaseResult
 }

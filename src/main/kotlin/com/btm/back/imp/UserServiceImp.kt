@@ -392,13 +392,17 @@ class UserServiceImp :UserService{
 
     override fun getAllUser(body: ReqBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
-        val list = userrepository.findAll(pageable)
+        val list = userrepository.findByIsItBannedFalse(isItBanned = false,pageable = pageable)
         val listvo = ArrayList<UserVO>()
-        list.forEach {
+        list?.forEach {
             val vo = CopierUtil.copyProperties(it,UserVO::class.java)
             vo?.let { it1 -> listvo.add(it1) }
         }
         return BaseResult.SECUESS(listvo)
+    }
+
+    override fun setUserBanned(body: ReqBody): BaseResult {
+    TODO()
     }
 
 
