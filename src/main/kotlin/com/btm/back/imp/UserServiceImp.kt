@@ -257,9 +257,13 @@ class UserServiceImp :UserService{
         if (u != null){
             if (null !=body.userSex){
                 u.userSex = body.userSex
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+              return  BaseResult.SECUESS(s)
             }
             if (null !=body.nickName){
-                return if (AliYunOssUtil.checkContext(body.nickName ?:"")){
+                 return if (AliYunOssUtil.checkContext(body.nickName ?:"")){
                     u.nickName = body.nickName
                     userrepository.save(u)
                     val s = CopierUtil.copyProperties(u,UserVO::class.java)
@@ -272,9 +276,13 @@ class UserServiceImp :UserService{
             }
             if (null !=body.realName){
                 u.realName = body.realName
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return BaseResult.SECUESS(s)
             }
             if (null !=body.easyInfo){
-                return if (AliYunOssUtil.checkContext(body.easyInfo ?:"")){
+                 return if (AliYunOssUtil.checkContext(body.easyInfo ?:"")){
                     u.easyInfo = body.easyInfo
                     userrepository.save(u)
                     val s = CopierUtil.copyProperties(u,UserVO::class.java)
@@ -287,30 +295,66 @@ class UserServiceImp :UserService{
             }
             if (null !=body.address){
                 u.address = body.address
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return  BaseResult.SECUESS(s)
             }
             if (null !=body.fances){
                 u.fances = body.fances
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return  BaseResult.SECUESS(s)
             }
             if (null !=body.likeStarts){
                 u.likeStarts = body.likeStarts
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return  BaseResult.SECUESS(s)
             }
             if (null != body.postNum){
                 u.postNum = body.postNum
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return  BaseResult.SECUESS(s)
             }
             if (null != body.userSex){
                 u.userSex = body.userSex
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return  BaseResult.SECUESS(s)
             }
             if (null != body.birthDay){
                 u.birthDay = body.birthDay
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return  BaseResult.SECUESS(s)
             }
             if (null != body.constellation){
                 u.constellation = body.constellation
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return  BaseResult.SECUESS(s)
             }
             if (null != body.province){
                 u.province = body.province
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return   BaseResult.SECUESS(s)
             }
             if (null != body.city){
                 u.city = body.city
+                userrepository.save(u)
+                val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                logger.info("更新用户信息成功$s")
+                return   BaseResult.SECUESS(s)
             }
             userrepository.save(u)
             val s = CopierUtil.copyProperties(u,UserVO::class.java)

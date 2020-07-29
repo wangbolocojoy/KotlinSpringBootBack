@@ -1,5 +1,6 @@
 package com.btm.back.utils
 import com.alibaba.fastjson.JSON
+import com.aliyun.oss.OSS
 import com.aliyun.oss.OSSClient
 import com.aliyun.oss.model.ObjectMetadata
 import com.aliyuncs.AcsResponse
@@ -12,6 +13,7 @@ import com.aliyuncs.imageaudit.model.v20191230.ScanImageRequest.Task
 import com.aliyuncs.imageaudit.model.v20191230.ScanImageRequest
 import com.aliyuncs.imageaudit.model.v20191230.ScanImageResponse
 import com.aliyuncs.imageaudit.model.v20191230.ScanTextRequest
+import com.aliyuncs.imageaudit.model.v20191230.ScanTextResponse
 import com.aliyuncs.profile.DefaultProfile
 import com.btm.back.bean.CheckImageModel
 import com.btm.back.bean.ContextModel
@@ -331,29 +333,34 @@ object AliYunOssUtil {
     }
     fun checkContext(context:String):Boolean{
         val request = ScanTextRequest()
+        request.regionId = "cn-shanghai"
         val tasksList: MutableList<ScanTextRequest.Tasks> = ArrayList()
-        val labList: MutableList<ScanTextRequest.Labels> = ArrayList()
         val task = ScanTextRequest.Tasks()
-        val lab = ScanTextRequest.Labels()
-        lab.label = "spam"
-        labList.add(lab)
-        lab.label = "porn"
-        labList.add(lab)
-        lab.label = "politics"
-        labList.add(lab)
-        lab.label = "abuse"
-        labList.add(lab)
-        lab.label = "terrorism"
-        labList.add(lab)
         task.content = context
         tasksList.add(task )
-        request.labelss = labList
         request.taskss = tasksList
-        val resp = getAcsResponse(request)
+        var lablist :MutableList<ScanTextRequest.Labels> = ArrayList()
+//        val lab1 = ScanTextRequest.Labels()
+//        lab1.label = "politics"
+//        lablist.add(lab1)
+//        val lab2 = ScanTextRequest.Labels()
+//        lab2.label = "abuse"
+//        lablist.add(lab2)
+//        val lab3 = ScanTextRequest.Labels()
+//        lab3.label = "terrorism"
+//        lablist.add(lab3)
+        val lab4 = ScanTextRequest.Labels()
+        lab4.label = "porn"
+        lablist.add(lab4)
+        request.labelss = lablist
+        logger.info("开始文本识别内容---> $context")
+        val resp :ScanTextResponse = getAcsResponse(request)
+        logger.info("resp"+resp.data)
         val json = GsonUtil.gsonToBean((JSON.toJSONString(resp)), ContextModel::class.java)
+        logger.info("识别结果 ---> "+json.toString())
         var boolean =false
-        if (json?.Data?.Elements?.size != 0 && json?.Data?.Elements?.get(0)?.Results?.size != 0){
-            for (it in json?.Data?.Elements?.get(0)?.Results!!){
+        if (json?.Data != null && json.Data.Elements.isNotEmpty() && json.Data.Elements[0].Results.isNotEmpty()){
+            for (it in json.Data.Elements[0].Results){
                 boolean = it.Suggestion == "pass"
                 if (boolean){
                     logger.info("文本内容正常")
@@ -363,6 +370,8 @@ object AliYunOssUtil {
                     return false
                 }
             }
+        }else{
+            boolean = true
         }
         return boolean
 
@@ -377,19 +386,17 @@ object AliYunOssUtil {
                 "cn-shanghai",  //默认
                 OSSClientConstants.ACCESS_KEY_ID,  //您的AccessKeyID
                 OSSClientConstants.ACCESS_KEY_SECRET) //您的AccessKeySecret
-
-
         client = DefaultAcsClient(profile)
         return try {
             client?.getAcsResponse(req)!!
         } catch (e: ServerException) { // 服务端异常
-            println(String.format("ServerException: errCode=%s, errMsg=%s", e.errCode, e.errMsg))
+            logger.error(String.format("ServerException: errCode=%s, errMsg=%s", e.errCode, e.errMsg))
             throw e
         } catch (e: ClientException) { // 客户端错误
-            println(String.format("ClientException: errCode=%s, errMsg=%s", e.errCode, e.errMsg))
+            logger.error(String.format("ClientException: errCode=%s, errMsg=%s", e.errCode, e.errMsg))
             throw e
         } catch (e: java.lang.Exception) {
-            println("Exception:" + e.message)
+            logger.error("Exception:" + e.message)
             throw e
         }
     }
@@ -424,6 +431,10 @@ object AliYunOssUtil {
 //      var json =   verificationCard(params)
 //        logger.info(json.toString())
 //    }
+
+}
+
+private fun OSS.putObject(backetName: String, keySuffixWithSlash: String, byteArrayInputStream: ByteArrayInputStream) {
 
 }
 
