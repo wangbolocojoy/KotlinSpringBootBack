@@ -347,7 +347,7 @@ class UserServiceImp :UserService{
                     logger.info("头像修改成功$s")
                     BaseResult.SECUESS("头像修改成功",s)
                 }else{
-                    BaseResult.FAIL("检测图片中的违规内容,请重新上传")
+                    BaseResult.FAIL("检测图片中包含违规内容,请重新上传")
                 }
 
             }else{
