@@ -9,7 +9,6 @@ import javax.persistence.*
 @Entity
 @Table(name = "User")
 @JsonIgnoreProperties(value = ["handler", "hibernateLazyInitializer", "fieldHandler"])
-//@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
 class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +37,7 @@ class User {
     var city:String? = null
     var isItBanned:Boolean? = false
     var isAdministrators:Boolean? = false
+    var isAuthentication:Boolean? = false
 
 
 

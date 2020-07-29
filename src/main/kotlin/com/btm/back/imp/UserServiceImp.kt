@@ -1,14 +1,12 @@
 package com.btm.back.imp
 
 import com.btm.back.bean.ReqBody
+import com.btm.back.dto.Authentication
 import com.btm.back.dto.Developer
 import com.btm.back.dto.FeedBack
 import com.btm.back.dto.User
 import com.btm.back.helper.CopierUtil
-import com.btm.back.repository.DeveloperRespository
-import com.btm.back.repository.FeedBackRespository
-import com.btm.back.repository.FollowRespository
-import com.btm.back.repository.UserRespository
+import com.btm.back.repository.*
 import com.btm.back.service.UserService
 import com.btm.back.utils.AliYunOssUtil
 import com.btm.back.utils.BaseResult
@@ -50,6 +48,8 @@ class UserServiceImp :UserService{
     @Autowired
     lateinit var feedBackRespository: FeedBackRespository
 
+    @Autowired
+    lateinit var authenticationRespository: AuthenticationRespository
 
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImp::class.java)
 
@@ -83,6 +83,8 @@ class UserServiceImp :UserService{
                     user.creatTime = Date()
                     user.userSex = false
                     user.isItBanned = false
+                    user.isAuthentication = false
+                    user.isAdministrators = false
                     userrepository.save(user)
                     val s = CopierUtil.copyProperties(user,UserVO::class.java)
                     logger.info("注册成功--- $s ")
@@ -318,13 +320,18 @@ class UserServiceImp :UserService{
             return if (null!=uploadFile){
                 val oldfilename = u.originalFileName
                 val url =AliYunOssUtil.uploadToAliyun(uploadFile.originalFilename ?: "",uploadFile.inputStream,uploadFile.contentType ?: "jpg",uploadType,id.toString())
-                u.icon = url
-                u.originalFileName = uploadFile.originalFilename
-                AliYunOssUtil.deleteFile(oldfilename ?: "",id.toString())
-                userrepository.save(u)
-                val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("头像修改成功$s")
-                BaseResult.SECUESS("头像修改成功",s)
+                if(AliYunOssUtil.checkScanImage(url)){
+                    u.icon = url
+                    u.originalFileName = uploadFile.originalFilename
+                    AliYunOssUtil.deleteFile(oldfilename ?: "",id.toString())
+                    userrepository.save(u)
+                    val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                    logger.info("头像修改成功$s")
+                    BaseResult.SECUESS("头像修改成功",s)
+                }else{
+                    BaseResult.FAIL("检测图片中的违规内容,请重新上传")
+                }
+
             }else{
                 BaseResult.FAIL("文件不存在")
             }
@@ -403,6 +410,23 @@ class UserServiceImp :UserService{
 
     override fun setUserBanned(body: ReqBody): BaseResult {
     TODO()
+    }
+
+
+    override fun relaseNameAuthen(userId: Int?,cardName:String?,cardNumber:String,uploadFile: ArrayList<MultipartFile>?):BaseResult {
+      val user =userId?.let { userrepository.findById(it) }
+       val  authen = user?.id?.let { authenticationRespository.findById(userId = it) }
+        if (authen != null){
+            return  BaseResult.FAIL("该账号已经实名认知")
+        }else{
+//            val param =
+//            AliYunOssUtil.verificationCard()
+            return  BaseResult.FAIL("该账号已经实名认知")
+        }
+    }
+
+    override fun uploadIdCard(userId: Int?, uploadType: String, uploadFile: MultipartFile?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 

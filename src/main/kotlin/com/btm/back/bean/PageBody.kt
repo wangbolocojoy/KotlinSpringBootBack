@@ -26,3 +26,4 @@ data class PostInfoBody(var postId: Int?,
                         var postState: Int? = null,
                         var postPublic:Boolean? = null
 ):abstractObjectToString(),Serializable
+

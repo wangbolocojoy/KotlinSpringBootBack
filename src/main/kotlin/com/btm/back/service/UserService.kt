@@ -79,4 +79,17 @@ interface UserService {
     * @Time: 18:58
     **/
     fun setUserBanned(body: ReqBody):BaseResult
+
+    /**
+    * @Description: 实名认证
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-07-27
+    * @Time: 14:34
+    **/
+    fun relaseNameAuthen (userId: Int?,cardName:String?,cardNumber:String,uploadFile: ArrayList<MultipartFile>?):BaseResult
+
+    fun uploadIdCard(userId: Int?,uploadType:String,uploadFile:MultipartFile?)
+
 }

@@ -1,6 +1,5 @@
 package com.btm.back.vo
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 class PostAuthorVo {
     var nickName: String? = null

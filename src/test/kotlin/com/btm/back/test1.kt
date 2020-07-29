@@ -1,21 +1,28 @@
 package com.btm.back
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
-import kotlin.random.Random
+import com.alibaba.fastjson.JSON
+import com.aliyuncs.AcsResponse
+import com.aliyuncs.DefaultAcsClient
+import com.aliyuncs.IAcsClient
+import com.aliyuncs.RpcAcsRequest
+import com.aliyuncs.exceptions.ClientException
+import com.aliyuncs.exceptions.ServerException
+import com.aliyuncs.imageaudit.model.v20191230.ScanImageRequest
+import com.aliyuncs.imageaudit.model.v20191230.ScanImageResponse
+import com.aliyuncs.profile.DefaultProfile
+import com.btm.back.utils.OSSClientConstants
+import java.util.*
+
 
 object test1 {
+
     @JvmStatic
     fun main(args: Array<String>) { //
-              val code = Random.nextInt(999999).toString()
-        System.out.print(getToken())
+
+
+        val url = "https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/fileserver/IMG_3010.jpg"
+//        checkScanImage(url = url)
     }
 
-    fun getToken(): String
-    {
-        var token = ""
-        token = JWT.create().withAudience("15390190780") // 将 user phone 保存到 token 里面
-                .sign(Algorithm.HMAC256("f17e148a4086567563ae390e7f1e7162")) // 以 password 作为 token 的密钥;
-        return token
-    }
+
 }

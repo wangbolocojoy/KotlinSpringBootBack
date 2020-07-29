@@ -1,11 +1,23 @@
 package com.btm.back.utils
+import com.alibaba.fastjson.JSON
 import com.aliyun.oss.OSSClient
 import com.aliyun.oss.model.ObjectMetadata
+import com.aliyuncs.AcsResponse
+import com.aliyuncs.DefaultAcsClient
+import com.aliyuncs.IAcsClient
+import com.aliyuncs.RpcAcsRequest
+import com.aliyuncs.exceptions.ClientException
+import com.aliyuncs.exceptions.ServerException
+import com.aliyuncs.imageaudit.model.v20191230.ScanImageRequest
+import com.aliyuncs.imageaudit.model.v20191230.ScanImageResponse
+import com.aliyuncs.profile.DefaultProfile
+import com.btm.back.bean.CheckImage
 import com.btm.back.dto.UserFiles
 import com.btm.back.helper.CopierUtil
+import com.btm.back.helper.JsonHelper
 import com.btm.back.repository.UserFilesRespository
-import com.btm.back.utils.OSSClientConstants
 import com.btm.back.vo.UserFilesVO
+import com.zhongtushiren.housekeeper.utils.GsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.multipart.MultipartFile
@@ -16,9 +28,11 @@ import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 object AliYunOssUtil {
     private var ossClient: OSSClient? = null
     private val logger: Logger = LoggerFactory.getLogger(AliYunOssUtil::class.java)
+    private var client: IAcsClient? = null
     /**
      * 上传文件到阿里云,并生成url
      *
@@ -254,8 +268,92 @@ object AliYunOssUtil {
             "text/plain"
         }
     }
+    @Throws(Exception::class)
+    fun checkScanImage(url:String) :Boolean{
+        println("--------  内容审核 --------------")
+        val req = ScanImageRequest()
+        val scenes: MutableList<String> = java.util.ArrayList()
+        scenes.add("porn")
+        scenes.add("terrorism")
+        req.scenes = scenes
+        val tasks: MutableList<ScanImageRequest.Task> = java.util.ArrayList<ScanImageRequest.Task>()
+        val task: ScanImageRequest.Task = ScanImageRequest.Task()
+        task.dataId = UUID.randomUUID().toString()
+
+        task.imageURL = url
+        tasks.add(task)
+        req.tasks = tasks
+        val resp: ScanImageResponse = getAcsResponse(req)
+        val json = GsonUtil.gsonToBean(resp.toString(),CheckImage::class.java)
+        var boolean:Boolean = false
+        if (json?.data?.results?.size!= 0 ){
+            json?.data?.results!![0].subResults?.forEach {
+                boolean = if (it.scene == "porn"){
+                    //检测色情图片
+                    it.label != "porn"
+
+                }else{
+                    it.label == "normal"
+                }
+            }
+
+        }
+        return boolean
+//        printResponse(req.sysActionName, resp.requestId, resp)
+
+    }
+    @Throws(java.lang.Exception::class)
+    private fun <R : RpcAcsRequest<T>?, T : AcsResponse?> getAcsResponse(req: R): T {
+        val profile = DefaultProfile.getProfile(
+                "cn-shanghai",  //默认
+                OSSClientConstants.ACCESS_KEY_ID,  //您的AccessKeyID
+                OSSClientConstants.ACCESS_KEY_SECRET) //您的AccessKeySecret
 
 
+        client = DefaultAcsClient(profile)
+        return try {
+            client?.getAcsResponse(req)!!
+        } catch (e: ServerException) { // 服务端异常
+            println(String.format("ServerException: errCode=%s, errMsg=%s", e.errCode, e.errMsg))
+            throw e
+        } catch (e: ClientException) { // 客户端错误
+            println(String.format("ClientException: errCode=%s, errMsg=%s", e.errCode, e.errMsg))
+            throw e
+        } catch (e: java.lang.Exception) {
+            println("Exception:" + e.message)
+            throw e
+        }
+    }
+    fun printResponse(actionName: String?, requestId: String?, data: AcsResponse?) {
+        println(String.format("actionName=%s, requestId=%s, data=%s", actionName, requestId,
+                JSON.toJSONString(data)))
+    }
 
+
+//    fun verificationCard(params:String): IDCardOCRResponse? {
+//        var responsebody:IDCardOCRResponse? = null
+//        try{
+//        val cred = Credential(OSSClientConstants.TXAPIID, OSSClientConstants.TXAPIKEY)
+//            val httpProfile = HttpProfile()
+//            httpProfile.endpoint = "ocr.tencentcloudapi.com"
+//            val clientProfile = ClientProfile()
+//            clientProfile.httpProfile = httpProfile
+//            val client = OcrClient(cred, "ap-chengdu", clientProfile)
+//            val req = IDCardOCRRequest.fromJsonString(params, IDCardOCRRequest::class.java)
+//            val resp = client.IDCardOCR(req)
+//            responsebody = resp
+//            logger.info(IDCardOCRResponse.toJsonString(resp))
+//        } catch (e: TencentCloudSDKException) {
+//           logger.error(e.toString())
+//        }
+//        return responsebody
+//    }
+
+//    @JvmStatic
+//    fun main(args: Array<String>) {
+//        val params = "{}"
+//      var json =   verificationCard(params)
+//        logger.info(json.toString())
+//    }
 
 }
