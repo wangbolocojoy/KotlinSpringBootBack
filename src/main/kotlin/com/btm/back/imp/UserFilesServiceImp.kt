@@ -50,33 +50,38 @@ class UserFilesServiceImp:UserFilesService{
         return if (userId == null || uploadType == null ||postDetail == null || uploadFile == null){
             BaseResult.FAIL("参数不能为空")
         }else{
-            val post = Post()
-            post.userId = userId
-            post.postAddress = postAddress
-            post.postDetail = postDetail
-            post.postPublic = postPublic ?: false
-            post.postStarts =  0
-            post.creatTime = Date()
-            post.latitude = latitude
-            post.longitude = longitude
-            postRespository.save(post)
-            val user = userRespository.findById(userId )
-            user?.postNum =(user?.postNum?:0)+1
-            user?.let { userRespository.save(it) }
-            logger.info("post---  ",post.id)
-            if (post.id != null){
-            val list = AliYunOssUtil.uploadToAliyunFiles(userId,post.id ?:0,userFilesRespository,uploadFile = uploadFile,userid = userId.toString())
-                logger.info("上传成功$list")
-                val pvo = CopierUtil.copyProperties(post,PostVO::class.java)
-                pvo?.postImages = list
-                pvo?.isStart = false
-                pvo?.isCollection = false
-                pvo?.msgNum = 0
-                BaseResult.SECUESS(pvo)
+            if (AliYunOssUtil.checkContext(postDetail)){
+                val post = Post()
+                post.userId = userId
+                post.postAddress = postAddress
+                post.postDetail = postDetail
+                post.postPublic = postPublic ?: false
+                post.postStarts =  0
+                post.creatTime = Date()
+                post.latitude = latitude
+                post.longitude = longitude
+                postRespository.save(post)
+                val user = userRespository.findById(userId )
+                user?.postNum =(user?.postNum?:0)+1
+                user?.let { userRespository.save(it) }
+                logger.info("post---  ",post.id)
+                if (post.id != null){
+                    val list = AliYunOssUtil.uploadToAliyunFiles(userId,post.id ?:0,userFilesRespository,uploadFile = uploadFile,userid = userId.toString())
+                    logger.info("上传成功$list")
+                    val pvo = CopierUtil.copyProperties(post,PostVO::class.java)
+                    pvo?.postImages = list
+                    pvo?.isStart = false
+                    pvo?.isCollection = false
+                    pvo?.msgNum = 0
+                    BaseResult.SECUESS(pvo)
 
+                }else{
+                    return  BaseResult.FAIL("发帖失败")
+                }
             }else{
-                return  BaseResult.FAIL("发帖失败")
+                return  BaseResult.FAIL("内容违规,请重新组织语言")
             }
+
 
         }
     }

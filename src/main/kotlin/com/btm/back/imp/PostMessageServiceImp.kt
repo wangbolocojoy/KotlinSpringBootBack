@@ -10,6 +10,7 @@ import com.btm.back.repository.PostMessageRespository
 import com.btm.back.repository.PostRespository
 import com.btm.back.repository.UserRespository
 import com.btm.back.service.PostMessageService
+import com.btm.back.utils.AliYunOssUtil
 import com.btm.back.utils.BaseResult
 import com.btm.back.vo.MessageVO
 import com.btm.back.vo.SendMsgVO
@@ -89,25 +90,30 @@ class PostMessageServiceImp : PostMessageService {
         return if (body.postMessage.isNullOrEmpty() || body.userId == null || body.postId == null) {
             BaseResult.FAIL("评论信息不能为空")
         } else {
-            val post = postRespository.findById(body.postId ?: 0) ?: return BaseResult.FAIL()
-            post.postMessageNum = post.postMessageNum?.plus(1)
-            postRespository.save(post)
+            if (AliYunOssUtil.checkContext(body.postMessage?:"")){
+                val post = postRespository.findById(body.postId ?: 0) ?: return BaseResult.FAIL()
+                post.postMessageNum = post.postMessageNum?.plus(1)
+                postRespository.save(post)
 
-            val msg = PostMessage()
-            if (body.postMsgId == null) {
-                msg.postId = body.postId
-            } else {
-                msg.postId = null
+                val msg = PostMessage()
+                if (body.postMsgId == null) {
+                    msg.postId = body.postId
+                } else {
+                    msg.postId = null
+                }
+                msg.postMsgCreatTime = Date()
+                msg.userId = body.userId
+                msg.messageStart = 0
+                msg.message = body.postMessage
+                msg.replyNickName = body.replyNickName
+                msg.postMsgId = body.postMsgId
+                msg.replyUserId = body.replyUserId
+                postMessageRespository.save(msg)
+                BaseResult.SECUESS(msg)
+            }else{
+                BaseResult.SECUESS("内容违规,请重新组织语言")
             }
-            msg.postMsgCreatTime = Date()
-            msg.userId = body.userId
-            msg.messageStart = 0
-            msg.message = body.postMessage
-            msg.replyNickName = body.replyNickName
-            msg.postMsgId = body.postMsgId
-            msg.replyUserId = body.replyUserId
-            postMessageRespository.save(msg)
-            BaseResult.SECUESS(msg)
+
         }
     }
 

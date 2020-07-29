@@ -8,16 +8,17 @@ import com.aliyuncs.IAcsClient
 import com.aliyuncs.RpcAcsRequest
 import com.aliyuncs.exceptions.ClientException
 import com.aliyuncs.exceptions.ServerException
+import com.aliyuncs.imageaudit.model.v20191230.ScanImageRequest.Task
 import com.aliyuncs.imageaudit.model.v20191230.ScanImageRequest
 import com.aliyuncs.imageaudit.model.v20191230.ScanImageResponse
+import com.aliyuncs.imageaudit.model.v20191230.ScanTextRequest
 import com.aliyuncs.profile.DefaultProfile
-import com.btm.back.bean.CheckImage
+import com.btm.back.bean.CheckImageModel
+import com.btm.back.bean.ContextModel
 import com.btm.back.dto.UserFiles
 import com.btm.back.helper.CopierUtil
-import com.btm.back.helper.JsonHelper
 import com.btm.back.repository.UserFilesRespository
 import com.btm.back.vo.UserFilesVO
-import com.zhongtushiren.housekeeper.utils.GsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.multipart.MultipartFile
@@ -26,7 +27,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 object AliYunOssUtil {
@@ -108,17 +108,20 @@ object AliYunOssUtil {
 //            url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
                    url = URL("https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/$fileoder")
                    logger.info("save - success - pictureUrl -> $url")
-                   val file = UserFiles()
-                   file.originalFileName =  multipartFile.originalFilename
-                   file.userId = id
-                   file.postId = postid
-                   file.fileType = multipartFile.contentType
-                   file.fileUrl = url.toString()
-                   file.fileLikes = 0
-                   val fvo = CopierUtil.copyProperties(file,UserFilesVO::class.java)
 
-                   fvo?.let { list.add(it) }
-                   userFilesRespository.save(file)
+                   if (checkScanImage(url = url.toString())){
+                       val file = UserFiles()
+                       file.originalFileName =  multipartFile.originalFilename
+                       file.userId = id
+                       file.postId = postid
+                       file.fileType = multipartFile.contentType
+                       file.fileUrl = url.toString()
+                       file.fileLikes = 0
+                       val fvo = CopierUtil.copyProperties(file,UserFilesVO::class.java)
+                       fvo?.let { list.add(it) }
+                       userFilesRespository.save(file)
+                   }
+
                } catch (e: IOException) {
                    e.printStackTrace()
                } finally {
@@ -272,36 +275,102 @@ object AliYunOssUtil {
     fun checkScanImage(url:String) :Boolean{
         println("--------  内容审核 --------------")
         val req = ScanImageRequest()
-        val scenes: MutableList<String> = java.util.ArrayList()
+        val scenes: MutableList<String> = ArrayList()
         scenes.add("porn")
         scenes.add("terrorism")
         req.scenes = scenes
-        val tasks: MutableList<ScanImageRequest.Task> = java.util.ArrayList<ScanImageRequest.Task>()
-        val task: ScanImageRequest.Task = ScanImageRequest.Task()
+        val tasks: MutableList<Task> = ArrayList()
+        val task = Task()
         task.dataId = UUID.randomUUID().toString()
 
         task.imageURL = url
         tasks.add(task)
         req.tasks = tasks
         val resp: ScanImageResponse = getAcsResponse(req)
-        val json = GsonUtil.gsonToBean(resp.toString(),CheckImage::class.java)
+        val json = GsonUtil.gsonToBean((JSON.toJSONString(resp)),CheckImageModel::class.java)
         var boolean:Boolean = false
+        logger.info(json.toString())
         if (json?.data?.results?.size!= 0 ){
-            json?.data?.results!![0].subResults?.forEach {
+            for (it in json?.data?.results!![0].subResults!!){
+                when (it.label){
+                    "normal"->{
+                        logger.info("检测类型"+it.scene+"正常图片")
+                    }
+                    "sexy"->{
+                        logger.info("检测类型"+it.scene+"性感图片")
+                    }
+                    "porn"->{
+                        logger.info("检测类型"+it.scene+"色情图片")
+                    }
+                    else ->{
+                        logger.info("检测类型"+it.scene+"图片涉及政治敏感、暴力、武器、恐怖、血腥、爆炸等内容")
+                    }
+                }
+
                 boolean = if (it.scene == "porn"){
                     //检测色情图片
                     it.label != "porn"
 
                 }else{
+                    //涉恐涉政识别
                     it.label == "normal"
                 }
+                if (boolean){
+                    logger.info("图片正常")
+                }else{
+                    logger.info("图片违规")
+                    return false
+                }
             }
+
 
         }
         return boolean
 //        printResponse(req.sysActionName, resp.requestId, resp)
 
     }
+    fun checkContext(context:String):Boolean{
+        val request = ScanTextRequest()
+        val tasksList: MutableList<ScanTextRequest.Tasks> = ArrayList()
+        val labList: MutableList<ScanTextRequest.Labels> = ArrayList()
+        val task = ScanTextRequest.Tasks()
+        val lab = ScanTextRequest.Labels()
+        lab.label = "spam"
+        labList.add(lab)
+        lab.label = "porn"
+        labList.add(lab)
+        lab.label = "politics"
+        labList.add(lab)
+        lab.label = "abuse"
+        labList.add(lab)
+        lab.label = "terrorism"
+        labList.add(lab)
+        task.content = context
+        tasksList.add(task )
+        request.labelss = labList
+        request.taskss = tasksList
+        val resp = getAcsResponse(request)
+        val json = GsonUtil.gsonToBean((JSON.toJSONString(resp)), ContextModel::class.java)
+        var boolean =false
+        if (json?.Data?.Elements?.size != 0 && json?.Data?.Elements?.get(0)?.Results?.size != 0){
+            for (it in json?.Data?.Elements?.get(0)?.Results!!){
+                boolean = it.Suggestion == "pass"
+                if (boolean){
+                    logger.info("文本内容正常")
+
+                }else{
+                    logger.info("文本内容违规")
+                    return false
+                }
+            }
+        }
+        return boolean
+
+
+    }
+
+
+
     @Throws(java.lang.Exception::class)
     private fun <R : RpcAcsRequest<T>?, T : AcsResponse?> getAcsResponse(req: R): T {
         val profile = DefaultProfile.getProfile(
@@ -357,3 +426,5 @@ object AliYunOssUtil {
 //    }
 
 }
+
+

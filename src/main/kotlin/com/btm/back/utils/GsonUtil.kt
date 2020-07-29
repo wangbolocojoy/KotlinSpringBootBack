@@ -1,12 +1,12 @@
-package com.zhongtushiren.housekeeper.utils
-dsdss
+import com.btm.back.utils.AliYunOssUtil
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import com.orhanobut.logger.Logger
-import org.json.JSONException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 object GsonUtil {
+    private val logger: Logger = LoggerFactory.getLogger(GsonUtil::class.java)
     private var gson: Gson? = null
     private const val TAG = "GsonUtil"
     init {
@@ -28,7 +28,7 @@ object GsonUtil {
             try {
                 gsonString = gson!!.toJson(`object`)
             }catch (e:JsonSyntaxException){
-                Logger.e(TAG,e.message)
+                logger.error(TAG,e.message)
             }
 
         }
@@ -49,7 +49,7 @@ object GsonUtil {
             try {
                 t = gson!!.fromJson(gsonString, cls)
             }catch (e: JsonSyntaxException){
-              Logger.e(TAG,"解析异常"+e.toString())
+                logger.error(TAG,"解析异常"+e.toString())
             }
 
         }
@@ -72,7 +72,7 @@ object GsonUtil {
 
                 }.type)
             }catch (e:JsonSyntaxException){
-                Logger.e(TAG,e.message)
+                logger.error(TAG,e.message)
             }
 
         }
@@ -95,7 +95,7 @@ object GsonUtil {
                 }.type)
 
             }catch (e:JsonSyntaxException){
-                Logger.e(TAG,e.message)
+                logger.error(TAG,e.message)
             }
 
         }
@@ -118,7 +118,7 @@ object GsonUtil {
                 }.type)
 
             }catch (e:JsonSyntaxException){
-                Logger.e(TAG,e.message)
+                logger.error(TAG,e.message)
             }
 
         }

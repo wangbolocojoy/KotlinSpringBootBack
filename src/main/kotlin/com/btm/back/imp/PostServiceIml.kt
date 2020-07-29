@@ -64,25 +64,30 @@ class PostServiceIml:PostService{
 //    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
     override fun sendPost(body: PostBody): BaseResult {
         return if (body.userId != null) {
-            val post = Post()
-            post.userId = body.userId
-            post.postAddress = body.postAddress
-            post.postDetail = body.postDetail
-            post.postPublic = body.postPublic ?: true
-            post.postStarts = body.postStart ?: 0
-            post.postState = 0
-            val smp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-            post.creatTime = Date()
-            post.postMessageNum = 0
-            postRespository.save(post)
+            if (AliYunOssUtil.checkContext( body.postDetail ?:"")){
+                val post = Post()
+                post.userId = body.userId
+                post.postAddress = body.postAddress
+                post.postDetail = body.postDetail
+                post.postPublic = body.postPublic ?: true
+                post.postStarts = body.postStart ?: 0
+                post.postState = 0
+                val smp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                post.creatTime = Date()
+                post.postMessageNum = 0
+                postRespository.save(post)
 
-            val user = userRespository.findById(body.userId ?:0)
-            user?.postNum =(user?.postNum?:0)+1
-            user?.let { userRespository.save(it) }
-            val s = CopierUtil.copyProperties(post,PostVO::class.java)
+                val user = userRespository.findById(body.userId ?:0)
+                user?.postNum =(user?.postNum?:0)+1
+                user?.let { userRespository.save(it) }
+                val s = CopierUtil.copyProperties(post,PostVO::class.java)
 
-            logger.info("发布帖子成功$s")
-            BaseResult.SECUESS(s)
+                logger.info("发布帖子成功$s")
+                BaseResult.SECUESS(s)
+            }else{
+                BaseResult.FAIL("内容违规,请重新组织语言")
+            }
+
         } else {
             BaseResult.FAIL("用户id不能为空")
         }

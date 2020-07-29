@@ -259,13 +259,31 @@ class UserServiceImp :UserService{
                 u.userSex = body.userSex
             }
             if (null !=body.nickName){
-                u.nickName = body.nickName
+                return if (AliYunOssUtil.checkContext(body.nickName ?:"")){
+                    u.nickName = body.nickName
+                    userrepository.save(u)
+                    val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                    logger.info("更新用户信息成功$s")
+                    BaseResult.SECUESS(s)
+                }else{
+                    BaseResult.FAIL("内容违规,请重新组织语言")
+                }
+
             }
             if (null !=body.realName){
                 u.realName = body.realName
             }
             if (null !=body.easyInfo){
-                u.easyInfo = body.easyInfo
+                return if (AliYunOssUtil.checkContext(body.easyInfo ?:"")){
+                    u.easyInfo = body.easyInfo
+                    userrepository.save(u)
+                    val s = CopierUtil.copyProperties(u,UserVO::class.java)
+                    logger.info("更新用户信息成功$s")
+                    BaseResult.SECUESS(s)
+                }else{
+                    BaseResult.FAIL("内容违规,请重新组织语言")
+                }
+
             }
             if (null !=body.address){
                 u.address = body.address
@@ -294,11 +312,11 @@ class UserServiceImp :UserService{
             if (null != body.city){
                 u.city = body.city
             }
-
             userrepository.save(u)
             val s = CopierUtil.copyProperties(u,UserVO::class.java)
             logger.info("更新用户信息成功$s")
             return  BaseResult.SECUESS(s)
+
         }else{
             return BaseResult.FAIL("该用户不存在")
         }
