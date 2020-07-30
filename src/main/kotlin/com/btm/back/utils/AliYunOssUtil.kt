@@ -17,8 +17,10 @@ import com.aliyuncs.imageaudit.model.v20191230.ScanTextResponse
 import com.aliyuncs.profile.DefaultProfile
 import com.btm.back.bean.CheckImageModel
 import com.btm.back.bean.ContextModel
+import com.btm.back.bean.Element
 import com.btm.back.dto.UserFiles
 import com.btm.back.helper.CopierUtil
+import com.btm.back.helper.JsonHelper
 import com.btm.back.repository.UserFilesRespository
 import com.btm.back.vo.UserFilesVO
 import org.slf4j.Logger
@@ -340,28 +342,28 @@ object AliYunOssUtil {
         tasksList.add(task )
         request.taskss = tasksList
         var lablist :MutableList<ScanTextRequest.Labels> = ArrayList()
-//        val lab1 = ScanTextRequest.Labels()
-//        lab1.label = "politics"
-//        lablist.add(lab1)
-//        val lab2 = ScanTextRequest.Labels()
-//        lab2.label = "abuse"
-//        lablist.add(lab2)
-//        val lab3 = ScanTextRequest.Labels()
-//        lab3.label = "terrorism"
-//        lablist.add(lab3)
+        val lab1 = ScanTextRequest.Labels()
+        lab1.label = "politics"
+        lablist.add(lab1)
+        val lab2 = ScanTextRequest.Labels()
+        lab2.label = "abuse"
+        lablist.add(lab2)
+        val lab3 = ScanTextRequest.Labels()
+        lab3.label = "terrorism"
+        lablist.add(lab3)
         val lab4 = ScanTextRequest.Labels()
         lab4.label = "porn"
         lablist.add(lab4)
         request.labelss = lablist
         logger.info("开始文本识别内容---> $context")
         val resp :ScanTextResponse = getAcsResponse(request)
-        logger.info("resp"+resp.data)
+        logger.info("resp"+JSON.toJSON(resp))
         val json = GsonUtil.gsonToBean((JSON.toJSONString(resp)), ContextModel::class.java)
         logger.info("识别结果 ---> "+json.toString())
         var boolean =false
-        if (json?.Data != null && json.Data.Elements.isNotEmpty() && json.Data.Elements[0].Results.isNotEmpty()){
-            for (it in json.Data.Elements[0].Results){
-                boolean = it.Suggestion == "pass"
+        if (json?.data !=null&& json.data.elements!!.isNotEmpty()   && json.data.elements[0].results!!.isNotEmpty()){
+            for (it in json.data.elements[0].results!!){
+                boolean = it.suggestion == "pass"
                 if (boolean){
                     logger.info("文本内容正常")
 
@@ -377,6 +379,7 @@ object AliYunOssUtil {
 
 
     }
+
 
 
 

@@ -9,6 +9,8 @@ import com.aliyuncs.exceptions.ClientException
 import com.aliyuncs.exceptions.ServerException
 import com.aliyuncs.imageaudit.model.v20191230.ScanImageRequest
 import com.aliyuncs.imageaudit.model.v20191230.ScanImageResponse
+import com.aliyuncs.imageaudit.model.v20191230.ScanTextRequest
+import com.aliyuncs.imageaudit.model.v20191230.ScanTextResponse
 import com.aliyuncs.profile.DefaultProfile
 import com.btm.back.utils.OSSClientConstants
 import java.util.*
@@ -24,5 +26,7 @@ object test1 {
 //        checkScanImage(url = url)
     }
 
+    fun checktextcontent(){
 
+    }
 }
