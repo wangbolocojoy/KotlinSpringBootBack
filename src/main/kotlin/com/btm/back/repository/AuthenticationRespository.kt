@@ -6,4 +6,5 @@ import org.springframework.data.repository.query.Param
 
 interface AuthenticationRespository :JpaRepository<Authentication,Long>{
     fun findById(@Param("userId") userId:Int): Authentication?
+    fun findByUserId(userId: Int): Authentication?
 }

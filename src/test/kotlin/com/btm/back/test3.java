@@ -6,7 +6,11 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.imageaudit.model.v20191230.ScanTextRequest;
 import com.aliyuncs.imageaudit.model.v20191230.ScanTextResponse;
+import com.aliyuncs.ocr.model.v20191230.RecognizeIdentityCardRequest;
+import com.aliyuncs.ocr.model.v20191230.RecognizeIdentityCardResponse;
 import com.aliyuncs.profile.DefaultProfile;
+import com.btm.back.bean.IdCardModel;
+import com.btm.back.helper.JsonHelper;
 import com.btm.back.utils.OSSClientConstants;
 import com.google.gson.Gson;
 
@@ -15,7 +19,7 @@ import java.util.List;
 
 public class test3 {
     public static void main(String[] args) {
-     test();
+        testid();
     }
     private static void test(){
         DefaultProfile profile = DefaultProfile.getProfile("cn-shanghai", OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET);
@@ -61,5 +65,25 @@ public class test3 {
             System.out.println("RequestId:" + e.getRequestId());
         }
 
+    }
+    private static void testid(){
+        DefaultProfile profile = DefaultProfile.getProfile("cn-shanghai", OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET);
+        IAcsClient client = new DefaultAcsClient(profile);
+
+        RecognizeIdentityCardRequest request = new RecognizeIdentityCardRequest();
+        request.setRegionId("cn-shanghai");
+        request.setImageURL("http://explorer-image.oss-cn-shanghai.aliyuncs.com/1032913586529687/IMG_2221.JPG?OSSAccessKeyId=LTAI4Fk9FstqSEYnqKJ5Dpeo&Expires=1596090326&Signature=6e9gqn0TMqcp%2Bb%2BTSvds6q9Qsn8%3D");
+        request.setSide("face");
+
+        try {
+            RecognizeIdentityCardResponse response = client.getAcsResponse(request);
+            System.out.println(new Gson().toJson(response));
+        } catch (ServerException e) {
+            e.printStackTrace();
+        } catch (ClientException e) {
+            System.out.println("ErrCode:" + e.getErrCode());
+            System.out.println("ErrMsg:" + e.getErrMsg());
+            System.out.println("RequestId:" + e.getRequestId());
+        }
     }
 }

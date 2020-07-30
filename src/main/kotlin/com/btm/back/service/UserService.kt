@@ -90,6 +90,6 @@ interface UserService {
     **/
     fun relaseNameAuthen (userId: Int?,cardName:String?,cardNumber:String,uploadFile: ArrayList<MultipartFile>?):BaseResult
 
-    fun uploadIdCard(userId: Int?,uploadType:String,uploadFile:MultipartFile?)
+    fun uploadIdCard(userId: Int?,uploadType:String,uploadFile:MultipartFile?):BaseResult
 
 }

@@ -12,6 +12,7 @@ import com.btm.back.utils.AliYunOssUtil
 import com.btm.back.utils.BaseResult
 import com.btm.back.utils.RonglianConstants
 import com.btm.back.utils.TokenService
+import com.btm.back.vo.AuthenticationVO
 import com.btm.back.vo.FeedBackVO
 import com.btm.back.vo.UserVO
 import org.slf4j.Logger
@@ -487,8 +488,60 @@ class UserServiceImp :UserService{
         }
     }
 
-    override fun uploadIdCard(userId: Int?, uploadType: String, uploadFile: MultipartFile?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun uploadIdCard(userId: Int?, uploadType: String, uploadFile: MultipartFile?):BaseResult {
+        if (uploadFile == null) {return BaseResult.FAIL("身份证照片不能为空")}
+        val u= userId?.let { userrepository.findById(it) } ?: return  BaseResult.FAIL("用户不存在")
+        val url =AliYunOssUtil.uploadToAliyunSH(uploadFile.originalFilename ?: "",uploadFile.inputStream,uploadFile.contentType ?: "jpg","img",userId.toString())
+        val model = AliYunOssUtil.verificationCard(url,uploadType)
+        if (model?.data == null ){
+            return BaseResult.FAIL("身份证识别错误,请重新上传")
+        }else{
+            val authentication = userId.let { authenticationRespository.findByUserId(it) }
+            if (authentication == null ){
+                val authentica = Authentication()
+                    authentica.userId = userId
+                if (model.data.frontResult != null){
+                    authentica.Address = model.data.frontResult.address
+                    authentica.Name = model.data.frontResult.name
+                    authentica.Nation = model.data.frontResult.nationality
+                    authentica.IdNum = model.data.frontResult.iDNumber
+                    authentica.Sex = model.data.frontResult.gender
+                    authentica.Birth = model.data.frontResult.birthDate
+                    authentica.FrontIdCard = url
+                }else{
+                    authentica.Authority = model.data.backResult?.issue
+                    authentica.startDate = model.data.backResult?.startDate
+                    authentica.endDate = model.data.backResult?.endDate
+                    authentica.NationalIdCard = url
+                }
+                authenticationRespository.save(authentica)
+                val vo = CopierUtil.copyProperties(authentica,AuthenticationVO::class.java)
+                vo?.isAuthentication =  !(authentica.NationalIdCard.isNullOrEmpty() ||authentica.FrontIdCard.isNullOrEmpty())
+                return BaseResult.SECUESS(vo)
+            }else{
+                if (model.data.frontResult != null){
+                    authentication.Address = model.data.frontResult.address
+                    authentication.Name = model.data.frontResult.name
+                    authentication.Nation = model.data.frontResult.nationality
+                    authentication.IdNum = model.data.frontResult.iDNumber
+                    authentication.Sex = model.data.frontResult.gender
+                    authentication.Birth = model.data.frontResult.birthDate
+                    authentication.FrontIdCard = url
+                }else{
+                    authentication.Authority = model.data.backResult?.issue
+                    authentication.startDate = model.data.backResult?.startDate
+                    authentication.endDate = model.data.backResult?.endDate
+                    authentication.NationalIdCard = url
+                }
+                u.isAuthentication = !(authentication.NationalIdCard.isNullOrEmpty() ||authentication.FrontIdCard.isNullOrEmpty())
+                userrepository.save(u)
+                authenticationRespository.save(authentication)
+                val vo = CopierUtil.copyProperties(authentication,AuthenticationVO::class.java)
+                vo?.isAuthentication = u.isAuthentication
+                return BaseResult.SECUESS(vo)
+            }
+        }
+
     }
 
 

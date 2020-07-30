@@ -83,4 +83,10 @@ class UserController  {
     @Throws(java.lang.Exception::class)
     private fun getDeveloperInfo() =userServiceImp.getDeveloperInfo()
 
+    @UserLoginToken
+    @RequestMapping(value = ["uploadIdCard"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun uploadIdCard(@RequestParam  userId:Int, @RequestParam uploadType:String, @RequestPart("uploadFile")uploadFile: MultipartFile? )= userServiceImp.uploadIdCard(userId,uploadType,uploadFile)
+
+
 }

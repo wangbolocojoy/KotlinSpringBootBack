@@ -14,10 +14,13 @@ import com.aliyuncs.imageaudit.model.v20191230.ScanImageRequest
 import com.aliyuncs.imageaudit.model.v20191230.ScanImageResponse
 import com.aliyuncs.imageaudit.model.v20191230.ScanTextRequest
 import com.aliyuncs.imageaudit.model.v20191230.ScanTextResponse
+import com.aliyuncs.ocr.model.v20191230.RecognizeIdentityCardRequest
+import com.aliyuncs.ocr.model.v20191230.RecognizeIdentityCardResponse
 import com.aliyuncs.profile.DefaultProfile
 import com.btm.back.bean.CheckImageModel
 import com.btm.back.bean.ContextModel
 import com.btm.back.bean.Element
+import com.btm.back.bean.IdCardModel
 import com.btm.back.dto.UserFiles
 import com.btm.back.helper.CopierUtil
 import com.btm.back.helper.JsonHelper
@@ -31,6 +34,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 import java.util.*
+import javax.print.attribute.standard.Sides
 
 
 object AliYunOssUtil {
@@ -63,14 +67,50 @@ object AliYunOssUtil {
             }else{
                 OSSClientConstants.PICTURE+ createFolder(user)+"/"
             }
-            var fileoder = filepath+pictureName
+            val fileoder = filepath+pictureName
             // 上传文件
             val putResult= ossClient!!.putObject(OSSClientConstants.BACKET_NAME, fileoder, `in`, objectMetadata)
-            logger.info("putResult---  $putResult")
-            logger.info("putResult.eTag---" + putResult.eTag)
 //            //生成过去的url
 //            url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
             url = URL("https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/$fileoder")
+            logger.info("save - success - pictureUrl -> $url")
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            ossClient!!.shutdown()
+            try {
+                `in`?.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return url.toString()
+    }
+
+    fun uploadToAliyunSH(pictureName: String, `in`: InputStream?, suffix: String, type: String, user:String): String {
+        logger.info("------------>文件名称为:  $pictureName.$suffix")
+        ossClient = OSSClient(OSSClientConstants.SHENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
+        var url: URL? = null
+
+        var filepath = "home/picture/"
+        try {
+            val objectMetadata = ObjectMetadata()
+            objectMetadata.contentLength = `in`!!.available().toLong()
+            objectMetadata.cacheControl = "no-cache" //设置Cache-Control请求头，表示用户指定的HTTP请求/回复链的缓存行为:不经过本地缓存
+            objectMetadata.setHeader("Pragma", "no-cache") //设置页面不缓存
+            objectMetadata.contentType = getcontentType(suffix)
+            objectMetadata.contentDisposition = "inline;filename=$pictureName.$suffix"
+            filepath = if(type == "video"){
+                OSSClientConstants.VIDEO+ createFolderSH(user) +"/"
+            }else{
+                OSSClientConstants.PICTURE+ createFolderSH(user)+"/"
+            }
+            val fileoder = filepath+pictureName
+            // 上传文件
+            val putResult= ossClient!!.putObject(OSSClientConstants.SHBACKET_NAME, fileoder, `in`, objectMetadata)
+//            //生成过去的url
+//            url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
+            url = URL("https://swiftktidcardinfo.oss-cn-shanghai.aliyuncs.com/$fileoder")
             logger.info("save - success - pictureUrl -> $url")
         } catch (e: IOException) {
             e.printStackTrace()
@@ -102,12 +142,11 @@ object AliYunOssUtil {
                    filepath = if (multipartFile.contentType == "video") {
                        OSSClientConstants.VIDEO + createFolder(userid) + "/"
                    } else {
-                       OSSClientConstants.PICTURE + createFolder(userid) + "/"
+                       OSSClientConstants.POSTPICTURE + createFolder(userid) + "/"
                    }
                    var fileoder = filepath + multipartFile.originalFilename
                    // 上传文件
                    val putResult = ossClient!!.putObject(OSSClientConstants.BACKET_NAME, fileoder, multipartFile.inputStream, objectMetadata)
-                   logger.info("putResult.eTag --->     " + putResult.eTag)
 //            //生成过去的url
 //            url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
                    url = URL("https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/$fileoder")
@@ -197,6 +236,23 @@ object AliYunOssUtil {
         }
         return keySuffixWithSlash
     }
+    fun  createFolderSH( folder:String):String{
+        //文件夹名
+        val  keySuffixWithSlash =folder
+        ossClient =OSSClient(OSSClientConstants.SHENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
+
+        //判断文件夹是否存在，不存在则创建
+        if(!ossClient!!.doesObjectExist(OSSClientConstants.SHBACKET_NAME, keySuffixWithSlash)){
+            //创建文件夹
+            ossClient!!.putObject(OSSClientConstants.SHBACKET_NAME, keySuffixWithSlash,  ByteArrayInputStream( byteArrayOf(0)))
+            logger.info("创建文件夹成功")
+            //得到文件夹名
+            val objecta = ossClient!!.getObject(OSSClientConstants.SHBACKET_NAME, keySuffixWithSlash)
+            val fileDir=objecta.getKey()
+            return fileDir
+        }
+        return keySuffixWithSlash
+    }
 
     /**
      * 根据key删除OSS服务器上的文件
@@ -211,6 +267,21 @@ object AliYunOssUtil {
         logger.info("删除-->  " + OSSClientConstants.PICTURE+"/"+id+"/"+ key+ "  <---成功")
         ossClient!!.shutdown()
     }
+    fun  deleteFileSH(key:String ,id:String){
+        ossClient =OSSClient(OSSClientConstants.SHENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
+        ossClient!!.deleteObject(OSSClientConstants.SHBACKET_NAME, OSSClientConstants.PICTURE+id+"/" + key)
+        logger.info("删除-->  " + OSSClientConstants.PICTURE+"/"+id+"/"+ key+ "  <---成功")
+        ossClient!!.shutdown()
+    }
+
+    /**
+    * @Description: 批量删除文件
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-07-30
+    * @Time: 11:22
+    **/
     fun deleteFiles(id:String,list:List<UserFiles>?){
         ossClient =OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
         list?.forEach {
@@ -275,6 +346,15 @@ object AliYunOssUtil {
             "text/plain"
         }
     }
+
+    /**
+    * @Description: 图片内容检测
+    * @Param: 参数
+    * @return: 返回数据 是否违规
+    * @Author: hero
+    * @Date: 2020-07-30
+    * @Time: 11:21
+    **/
     @Throws(Exception::class)
     fun checkScanImage(url:String) :Boolean{
         println("--------  内容审核 --------------")
@@ -333,6 +413,15 @@ object AliYunOssUtil {
 //        printResponse(req.sysActionName, resp.requestId, resp)
 
     }
+
+    /**
+    * @Description: 文本内容违规检测
+    * @Param: 参数
+    * @return: 返回数据 是否违规
+    * @Author: hero
+    * @Date: 2020-07-30
+    * @Time: 11:20
+    **/
     @Throws(Exception::class)
     fun checkContext(context:String):Boolean{
         val request = ScanTextRequest()
@@ -381,11 +470,73 @@ object AliYunOssUtil {
 
     }
 
+    /**
+    * @Description: 识别身份证号码
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-07-30
+    * @Time: 11:49
+    **/
+    @Throws(Exception::class)
+    fun verificationCard(url:String,side: String): IdCardModel? {
+
+
+        val request =  RecognizeIdentityCardRequest()
+        request.imageURL= url
+        request.side=side
+        if (side == "face"){
+            logger.info("开始识别身份证人物面")
+        }else{
+            logger.info("开始识别身份证国徽面")
+        }
+        val response: RecognizeIdentityCardResponse = getAcsResponse(request)
+        logger.info("识别结果response:$response")
+        val json = GsonUtil.gsonToBean(JSON.toJSONString(response),IdCardModel::class.java)
+        logger.info("识别结果json:$json")
+        return json
+    }
 
 
 
+    /**
+    * @Description: 调用阿里云内容安全sdk进行内容检测
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-07-30
+    * @Time: 11:22
+    **/
     @Throws(Exception::class)
     private fun <R : RpcAcsRequest<T>?, T : AcsResponse?> getAcsResponse(req: R): T {
+        val profile = DefaultProfile.getProfile(
+                "cn-shanghai",  //默认
+                OSSClientConstants.ACCESS_KEY_ID,  //您的AccessKeyID
+                OSSClientConstants.ACCESS_KEY_SECRET) //您的AccessKeySecret
+        client = DefaultAcsClient(profile)
+        return try {
+            client?.getAcsResponse(req)!!
+        } catch (e: ServerException) { // 服务端异常
+            logger.error(String.format("ServerException: errCode=%s, errMsg=%s", e.errCode, e.errMsg))
+            throw e
+        } catch (e: ClientException) { // 客户端错误
+            logger.error(String.format("ClientException: errCode=%s, errMsg=%s", e.errCode, e.errMsg))
+            throw e
+        } catch (e: java.lang.Exception) {
+            logger.error("Exception:" + e.message)
+            throw e
+        }
+    }
+    /**
+     * @Description: 调用阿里云内容安全sdk进行内容检测
+     * @Param: 参数
+     * @return: 返回数据
+     * @Author: hero
+     * @Date: 2020-07-30
+     * @Time: 11:22
+     **/
+    @Throws(Exception::class)
+    private fun <R : RpcAcsRequest<T>?, T : AcsResponse?> getAcsResponsesh(req: R): T {
         val profile = DefaultProfile.getProfile(
                 "cn-shanghai",  //默认
                 OSSClientConstants.ACCESS_KEY_ID,  //您的AccessKeyID
@@ -410,24 +561,7 @@ object AliYunOssUtil {
     }
 
 
-//    fun verificationCard(params:String): IDCardOCRResponse? {
-//        var responsebody:IDCardOCRResponse? = null
-//        try{
-//        val cred = Credential(OSSClientConstants.TXAPIID, OSSClientConstants.TXAPIKEY)
-//            val httpProfile = HttpProfile()
-//            httpProfile.endpoint = "ocr.tencentcloudapi.com"
-//            val clientProfile = ClientProfile()
-//            clientProfile.httpProfile = httpProfile
-//            val client = OcrClient(cred, "ap-chengdu", clientProfile)
-//            val req = IDCardOCRRequest.fromJsonString(params, IDCardOCRRequest::class.java)
-//            val resp = client.IDCardOCR(req)
-//            responsebody = resp
-//            logger.info(IDCardOCRResponse.toJsonString(resp))
-//        } catch (e: TencentCloudSDKException) {
-//           logger.error(e.toString())
-//        }
-//        return responsebody
-//    }
+
 
 //    @JvmStatic
 //    fun main(args: Array<String>) {
@@ -438,8 +572,5 @@ object AliYunOssUtil {
 
 }
 
-private fun OSS.putObject(backetName: String, keySuffixWithSlash: String, byteArrayInputStream: ByteArrayInputStream) {
-
-}
 
 
