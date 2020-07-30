@@ -333,6 +333,7 @@ object AliYunOssUtil {
 //        printResponse(req.sysActionName, resp.requestId, resp)
 
     }
+    @Throws(Exception::class)
     fun checkContext(context:String):Boolean{
         val request = ScanTextRequest()
         request.regionId = "cn-shanghai"
@@ -383,7 +384,7 @@ object AliYunOssUtil {
 
 
 
-    @Throws(java.lang.Exception::class)
+    @Throws(Exception::class)
     private fun <R : RpcAcsRequest<T>?, T : AcsResponse?> getAcsResponse(req: R): T {
         val profile = DefaultProfile.getProfile(
                 "cn-shanghai",  //默认

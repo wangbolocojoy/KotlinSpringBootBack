@@ -37,6 +37,13 @@
 <!--            &lt;!&ndash; 请到https://search.maven.org/search?q=tencentcloud-sdk-java查询最新版本 &ndash;&gt;-->
 <!--            <version>3.1.62</version>-->
 <!--        </dependency>-->
+<!--       阿里云文字识别sdk-->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-ocr</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+<!--        IM框架-->
 <!--        <dependency>-->
 <!--            <groupId>org.j-im</groupId>-->
 <!--            <artifactId>jim-server</artifactId>-->
@@ -49,12 +56,14 @@
             <version>2.8.6</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.aliyun/aliyun-java-sdk-core -->
+<!--        阿里云视觉Java核心库-->
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>
             <version>4.5.5</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.aliyun/aliyun-java-sdk-imageaudit -->
+<!--        阿里云内容安全sdk包含图片检测文本内容安全检测-->
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-imageaudit</artifactId>
@@ -62,25 +71,6 @@
         </dependency>
 
 
-        <!--        <dependency>-->
-<!--            <groupId>io.opentracing</groupId>-->
-<!--            <artifactId>opentracing-api</artifactId>-->
-<!--&lt;!&ndash;            <version>0.33.0</version>&ndash;&gt;-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentracing</groupId>-->
-<!--            <artifactId>opentracing-util</artifactId>-->
-<!--&lt;!&ndash;            <version>0.33.0</version>&ndash;&gt;-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.aliyun</groupId>-->
-<!--            <artifactId>aliyun-java-sdk-core</artifactId>-->
-<!--            <version>4.4.8</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.aliyun</groupId>-->
-<!--            <artifactId>aliyun-java-sdk-ocr</artifactId>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-c3p0</artifactId>
