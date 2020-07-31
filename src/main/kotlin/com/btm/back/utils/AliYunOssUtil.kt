@@ -480,8 +480,6 @@ object AliYunOssUtil {
     **/
     @Throws(Exception::class)
     fun verificationCard(url:String,side: String): IdCardModel? {
-
-
         val request =  RecognizeIdentityCardRequest()
         request.imageURL= url
         request.side=side

@@ -17,12 +17,12 @@ class Post  {
     var userId: Int? = null
     var postDetail:String? = null
     var postAddress:String? = null
-    var postPublic:Boolean? = false
-    var postStarts:Int? = 0
+    var postPublic:Boolean? = null
+    var postStarts:Int? = null
     var creatTime:Date? = null
     var latitude:String? = null
     var longitude:String? = null
-    var postMessageNum:Int? = 0
-    var postState:Int? = 0
-    var postReport:Int? = 0
+    var postMessageNum:Int? = null
+    var postState:Int? = null
+    var postReport:Int? = null
 }

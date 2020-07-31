@@ -14,7 +14,8 @@ data class PageBody(var page: Int?,
                     var postState:Int? ,
                     var postReport:Int? ,
                     var postList:List<PostInfoBody>?,
-                    var postId:Int?
+                    var postId:Int?,
+                    var public:Boolean?
                     ) : abstractObjectToString(), Serializable
 data class RestPostBody(var postId: Int?,
                     var userId: Int? = null,

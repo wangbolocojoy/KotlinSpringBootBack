@@ -236,7 +236,7 @@ class PostServiceIml:PostService{
     **/
     override fun getPostByUserId(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
-        val list = postRespository.findByUserIdAndPostPublicAndPostStateOrderByCreatTimeDesc(userId = body.userId ?:0 ,postPublic = true,postState = body.postState ?:1, pageable = pageable)
+        val list = postRespository.findByUserIdAndPostPublicAndPostStateOrderByCreatTimeDesc(userId = body.userId ?:0 ,postPublic = body.public ?: true,postState = body.postState ?:1, pageable = pageable)
         return if (list?.isEmpty() == true){
             BaseResult.SECUESS("该用户暂时未发过帖子")
         }else{

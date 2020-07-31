@@ -55,11 +55,12 @@ class UserFilesServiceImp:UserFilesService{
                 post.userId = userId
                 post.postAddress = postAddress
                 post.postDetail = postDetail
-                post.postPublic = postPublic ?: false
+                post.postPublic = postPublic ?: true
                 post.postStarts =  0
                 post.creatTime = Date()
                 post.latitude = latitude
                 post.longitude = longitude
+                post.postState = 0
                 postRespository.save(post)
                 val user = userRespository.findById(userId )
                 user?.postNum =(user?.postNum?:0)+1

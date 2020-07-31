@@ -1,6 +1,5 @@
 package com.btm.back.utils
 
-import com.btm.back.utils.ErrorCodeEnum
 
 /**
  * @author hero

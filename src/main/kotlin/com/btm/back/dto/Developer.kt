@@ -15,5 +15,6 @@ class Developer{
     var developerWechat_: String? = null
     var developerEmail_: String? = null
     var developerIcon_: String? = null
+    var needCheckPost:Boolean? = null
 
 }

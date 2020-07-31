@@ -66,6 +66,7 @@ public class test3 {
         }
 
     }
+//    MIGJAoGBAKeKTFgkMfQ8VQMhoAaFEqZGG43vjWbcSuI2LkMy2qUOsjilF9UXBo34+7H/PbFusoKKYKSmz7nhCoZBFLnIz590ba1uosV5iUXXl3dvd7Ch1zU7225x6VK62lqOEOXd04oEvs9zr4L7ko3FgzmL5XkasLJi0VNM/F6qGToifV/JAgMBAAE=
     private static void testid(){
         DefaultProfile profile = DefaultProfile.getProfile("cn-shanghai", OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET);
         IAcsClient client = new DefaultAcsClient(profile);

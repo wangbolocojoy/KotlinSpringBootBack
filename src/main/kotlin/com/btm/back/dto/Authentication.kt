@@ -27,6 +27,7 @@ class Authentication{
     var RequestId:String? =null //唯一请求 ID，每次请求都会返回。定位问题时需要提供该次请求的 RequestId。
     var FrontIdCard:String? = null//身份证正面
     var NationalIdCard:String? = null//身份证反面
+    var authentication:Boolean? = null
 
 
 }

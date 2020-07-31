@@ -14,9 +14,9 @@ class AuthenticationVO {
     var endDate:String? =null //证件有效期（国徽面）
     var FrontIdCard:String? = null//身份证正面
     var NationalIdCard:String? = null//身份证反面
-    var isAuthentication :Boolean? = false
+    var authentication :Boolean? = null
     override fun toString(): String {
-        return "AuthenticationVO(id=$id, userId=$userId, Name=$Name, Sex=$Sex, Nation=$Nation, Birth=$Birth, Address=$Address, IdNum=$IdNum, Authority=$Authority, startDate=$startDate, endDate=$endDate, FrontIdCard=$FrontIdCard, NationalIdCard=$NationalIdCard, isAuthentication=$isAuthentication)"
+        return "AuthenticationVO(id=$id, userId=$userId, Name=$Name, Sex=$Sex, Nation=$Nation, Birth=$Birth, Address=$Address, IdNum=$IdNum, Authority=$Authority, startDate=$startDate, endDate=$endDate, FrontIdCard=$FrontIdCard, NationalIdCard=$NationalIdCard, authentication=$authentication)"
     }
 
 

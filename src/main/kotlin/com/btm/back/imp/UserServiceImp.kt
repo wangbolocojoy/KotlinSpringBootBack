@@ -83,9 +83,9 @@ class UserServiceImp :UserService{
                     user.likeStarts = 0
                     user.creatTime = Date()
                     user.userSex = false
-                    user.isItBanned = false
-                    user.isAuthentication = false
-                    user.isAdministrators = false
+                    user.isbanned = false
+                    user.authentication = false
+                    user.administrators = false
                     userrepository.save(user)
                     val s = CopierUtil.copyProperties(user,UserVO::class.java)
                     logger.info("注册成功--- $s ")
@@ -195,7 +195,7 @@ class UserServiceImp :UserService{
         val u= body.phone?.let { userrepository.findByAccount(it) }
         return if(u!=null){
             if(u.phone == body.phone&&u.password==body.password){
-                if (u.isItBanned == true){
+                if (u.isbanned == true){
                     BaseResult.SECUESS("该账号已被封禁")
                 }else{
                     val s = CopierUtil.copyProperties(u,UserVO::class.java)
@@ -234,7 +234,7 @@ class UserServiceImp :UserService{
     override fun getuserinfo(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
         return if (u != null) {
-            val  s= CopierUtil.copyProperties(u,UserVO::class.java)
+            val  s = CopierUtil.copyProperties(u,UserVO::class.java)
             logger.info("获取用户信息成功--- $s ")
             BaseResult.SECUESS(s)
         }else{
@@ -462,7 +462,7 @@ class UserServiceImp :UserService{
 
     override fun getAllUser(body: ReqBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
-        val list = userrepository.findByIsItBannedFalse(isItBanned = false,pageable = pageable)
+        val list = userrepository.findByIsbannedFalse(isbanned = false,pageable = pageable)
         val listvo = ArrayList<UserVO>()
         list?.forEach {
             val vo = CopierUtil.copyProperties(it,UserVO::class.java)
@@ -496,17 +496,19 @@ class UserServiceImp :UserService{
         if (model?.data == null ){
             return BaseResult.FAIL("身份证识别错误,请重新上传")
         }else{
+            logger.info("model--->"+model.toString())
             val authentication = userId.let { authenticationRespository.findByUserId(it) }
             if (authentication == null ){
+
                 val authentica = Authentication()
                     authentica.userId = userId
-                if (model.data.frontResult != null){
-                    authentica.Address = model.data.frontResult.address
-                    authentica.Name = model.data.frontResult.name
-                    authentica.Nation = model.data.frontResult.nationality
-                    authentica.IdNum = model.data.frontResult.iDNumber
-                    authentica.Sex = model.data.frontResult.gender
-                    authentica.Birth = model.data.frontResult.birthDate
+                if (uploadType== "face"){
+                    authentica.Address = model.data.frontResult?.address
+                    authentica.Name = model.data.frontResult?.name
+                    authentica.Nation = model.data.frontResult?.nationality
+                    authentica.IdNum = model.data.frontResult?.iDNumber
+                    authentica.Sex = model.data.frontResult?.gender
+                    authentica.Birth = model.data.frontResult?.birthDate
                     authentica.FrontIdCard = url
                 }else{
                     authentica.Authority = model.data.backResult?.issue
@@ -514,18 +516,21 @@ class UserServiceImp :UserService{
                     authentica.endDate = model.data.backResult?.endDate
                     authentica.NationalIdCard = url
                 }
-                authenticationRespository.save(authentica)
+
                 val vo = CopierUtil.copyProperties(authentica,AuthenticationVO::class.java)
-                vo?.isAuthentication =  !(authentica.NationalIdCard.isNullOrEmpty() ||authentica.FrontIdCard.isNullOrEmpty())
+                logger.info(vo.toString())
+                vo?.authentication =  !(authentica.NationalIdCard.isNullOrEmpty() ||authentica.FrontIdCard.isNullOrEmpty())
+                authentica.authentication =  vo?.authentication
+                authenticationRespository.save(authentica)
                 return BaseResult.SECUESS(vo)
             }else{
-                if (model.data.frontResult != null){
-                    authentication.Address = model.data.frontResult.address
-                    authentication.Name = model.data.frontResult.name
-                    authentication.Nation = model.data.frontResult.nationality
-                    authentication.IdNum = model.data.frontResult.iDNumber
-                    authentication.Sex = model.data.frontResult.gender
-                    authentication.Birth = model.data.frontResult.birthDate
+                if (uploadType== "face"){
+                    authentication.Address = model.data.frontResult?.address
+                    authentication.Name = model.data.frontResult?.name
+                    authentication.Nation = model.data.frontResult?.nationality
+                    authentication.IdNum = model.data.frontResult?.iDNumber
+                    authentication.Sex = model.data.frontResult?.gender
+                    authentication.Birth = model.data.frontResult?.birthDate
                     authentication.FrontIdCard = url
                 }else{
                     authentication.Authority = model.data.backResult?.issue
@@ -533,16 +538,20 @@ class UserServiceImp :UserService{
                     authentication.endDate = model.data.backResult?.endDate
                     authentication.NationalIdCard = url
                 }
-                u.isAuthentication = !(authentication.NationalIdCard.isNullOrEmpty() ||authentication.FrontIdCard.isNullOrEmpty())
+                u.authentication = !(authentication.NationalIdCard.isNullOrEmpty() ||authentication.FrontIdCard.isNullOrEmpty())
                 userrepository.save(u)
+                authentication.authentication = u.authentication
                 authenticationRespository.save(authentication)
                 val vo = CopierUtil.copyProperties(authentication,AuthenticationVO::class.java)
-                vo?.isAuthentication = u.isAuthentication
+                vo?.authentication = u.authentication
+                logger.info(vo.toString())
                 return BaseResult.SECUESS(vo)
             }
         }
 
     }
+
+
 
 
 }

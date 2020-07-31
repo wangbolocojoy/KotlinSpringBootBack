@@ -16,6 +16,7 @@ enum class ErrorCodeEnum
     TOKENISNULL("434", "无token，请重新登录"),
     TOKENJSONERROR("434", "token解析错误"),
     USERISNOTFOUND("434", "用户不存在，请重新登录"),
+    USERISBANDE("454", "该账号已被封禁"),
     NO_SERVICE("404", "网络异常, 服务器熔断"),  // 通用异常
     REQUEST_ERROR("400", "入参异常,请检查入参后再次调用"), PAGE_NUM_IS_NULL("4001", "页码不能为空"), PAGE_SIZE_IS_NULL("4002", "页数不能为空"), ID_IS_NULL("4003", "ID不能为空"), SEARCH_IS_NULL("4004", "搜索条件不能为空"),  // 短信相关
     SEND_MASSAGE_FAIL("30001", "发送短消息失败"), SEND_MASSAGE_OFTEN("30002", "操作发送短消息太频繁,请稍后再试"), MESSAGE_TEMPLATE_UNDEFINED("30003", "短信模板未定义"),  //支付相关

@@ -46,6 +46,9 @@ class AuthenticationInterceptor : HandlerInterceptor {
                     throw KtErrorException(ErrorCodeEnum.TOKENJSONERROR)
                 }
                 val user = userService!!.findUserById(userId) ?: throw  KtErrorException(ErrorCodeEnum.USERISNOTFOUND)
+                if (user.isbanned == true){
+                    throw KtErrorException(ErrorCodeEnum.USERISBANDE)
+                }
                 // 验证 token
                 val jwtVerifier = JWT.require(Algorithm.HMAC256(user.password)).build()
                 try {
