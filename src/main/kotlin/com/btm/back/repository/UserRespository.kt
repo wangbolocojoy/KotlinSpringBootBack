@@ -14,4 +14,6 @@ interface UserRespository : JpaRepository<User, Long> {
     fun findByAccount(@Param("account") account: String): User?
     fun findById(@Param("id") id:Int):User?
     fun findByIsbannedFalse(isbanned:Boolean,pageable: Pageable):List<User>?
+    fun findByIdNotIn(list:List<Int>,pageable: Pageable):List<User>?
+    fun findByIdIn(list:List<Int>,pageable: Pageable):List<User>?
 }

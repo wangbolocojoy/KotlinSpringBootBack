@@ -1,10 +1,7 @@
 package com.btm.back.imp
 
 import com.btm.back.bean.ReqBody
-import com.btm.back.dto.Authentication
-import com.btm.back.dto.Developer
-import com.btm.back.dto.FeedBack
-import com.btm.back.dto.User
+import com.btm.back.dto.*
 import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.*
 import com.btm.back.service.UserService
@@ -39,6 +36,9 @@ import kotlin.random.Random
 class UserServiceImp :UserService{
     @Autowired
     lateinit var userrepository: UserRespository
+
+    @Autowired
+    lateinit var backdinfoplistRespository: BackInfoPlistRespository
 
     @Autowired
     lateinit var developerRespository: DeveloperRespository
@@ -230,11 +230,15 @@ class UserServiceImp :UserService{
      * @Date: 2020-06-26
      * @Time: 01:24
      **/
-//    @Cacheable
     override fun getuserinfo(body: ReqBody): BaseResult {
         val u= body.id?.let { userrepository.findById(it) }
-        return if (u != null) {
-            val  s = CopierUtil.copyProperties(u,UserVO::class.java)
+          return if (u != null) {
+              val folllist = body.id?.let { followRespository.findAllByUserId(it) }
+              val fancelist = body.id?.let { followRespository.findAllByFollowId(it) }
+              u.fances = fancelist?.size ?: 0
+              u.follows = folllist?.size ?: 0
+              userrepository.save(u)
+              val  s = CopierUtil.copyProperties(u,UserVO::class.java)
             logger.info("获取用户信息成功--- $s ")
             BaseResult.SECUESS(s)
         }else{
@@ -415,9 +419,10 @@ class UserServiceImp :UserService{
    **/
 //   @CachePut
     override fun searchfollow(body: ReqBody): BaseResult {
+       val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val user = userrepository.findByPhone(body.phone ?:"")
-        val follow = followRespository.findByFollowId(body.id?:0)
-        val f =follow.any { user?.id == it.followId }
+        val follow = followRespository.findByFollowId(body.id?:0,pageable)
+        val f =follow?.any { user?.id == it.followId }
         user?.isFollow = f
         return if (user!= null){
             val s = CopierUtil.copyProperties(user, UserVO::class.java)
@@ -551,7 +556,62 @@ class UserServiceImp :UserService{
 
     }
 
+    override fun getIdCardInfo(body: ReqBody): BaseResult {
+        val card = body.userId?.let { authenticationRespository.findByUserId(it) } ?: return BaseResult.FAIL("该用户没有实名认证信息")
+        val cardvo = CopierUtil.copyProperties(card,AuthenticationVO::class.java)
+        return BaseResult.SECUESS(cardvo)
+    }
 
+    override fun addBackInfoPlist(body: ReqBody): BaseResult {
+        val back = body.userId?.let { backdinfoplistRespository.findByUserId(it) } ?: return BaseResult.FAIL("用户不存在")
+
+        if (back.any { it.backId == body.backId }){
+            return  BaseResult.FAIL("已经添加到黑名单")
+        }else{
+            val user = userrepository.findById(body.userId?:0)
+            val fool = followRespository.findByUserIdAndFollowId(body.userId?:0,body.backId?:0)
+            if (fool != null){
+                user?.follows = user?.follows?.minus(1)
+            }
+            fool?.let { followRespository.delete(it) }
+            val fance = followRespository.findByUserIdAndFollowId(body.backId?:0,body.userId?:0)
+            if (fance != null){
+                user?.fances = user?.fances?.minus(1)
+
+            }
+            user?.let { userrepository.save(it) }
+            fance?.let { followRespository.delete(it) }
+            val ds = BackInfoPlist()
+            ds.backId = body.backId
+            ds.userId = body.userId
+            backdinfoplistRespository.save(ds)
+            return  BaseResult.SECUESS("添加到黑名单成功")
+        }
+
+    }
+
+    override fun removeBackInfoPlist(body: ReqBody): BaseResult {
+        val back = body.userId?.let { backdinfoplistRespository.findByUserIdAndBackId(it,body.backId?:0) }
+        return if (back == null){
+            BaseResult.FAIL("未加入黑名单")
+        }else{
+            backdinfoplistRespository.delete(back[0])
+            BaseResult.SECUESS("以移除黑名单")
+        }
+    }
+
+    override fun getBackList(body: ReqBody): BaseResult {
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        var back = body.userId?.let { backdinfoplistRespository.findByUserId(it) } ?: return BaseResult.FAIL("用户不存在")
+         val idlist=   back.map {  it.backId ?: 0}
+        var userlist =  userrepository.findByIdIn(list = idlist,pageable = pageable)
+        var volist = ArrayList<UserVO>()
+        userlist?.forEach {
+            val u = CopierUtil.copyProperties(it,UserVO::class.java)
+            u?.let { it1 -> volist.add(it1) }
+        }
+        return BaseResult.SECUESS(volist)
+    }
 
 
 }

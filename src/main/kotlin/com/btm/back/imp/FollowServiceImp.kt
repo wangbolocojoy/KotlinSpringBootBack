@@ -4,6 +4,7 @@ import com.btm.back.bean.ReqBody
 import com.btm.back.dto.Follow
 import com.btm.back.dto.User
 import com.btm.back.helper.CopierUtil
+import com.btm.back.repository.BackInfoPlistRespository
 import com.btm.back.repository.FollowRespository
 import com.btm.back.repository.UserRespository
 import com.btm.back.service.FollowService
@@ -25,8 +26,12 @@ class FollowServiceImp : FollowService {
 
     @Autowired
     lateinit var followRespository: FollowRespository
+
     @Autowired
     lateinit var userRespository: UserRespository
+
+    @Autowired
+    lateinit var backInfoPlistRespository: BackInfoPlistRespository
     private val logger: Logger = LoggerFactory.getLogger(FollowServiceImp::class.java)
 
     /**
@@ -37,7 +42,11 @@ class FollowServiceImp : FollowService {
     * @Date: 2020-06-26
     **/
     override fun getFollowList(body: ReqBody): BaseResult {
-        val follow = body.userId?.let { followRespository.findByUserId(it) }
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        val backlist = body.userId?.let { backInfoPlistRespository.findByUserId(it) }
+        val lis1 = backlist?.map { it.backId ?:0  }?.toMutableList()
+
+        val follow = body.userId?.let { lis1?.let { it1 -> followRespository.findByUserIdAndFollowIdNotIn(it, it1,pageable) } }
         if (follow.isNullOrEmpty()) {
             return BaseResult.FAIL("关注列表为空")
         } else {
@@ -65,14 +74,17 @@ class FollowServiceImp : FollowService {
    * @Date: 2020-06-26
    **/
     override fun getFanceList(body: ReqBody): BaseResult {
-        val fancelist = body.userId?.let { followRespository.findByFollowId(it) }
+       val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+       val backlist = body.userId?.let { backInfoPlistRespository.findByUserId(it) }
+       val lis1 = backlist?.map { it.backId ?:0  }?.toMutableList()
+       val fancelist = body.userId?.let { lis1?.let { it1 -> followRespository.findByFollowIdAndUserIdNotIn(it, it1,pageable) } }
         return if (fancelist.isNullOrEmpty()) {
             BaseResult.FAIL("粉丝列表为空")
         } else {
             val list = ArrayList<FollowVO>()
             fancelist.forEach {
                 val user = userRespository.findById(it.userId ?: 0)
-                val followlist = body.userId?.let { followRespository.findByUserId(body.userId ?: 0) }
+                val followlist = body.userId?.let { followRespository.findByUserId(body.userId ?: 0,pageable) }
                 //该粉丝状态是否关注了用户
                 user?.isFollow = followlist?.any { it1 ->
                     it1.followId == user?.id
@@ -92,10 +104,11 @@ class FollowServiceImp : FollowService {
      * 关注用户
      */
     override fun followUser(body: ReqBody): BaseResult {
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         if (body.followId == null) {
             return BaseResult.FAIL("关注人id不能为空")
         }
-        val follow = body.userId?.let { followRespository.findByUserId(it) }
+        val follow = body.userId?.let { followRespository.findByUserId(it,pageable) }
         val user = userRespository.findById(body.userId?:0)
         val followuser = userRespository.findById(body.followId?:0)
         val f = follow?.any { it.followId == body.followId }
@@ -105,10 +118,10 @@ class FollowServiceImp : FollowService {
             val follow1 = Follow()
             follow1.followId = body.followId
             follow1.userId = body.userId
-            var follows = user?.follows ?:0
+            val follows = user?.follows ?:0
             user?.follows = follows +1
             user?.let { userRespository.save(it) }
-            var fances = followuser?.fances?:0
+            val fances = followuser?.fances?:0
 
             followuser?.fances =  fances +1
             followuser?.let { userRespository.save(it) }
@@ -116,7 +129,6 @@ class FollowServiceImp : FollowService {
             logger.info("关注成功$user")
             BaseResult.SECUESS("关注成功",user)
         }
-
     }
 
     /**
@@ -126,7 +138,8 @@ class FollowServiceImp : FollowService {
         if (body.followId == null) {
             return BaseResult.FAIL("要取消关注人的id不能为空")
         }
-        val follow = body.userId?.let { followRespository.findByUserId(it) }
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
+        val follow = body.userId?.let { followRespository.findByUserId(it,pageable) }
         val f = follow?.singleOrNull { it.followId == body.followId }
         return if (f != null) {
             val user = userRespository.findById(body.userId?:0)
@@ -145,83 +158,37 @@ class FollowServiceImp : FollowService {
         }
     }
 
+    /**
+    * @Description: 获取推荐关注列表
+    * @Param: 参数
+    * @return: 返回数据
+    * @Author: hero
+    * @Date: 2020-08-05
+    * @Time: 10:10
+    **/
     override fun getRecommend(body: ReqBody): BaseResult {
-        val follow = body.userId?.let { followRespository.findByUserId(it) }
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
-        val pages: Page<User> = userRespository.findAll(pageable)
-        var list =  pages.filterNot {
-            it.id == body.userId
+        val follow = body.userId?.let { followRespository.findByUserId(it,pageable) }
+        val back = body.userId?.let { backInfoPlistRespository.findByUserId(it) }
+        val  list1 : MutableList<Int>? = follow?.map { it.followId ?: 0 }?.toMutableList()
+        val list2 : MutableList<Int>? = back?.map { it.backId ?: 0}?.toMutableList()
+        list2?.let { list1?.addAll(it) }
+        list1?.add(body.userId ?:0)
+        val list = list1?.toList().let { it?.let { it1 -> userRespository.findByIdNotIn(it1,pageable) } } ?: userRespository.findAll(pageable)
+        val volist = ArrayList<UserVO>()
+        list.forEach {
+            val u = CopierUtil.copyProperties(it,UserVO::class.java)
+            u?.let { it1 -> volist.add(it1) }
         }
-        val u =ArrayList<FollowVO>()
-        if (follow.isNullOrEmpty()){
-            list.map { it.isFollow = false
-                val s = CopierUtil.copyProperties(it, FollowVO::class.java)
-                s?.let { it1 -> u.add(it1) }
-            }
-            logger.info("获取关注列表$u")
-            return BaseResult.SECUESS(u)
-        }else{
-          follow.forEach {
-              list = list.filterNot { it1->
-                  it1.id == it.followId
-              }
-          }
-            list.map {
-
-                val s = CopierUtil.copyProperties(it, FollowVO::class.java)
-                s?.let { it1 -> u.add(it1) }
-
-            }
-            logger.info("获取关注列表$u")
-            return BaseResult.SECUESS(u)
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        val iterator: MutableIterator<User> = pages.iterator()
-//        val users=ArrayList<FollowVO>()
-//        if (follow.isNullOrEmpty()){
-//            iterator.forEach {
-//                if (body.userid != it.id){
-//                    val s = CopierUtil.copyProperties(it, FollowVO::class.java)
-//                    s?.let { it2 -> users.add(it2) }
-//                }
-//
-//            }
-//            return BaseResult.SECUESS(users)
-//        }else{
-//            follow.forEach { iterator.forEach { it1 ->
-//                if (it.userid != it1.id){
-//                    val s = CopierUtil.copyProperties(it1, FollowVO::class.java)
-//                    s?.let { it2 -> users.add(it2) }
-//                }
-//            }
-//            }
-//            if (users.isNullOrEmpty()){
-//                return  BaseResult.FAIL("推荐列表为空")
-//            }else{
-//                return  BaseResult.SECUESS(users)
-//            }
-//        }
-
+        return BaseResult.SECUESS(volist)
     }
 
     override fun getuserfancesandfollows(body: ReqBody): BaseResult {
         val user = userRespository.findById(body.userId ?: 0)
+        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         return if (user != null) {
-            user.fances = followRespository.findByFollowId(body.userId ?:0).size
-            user.follows = followRespository.findByUserId(body.userId ?: 0).size
+            user.fances = followRespository.findByFollowId(body.userId ?:0,pageable)?.size ?:0
+            user.follows = followRespository.findByUserId(body.userId ?: 0,pageable)?.size ?:0
             userRespository.save(user)
             val s = CopierUtil.copyProperties(user, UserVO::class.java)
             BaseResult.SECUESS(s)

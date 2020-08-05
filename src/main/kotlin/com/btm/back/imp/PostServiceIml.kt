@@ -50,6 +50,9 @@ class PostServiceIml:PostService{
     @Autowired
     lateinit var reportPostRespository: ReportPostRespository
 
+    @Autowired
+    lateinit var backInfoPlistRespository: BackInfoPlistRespository
+
 
     private val logger: Logger = LoggerFactory.getLogger(PostServiceIml::class.java)
 
@@ -287,7 +290,14 @@ class PostServiceIml:PostService{
     **/
     override fun getPosts(body: PageBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
-        val list = postRespository.findByPostPublicAndPostStateOrderByCreatTimeDesc(postPublic = true,postState = body.postState ?:1, pageable = pageable)
+        val backlist = body.userId?.let { backInfoPlistRespository.findByUserId(it) }
+        val listid = backlist?.map { it.backId ?: 0}
+        logger.info("listid---黑名单"+listid)
+       val list = if (listid?.isNotEmpty()!!){
+            postRespository.findByUserIdNotInAndPostPublicAndPostStateOrderByCreatTimeDesc(list = listid,postPublic = true,postState = body.postState ?:1, pageable = pageable)
+        }else{
+            postRespository.findByPostPublicAndPostStateOrderByCreatTimeDesc(postPublic = true,postState = body.postState ?:1, pageable = pageable)
+        }
         return if (list.isNullOrEmpty()){
             BaseResult.SECUESS("暂时没有帖子")
         }else{
@@ -375,7 +385,6 @@ class PostServiceIml:PostService{
         return if (user != null){
             val users = body.postId?.let { postStartRespository.findByPostId(it) }
             val has = users?.any { it.id == body.userId }
-
             BaseResult.FAIL()
 
         }else{

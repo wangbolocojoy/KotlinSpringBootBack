@@ -88,5 +88,26 @@ class UserController  {
     @Throws(java.lang.Exception::class)
     private fun uploadIdCard(@RequestParam  userId:Int, @RequestParam uploadType:String, @RequestPart("uploadFile")uploadFile: MultipartFile? )= userServiceImp.uploadIdCard(userId,uploadType,uploadFile)
 
+    @UserLoginToken
+    @RequestMapping(value = ["getIdCardInfo"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getIdCardInfo(@RequestBody u: ReqBody) =userServiceImp.getIdCardInfo(u)
+
+    @UserLoginToken
+    @RequestMapping(value = ["addBackInfoPlist"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun addBackInfoPlist(@RequestBody u: ReqBody) =userServiceImp.addBackInfoPlist(u)
+
+    @UserLoginToken
+    @RequestMapping(value = ["removeBackInfoPlist"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun removeBackInfoPlist(@RequestBody u: ReqBody) =userServiceImp.removeBackInfoPlist(u)
+
+    @UserLoginToken
+    @RequestMapping(value = ["getBackList"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getBackList(@RequestBody u: ReqBody) =userServiceImp.getBackList(u)
+
+
 
 }

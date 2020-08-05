@@ -9,8 +9,6 @@ import com.aliyuncs.imageaudit.model.v20191230.ScanTextResponse;
 import com.aliyuncs.ocr.model.v20191230.RecognizeIdentityCardRequest;
 import com.aliyuncs.ocr.model.v20191230.RecognizeIdentityCardResponse;
 import com.aliyuncs.profile.DefaultProfile;
-import com.btm.back.bean.IdCardModel;
-import com.btm.back.helper.JsonHelper;
 import com.btm.back.utils.OSSClientConstants;
 import com.google.gson.Gson;
 
@@ -31,11 +29,11 @@ public class test3 {
         List<ScanTextRequest.Tasks> tasksList = new ArrayList<ScanTextRequest.Tasks>();
 
         ScanTextRequest.Tasks tasks1 = new ScanTextRequest.Tasks();
-        tasks1.setContent("傻逼");
+        tasks1.setContent("开个会离开就好");
         tasksList.add(tasks1);
 
         ScanTextRequest.Tasks tasks2 = new ScanTextRequest.Tasks();
-        tasks2.setContent("你妈个逼");
+        tasks2.setContent("苦尽甘来");
         tasksList.add(tasks2);
         request.setTaskss(tasksList);
 

@@ -1,6 +1,7 @@
 package com.btm.back.repository
 
 import com.btm.back.dto.Post
+import com.btm.back.dto.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -13,7 +14,7 @@ interface PostRespository: JpaRepository<Post,Long>, JpaSpecificationExecutor<Po
     fun findByPostPublicOrderByCreatTimeDesc(postPublic:Boolean,pageable: Pageable):List<Post>?
     fun findByPostPublicAndPostStateOrderByCreatTimeDesc(postPublic:Boolean,postState:Int,pageable: Pageable):List<Post>?
     fun findByPostReportGreaterThanOrderByCreatTimeDesc(postReport:Int,pageable: Pageable):List<Post>?
-
+    fun findByUserIdNotInAndPostPublicAndPostStateOrderByCreatTimeDesc(list:List<Int>,postPublic:Boolean,postState:Int,pageable: Pageable):List<Post>?
     fun findByUserIdAndPostPublicAndPostStateOrderByCreatTimeDesc(userId:Int,postPublic:Boolean,postState:Int,pageable: Pageable):List<Post>?
     fun findByPostPublicFalseOrderByCreatTimeDesc(postPublic:Boolean,pageable: Pageable):List<Post>?
     fun deleteById(id:Int)
