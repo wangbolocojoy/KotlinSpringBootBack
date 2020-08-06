@@ -78,7 +78,7 @@ class UserController  {
     @Throws(java.lang.Exception::class)
     private fun getFeedBack(@RequestBody u: ReqBody) =userServiceImp.getFeedBack(u)
 
-    @UserLoginToken
+    @PassToken
     @RequestMapping(value = ["getDeveloperInfo"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     private fun getDeveloperInfo() =userServiceImp.getDeveloperInfo()
