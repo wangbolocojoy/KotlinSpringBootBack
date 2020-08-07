@@ -60,7 +60,7 @@ class UserFilesServiceImp:UserFilesService{
                 post.creatTime = Date()
                 post.latitude = latitude
                 post.longitude = longitude
-                post.postState = 0
+                post.postState = 1
                 postRespository.save(post)
                 val user = userRespository.findById(userId )
                 user?.postNum =(user?.postNum?:0)+1
