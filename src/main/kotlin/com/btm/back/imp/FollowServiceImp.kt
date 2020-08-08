@@ -46,7 +46,13 @@ class FollowServiceImp : FollowService {
         val backlist = body.userId?.let { backInfoPlistRespository.findByUserId(it) }
         val lis1 = backlist?.map { it.backId ?:0  }?.toMutableList()
 
-        val follow = body.userId?.let { lis1?.let { it1 -> followRespository.findByUserIdAndFollowIdNotIn(it, it1,pageable) } }
+        val follow = if (lis1.isNullOrEmpty()){
+            body.userId?.let { followRespository.findByUserId(it,pageable) }
+        }else{
+            body.userId?.let { lis1.let { it1 -> followRespository.findByUserIdAndFollowIdNotIn(it, it1,pageable)} }
+        }
+
+
         if (follow.isNullOrEmpty()) {
             return BaseResult.FAIL("关注列表为空")
         } else {
@@ -77,7 +83,11 @@ class FollowServiceImp : FollowService {
        val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
        val backlist = body.userId?.let { backInfoPlistRespository.findByUserId(it) }
        val lis1 = backlist?.map { it.backId ?:0  }?.toMutableList()
-       val fancelist = body.userId?.let { lis1?.let { it1 -> followRespository.findByFollowIdAndUserIdNotIn(it, it1,pageable) } }
+       val fancelist = if (lis1.isNullOrEmpty()){
+           body.userId?.let { followRespository.findByFollowId(it,pageable) }
+       }else{
+           body.userId?.let { lis1.let { it1 -> followRespository.findByFollowIdAndUserIdNotIn(it,it1,pageable) }}
+       }
         return if (fancelist.isNullOrEmpty()) {
             BaseResult.FAIL("粉丝列表为空")
         } else {

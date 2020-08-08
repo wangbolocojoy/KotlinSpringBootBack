@@ -307,7 +307,7 @@ class PostServiceIml:PostService{
             list.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
-                val msgList = postMessageRespository.findByPostId(body.postId ?:0)
+                val msgList = postMessageRespository.findByPostId(it.id ?:0)
                 val user =  userRespository.findById(it.userId ?: 0)
                 var postAuth : PostAuthorVo? = null
                 if (user!= null ){

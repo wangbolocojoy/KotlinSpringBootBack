@@ -92,7 +92,8 @@ class PostMessageServiceImp : PostMessageService {
         } else {
             if (AliYunOssUtil.checkContext(body.postMessage?:"")){
                 val post = postRespository.findById(body.postId ?: 0) ?: return BaseResult.FAIL()
-                post.postMessageNum = post.postMessageNum?.plus(1)
+                val num = post.id?.let { postMessageRespository.findByPostId(it) }
+                post.postMessageNum = num?.size?.plus(1)
                 postRespository.save(post)
 
                 val msg = PostMessage()
@@ -126,7 +127,8 @@ class PostMessageServiceImp : PostMessageService {
             val msg = postMessageRespository.findById(body.id ?: 0)
             if (msg != null && msg.userId == body.userId) {
                 val post = postRespository.findById(body.postId ?: 0)
-                post?.postMessageNum = post?.postMessageNum?.minus(1)
+                val num = post?.id?.let { postMessageRespository.findByPostId(it) }
+                post?.postMessageNum = num?.size?.minus(1)
                 post?.let { postRespository.save(it) }
                 val user = userRespository.findById(body.userId ?: 0)
                 postMessageRespository.delete(msg)

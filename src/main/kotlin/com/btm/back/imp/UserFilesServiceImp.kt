@@ -61,8 +61,10 @@ class UserFilesServiceImp:UserFilesService{
                 post.latitude = latitude
                 post.longitude = longitude
                 post.postState = 1
+                post.postMessageNum = 0
+                post.postReport = 0
                 postRespository.save(post)
-                val user = userRespository.findById(userId )
+                val user = userRespository.findById(userId)
                 user?.postNum =(user?.postNum?:0)+1
                 user?.let { userRespository.save(it) }
                 logger.info("post---  ",post.id)
