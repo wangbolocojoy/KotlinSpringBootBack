@@ -86,9 +86,12 @@ class UserServiceImp :UserService{
                     user.isbanned = false
                     user.authentication = false
                     user.administrators = false
+                    user.easyInfo = "我还没想好写什么"
+                    user.nickName = "我是萌新"
+                    user.icon = "https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/home/picture/1/2020-07-31-00:19:34-0.png"
                     userrepository.save(user)
                     val s = CopierUtil.copyProperties(user,UserVO::class.java)
-                    logger.info("注册成功--- $s ")
+                    logger.info("注册成功---  "+s.toString())
                     BaseResult.SECUESS(s)
                 }else{
                     BaseResult.FAIL("验证码错误")
@@ -112,9 +115,10 @@ class UserServiceImp :UserService{
                 val data = arrayOf(code,"5")
                 val result: HashMap<String, Any> = RonglianConstants.instance.sendTemplateSMS(phone,RonglianConstants.tempId,data)
                 if ("000000" == result["statusCode"]) { //正常返回输出data包体信息（map）
+
                     BaseResult.SECUESS()
                 } else { //异常返回输出错误码和错误信息
-                    println("错误码=" + result["statusCode"] + " 错误信息= " + result["statusMsg"])
+                    logger.error("错误码=" + result["statusCode"] + " 错误信息= " + result["statusMsg"])
                     BaseResult.FAIL(result["statusMsg"])
                 }
 
@@ -124,14 +128,14 @@ class UserServiceImp :UserService{
                 val code = Random.nextInt(100000,999999).toString()
                 logger.info("验证码$code")
                 val no = body.phone?.let { redisTemplate.opsForValue().set(it,code, Duration.ofMinutes(5)) }
-                System.out.print("redis储存是否成功"+no)
+               logger.info("redis储存验证码是否成功"+no)
                 val phone = body.phone
                 val data = arrayOf(code,"5")
                 val result: HashMap<String, Any> = RonglianConstants.instance.sendTemplateSMS(phone,RonglianConstants.tempId,data)
                 if ("000000" == result["statusCode"]) { //正常返回输出data包体信息（map）
                     BaseResult.SECUESS()
                 } else { //异常返回输出错误码和错误信息
-                    println("错误码=" + result["statusCode"] + " 错误信息= " + result["statusMsg"])
+                    logger.error("错误码=" + result["statusCode"] + " 错误信息= " + result["statusMsg"])
                     BaseResult.FAIL(result["statusMsg"])
                 }
             }else{
@@ -174,6 +178,7 @@ class UserServiceImp :UserService{
                 user.token = TokenService.getToken(user)
                 userrepository.save(user)
                 val s = CopierUtil.copyProperties(user,UserVO::class.java)
+                logger.info("更新密码成功")
                 BaseResult.SECUESS(s)
             }else {
                 BaseResult.FAIL("验证码错误")
@@ -199,7 +204,7 @@ class UserServiceImp :UserService{
                     BaseResult.SECUESS("该账号已被封禁")
                 }else{
                     val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                    logger.info("登录成功--- $s ")
+                    logger.info("登录成功---  "+s.toString())
                     BaseResult.SECUESS(s)
                 }
 
@@ -239,7 +244,7 @@ class UserServiceImp :UserService{
               u.follows = folllist?.size ?: 0
               userrepository.save(u)
               val  s = CopierUtil.copyProperties(u,UserVO::class.java)
-            logger.info("获取用户信息成功--- $s ")
+            logger.info("获取用户信息成功--- "+s.toString())
             BaseResult.SECUESS(s)
         }else{
             BaseResult.FAIL("该用户不存在")
@@ -291,7 +296,6 @@ class UserServiceImp :UserService{
                     u.easyInfo = body.easyInfo
                     userrepository.save(u)
                     val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                    logger.info("更新用户信息成功$s")
                     BaseResult.SECUESS(s)
                 }else{
                     BaseResult.FAIL("内容违规,请重新组织语言")
@@ -302,63 +306,54 @@ class UserServiceImp :UserService{
                 u.address = body.address
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return  BaseResult.SECUESS(s)
             }
             if (null !=body.fances){
                 u.fances = body.fances
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return  BaseResult.SECUESS(s)
             }
             if (null !=body.likeStarts){
                 u.likeStarts = body.likeStarts
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return  BaseResult.SECUESS(s)
             }
             if (null != body.postNum){
                 u.postNum = body.postNum
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return  BaseResult.SECUESS(s)
             }
             if (null != body.userSex){
                 u.userSex = body.userSex
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return  BaseResult.SECUESS(s)
             }
             if (null != body.birthDay){
                 u.birthDay = body.birthDay
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return  BaseResult.SECUESS(s)
             }
             if (null != body.constellation){
                 u.constellation = body.constellation
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return  BaseResult.SECUESS(s)
             }
             if (null != body.province){
                 u.province = body.province
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return   BaseResult.SECUESS(s)
             }
             if (null != body.city){
                 u.city = body.city
                 userrepository.save(u)
                 val s = CopierUtil.copyProperties(u,UserVO::class.java)
-                logger.info("更新用户信息成功$s")
                 return   BaseResult.SECUESS(s)
             }
             userrepository.save(u)
@@ -426,7 +421,7 @@ class UserServiceImp :UserService{
         user?.isFollow = f
         return if (user!= null){
             val s = CopierUtil.copyProperties(user, UserVO::class.java)
-            logger.info("查找用户成功$s")
+            logger.info("查找用户成功----"+s.toString())
             BaseResult.SECUESS(s)
         }else{
             BaseResult.FAIL("用户不存在")
@@ -447,6 +442,7 @@ class UserServiceImp :UserService{
             feedBack.userId = body.userId
             feedBack.userMsg = body.feedMsg
             feedBackRespository.save(feedBack)
+            logger.info("储存反馈信息成功")
             BaseResult.SECUESS()
         }
     }
@@ -462,6 +458,7 @@ class UserServiceImp :UserService{
             vo?.userIcon = user?.icon
             vo?.let { it1 -> list.add(it1) }
         }
+        logger.info("获取反馈列表"+list.size+"条")
         return  BaseResult.SECUESS(list)
     }
 
@@ -473,6 +470,7 @@ class UserServiceImp :UserService{
             val vo = CopierUtil.copyProperties(it,UserVO::class.java)
             vo?.let { it1 -> listvo.add(it1) }
         }
+        logger.info("分页获取全部用户"+listvo.size+"条")
         return BaseResult.SECUESS(listvo)
     }
 
@@ -527,6 +525,7 @@ class UserServiceImp :UserService{
                 vo?.authentication =  !(authentica.NationalIdCard.isNullOrEmpty() ||authentica.FrontIdCard.isNullOrEmpty())
                 authentica.authentication =  vo?.authentication
                 authenticationRespository.save(authentica)
+                logger.info("保存用户身份信息"+vo.toString())
                 return BaseResult.SECUESS(vo)
             }else{
                 if (uploadType== "face"){
@@ -549,7 +548,7 @@ class UserServiceImp :UserService{
                 authenticationRespository.save(authentication)
                 val vo = CopierUtil.copyProperties(authentication,AuthenticationVO::class.java)
                 vo?.authentication = u.authentication
-                logger.info(vo.toString())
+                logger.info("保存用户身份信息"+vo.toString())
                 return BaseResult.SECUESS(vo)
             }
         }
@@ -559,6 +558,7 @@ class UserServiceImp :UserService{
     override fun getIdCardInfo(body: ReqBody): BaseResult {
         val card = body.userId?.let { authenticationRespository.findByUserId(it) } ?: return BaseResult.FAIL("该用户没有实名认证信息")
         val cardvo = CopierUtil.copyProperties(card,AuthenticationVO::class.java)
+        logger.info("获取用户身份信息"+cardvo.toString())
         return BaseResult.SECUESS(cardvo)
     }
 
@@ -585,6 +585,7 @@ class UserServiceImp :UserService{
             ds.backId = body.backId
             ds.userId = body.userId
             backdinfoplistRespository.save(ds)
+
             return  BaseResult.SECUESS("添加到黑名单成功")
         }
 
@@ -602,14 +603,15 @@ class UserServiceImp :UserService{
 
     override fun getBackList(body: ReqBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
-        var back = body.userId?.let { backdinfoplistRespository.findByUserId(it) } ?: return BaseResult.FAIL("用户不存在")
-         val idlist=   back.map {  it.backId ?: 0}
-        var userlist =  userrepository.findByIdIn(list = idlist,pageable = pageable)
-        var volist = ArrayList<UserVO>()
+        val back = body.userId?.let { backdinfoplistRespository.findByUserId(it) } ?: return BaseResult.FAIL("用户不存在")
+        val idlist=   back.map {  it.backId ?: 0}
+        val userlist =  userrepository.findByIdIn(list = idlist,pageable = pageable)
+        val volist = ArrayList<UserVO>()
         userlist?.forEach {
             val u = CopierUtil.copyProperties(it,UserVO::class.java)
             u?.let { it1 -> volist.add(it1) }
         }
+        logger.info("获取黑名单列表成功"+volist.size+"条")
         return BaseResult.SECUESS(volist)
     }
 

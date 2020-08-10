@@ -79,7 +79,7 @@ class PostMessageServiceImp : PostMessageService {
             }
             vo?.chiledMessage = list1
             vo?.let { it1 -> list.add(it1) }
-            logger.info(vo.toString())
+            logger.info("获取帖子")
         }
         return BaseResult.SECUESS(list)
 
@@ -110,6 +110,7 @@ class PostMessageServiceImp : PostMessageService {
                 msg.postMsgId = body.postMsgId
                 msg.replyUserId = body.replyUserId
                 postMessageRespository.save(msg)
+                logger.info("发送评论成功----"+body.postMessage)
                 BaseResult.SECUESS(msg)
             }else{
                 BaseResult.SECUESS("内容违规,请重新组织语言")

@@ -133,7 +133,7 @@ class PostServiceIml:PostService{
                 s?.creatTime = it.creatTime?.toCreatTimeString()
                 s?.let { it1 -> images.add(it1) }
             }
-            logger.info("获取用户帖子成功$images")
+            logger.info("获取用户"+body.userId+"的"+images.size+"条")
             BaseResult.SECUESS(images)
         }
     }
@@ -161,6 +161,7 @@ class PostServiceIml:PostService{
                     postRespository.save(post)
                 }
             }
+            logger.info("更新帖子"+body.postId+"成功")
             return BaseResult.SECUESS("更新成功")
         }else{
             return BaseResult.FAIL("传入要更新的数据")
@@ -190,6 +191,7 @@ class PostServiceIml:PostService{
              reportPostRespository.save(reportPost)
              post?.postReport = post?.postReport?.plus(1)
              post?.let { postRespository.save(it) }
+             logger.info("用户"+body.userId +"举报帖子"+body.postId+"成功")
              return BaseResult.SECUESS("举报成功")
          }
 
@@ -274,7 +276,7 @@ class PostServiceIml:PostService{
                 s?.creatTime = it.creatTime?.toCreatTimeString()
                 s?.let { it1 -> images.add(it1) }
             }
-            logger.info("获取用户帖子成功$images")
+            logger.info("获取用户"+body.userId+"的"+images.size+"条")
             BaseResult.SECUESS(images)
         }
 
@@ -292,7 +294,6 @@ class PostServiceIml:PostService{
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 3)
         val backlist = body.userId?.let { backInfoPlistRespository.findByUserId(it) }
         val listid = backlist?.map { it.backId ?: 0}
-        logger.info("listid---黑名单"+listid)
        val list = if (listid?.isNotEmpty()!!){
             postRespository.findByUserIdNotInAndPostPublicAndPostStateOrderByCreatTimeDesc(list = listid,postPublic = true,postState = body.postState ?:1, pageable = pageable)
         }else{
@@ -330,7 +331,7 @@ class PostServiceIml:PostService{
                 s?.creatTime = it.creatTime?.toCreatTimeString()
                 s?.let { it1 -> images.add(it1) }
             }
-            logger.info("获取帖子成功$images")
+            logger.info("获取帖子成功"+images.size+"条")
             BaseResult.SECUESS(images)
         }
     }

@@ -2,7 +2,6 @@ package com.btm.back.imp
 
 import com.btm.back.bean.ReqBody
 import com.btm.back.dto.Follow
-import com.btm.back.dto.User
 import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.BackInfoPlistRespository
 import com.btm.back.repository.FollowRespository
@@ -14,7 +13,6 @@ import com.btm.back.vo.UserVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -178,7 +176,7 @@ class FollowServiceImp : FollowService {
     **/
     override fun getRecommend(body: ReqBody): BaseResult {
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
-        val follow = body.userId?.let { followRespository.findByUserId(it,pageable) }
+        val follow = body.userId?.let { followRespository.findAllByUserId(it) }
         val back = body.userId?.let { backInfoPlistRespository.findByUserId(it) }
         val  list1 : MutableList<Int>? = follow?.map { it.followId ?: 0 }?.toMutableList()
         val list2 : MutableList<Int>? = back?.map { it.backId ?: 0}?.toMutableList()
