@@ -54,6 +54,11 @@ class PostController {
     @Throws(java.lang.Exception::class)
     fun getExamineList(@RequestBody body: PageBody) = postServiceIml.getExamineList(body)
 
+    @PassToken
+    @RequestMapping(value = ["gettoken"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    fun gettoken() = postServiceIml.gettoken()
+
 
     @PassToken
     @RequestMapping(value = ["getPosts"], method = [RequestMethod.POST])

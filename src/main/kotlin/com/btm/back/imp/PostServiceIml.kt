@@ -1,5 +1,12 @@
 package com.btm.back.imp
 
+import com.aliyuncs.AcsResponse
+import com.aliyuncs.DefaultAcsClient
+import com.aliyuncs.auth.sts.AssumeRoleRequest
+import com.aliyuncs.exceptions.ClientException
+import com.aliyuncs.http.MethodType
+import com.aliyuncs.profile.DefaultProfile
+import com.aliyuncs.profile.IClientProfile
 import com.btm.back.bean.PageBody
 import com.btm.back.bean.PostBody
 import com.btm.back.bean.RestPostBody
@@ -9,8 +16,7 @@ import com.btm.back.helper.CopierUtil
 import com.btm.back.helper.toCreatTimeString
 import com.btm.back.repository.*
 import com.btm.back.service.PostService
-import com.btm.back.utils.AliYunOssUtil
-import com.btm.back.utils.BaseResult
+import com.btm.back.utils.*
 import com.btm.back.vo.PostAuthorVo
 import com.btm.back.vo.PostVO
 import com.btm.back.vo.UserFilesVO
@@ -24,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 @Transactional
 @Service
@@ -228,6 +235,35 @@ class PostServiceIml:PostService{
     **/
     override fun getExamineList(body: PageBody): BaseResult {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun gettoken(): BaseResult {
+        val endpoint = OSSClientConstants.STSSH
+        val AccessKeyId = OSSClientConstants.ACCESS_KEY_IDSTS
+        val accessKeySecret = OSSClientConstants.ACCESS_KEY_SECRETSTS
+        val roleArn = "acs:ram::1032913586529687:role/appserver"
+        val roleSessionName = "appserver"
+        try { // 添加endpoint（直接使用STS endpoint，前两个参数留空，无需添加region ID）
+            DefaultProfile.addEndpoint("", "", "Sts", endpoint)
+            // 构造default profile（参数留空，无需添加region ID）
+            val profile: IClientProfile = DefaultProfile.getProfile("", AccessKeyId, accessKeySecret)
+            // 用profile构造client
+            val client = DefaultAcsClient(profile)
+            val request = AssumeRoleRequest()
+            request.method = MethodType.POST
+            request.roleArn = roleArn
+            request.roleSessionName = roleSessionName
+            request.durationSeconds = 1000L // 设置凭证有效时间
+            val response = client.getAcsResponse(request)
+
+            return BaseResult.SECUESS(response)
+        } catch (e: ClientException) {
+            println("Failed：")
+            println("Error code: " + e.errCode)
+            println("Error message: " + e.errMsg)
+            println("RequestId: " + e.requestId)
+        }
+        return BaseResult.FAIL()
     }
 
 

@@ -1,9 +1,11 @@
 package com.btm.back.service
 
+import com.aliyuncs.AcsResponse
 import com.btm.back.bean.PageBody
 import com.btm.back.bean.PostBody
 import com.btm.back.bean.RestPostBody
 import com.btm.back.utils.BaseResult
+import com.btm.back.utils.StsResult
 
 interface PostService {
     fun sendPost(body: PostBody): BaseResult
@@ -17,4 +19,5 @@ interface PostService {
     fun reportPostByPostId(body: RestPostBody):BaseResult
     fun getReportList(body: PageBody):BaseResult
     fun getExamineList(body: PageBody):BaseResult
+    fun gettoken(): BaseResult
 }

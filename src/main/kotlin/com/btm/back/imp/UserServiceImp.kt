@@ -5,20 +5,14 @@ import com.btm.back.dto.*
 import com.btm.back.helper.CopierUtil
 import com.btm.back.repository.*
 import com.btm.back.service.UserService
-import com.btm.back.utils.AliYunOssUtil
-import com.btm.back.utils.BaseResult
-import com.btm.back.utils.RonglianConstants
-import com.btm.back.utils.TokenService
+import com.btm.back.utils.*
+import com.btm.back.utils.RandomNickName.generateName
 import com.btm.back.vo.AuthenticationVO
 import com.btm.back.vo.FeedBackVO
 import com.btm.back.vo.UserVO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.annotation.CacheConfig
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.CachePut
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -87,11 +81,14 @@ class UserServiceImp :UserService{
                     user.authentication = false
                     user.administrators = false
                     user.easyInfo = "我还没想好写什么"
-                    user.nickName = "我是萌新"
+                    user.nickName = generateName()
+                    user.authentication = true
                     user.icon = "https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/home/picture/1/2020-07-31-00:19:34-0.png"
                     userrepository.save(user)
                     val s = CopierUtil.copyProperties(user,UserVO::class.java)
                     logger.info("注册成功---  "+s.toString())
+                    val path = ""+s?.id + "/"
+                    AliYunOssUtil.createFolder(path)
                     BaseResult.SECUESS(s)
                 }else{
                     BaseResult.FAIL("验证码错误")

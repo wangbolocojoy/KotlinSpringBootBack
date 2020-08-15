@@ -1,8 +1,8 @@
 package com.btm.back.utils
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, property="@class")
-class BaseResult {
+import com.aliyuncs.AcsResponse
+import com.aliyuncs.transform.UnmarshallerContext
+class BaseResult: AcsResponse {
     var status //状态码
             : Int? = null
     var msg //消息
@@ -57,7 +57,9 @@ class BaseResult {
 
     }
 
-
+    override fun getInstance(p0: UnmarshallerContext?): AcsResponse {
+       return BaseResult.SECUESS(p0?.httpResponse)
+    }
 
 
 }
