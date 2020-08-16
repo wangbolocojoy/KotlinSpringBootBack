@@ -12,6 +12,7 @@ import com.btm.back.bean.PostBody
 import com.btm.back.bean.RestPostBody
 import com.btm.back.dto.Post
 import com.btm.back.dto.ReportPost
+import com.btm.back.dto.UserFiles
 import com.btm.back.helper.CopierUtil
 import com.btm.back.helper.toCreatTimeString
 import com.btm.back.repository.*
@@ -81,15 +82,32 @@ class PostServiceIml:PostService{
                 post.postDetail = body.postDetail
                 post.postPublic = body.postPublic ?: true
                 post.postStarts = body.postStart ?: 0
-                post.postState = 0
+                post.longitude = body.longitude
+                post.latitude = body.latitude
+                post.postState = 1
                 val smp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                 post.creatTime = Date()
                 post.postMessageNum = 0
                 postRespository.save(post)
-
                 val user = userRespository.findById(body.userId ?:0)
+                logger.info("发送帖子----")
                 user?.postNum =(user?.postNum?:0)+1
                 user?.let { userRespository.save(it) }
+
+                body.postimagelist?.forEach {
+                  if(it.fileUrl?.let { it1 -> AliYunOssUtil.checkScanImage(it1) } == true){
+                      val file = UserFiles()
+                      file.fileUrl = it.fileUrl
+                      file.userId = it.userId
+                      file.originalFileName = it.originalFileName
+                      file.postId = post.id
+                      file.fileType = file.fileType
+                      userFilesRespository.save(file)
+                  }else{
+                      logger.info("图正不正常")
+                  }
+
+                }
                 val s = CopierUtil.copyProperties(post,PostVO::class.java)
 
                 logger.info("发布帖子成功$s")

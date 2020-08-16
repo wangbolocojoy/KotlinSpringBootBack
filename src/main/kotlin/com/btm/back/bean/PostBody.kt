@@ -13,4 +13,13 @@ data class PostBody(var postTitle: String? ,
                     var msgId:Int?,
                     var page:Int?,
                     var pageSize:Int?,
-                    var postStart:Int?): abstractObjectToString(),Serializable
+                    var postStart:Int?,
+                    var longitude:String?,
+                    var latitude:String?,
+                    var postimagelist:List<PostImageBody>?): abstractObjectToString(),Serializable
+data class PostImageBody( var userId: Int? ,
+                          var postId:Int? ,
+                          var fileType: String? ,
+                          var originalFileName: String? ,
+                          var fileUrl:String?,
+                          var fileLikes:Int? ): abstractObjectToString(),Serializable
