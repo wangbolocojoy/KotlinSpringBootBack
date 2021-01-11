@@ -1,6 +1,5 @@
 package com.btm.back.imp
 
-import com.aliyuncs.AcsResponse
 import com.aliyuncs.DefaultAcsClient
 import com.aliyuncs.auth.sts.AssumeRoleRequest
 import com.aliyuncs.exceptions.ClientException
@@ -101,7 +100,8 @@ class PostServiceIml:PostService{
                       file.userId = it.userId
                       file.originalFileName = it.originalFileName
                       file.postId = post.id
-                      file.fileType = file.fileType
+                      file.fileType = it.fileType
+                      file.fileLikes = 0
                       userFilesRespository.save(file)
                   }else{
                       logger.info("图正不正常")
