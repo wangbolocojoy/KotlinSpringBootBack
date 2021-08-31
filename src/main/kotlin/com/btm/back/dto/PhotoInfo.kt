@@ -11,14 +11,27 @@ class PhotoInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
+
+
+    /**
+     * 照片拍摄日期
+     */
+    var Photoshootingtime: Date? = null
+    /**
+     * 照片分类id
+     */
+    var Photoclassificationid: Int? = null
+
+    /**
+     * 照片分类描述
+     */
+    var Photoclassification: String? = null
+
     /**
      * 照片尺寸
      */
-    var ResolutionUnit: Int? = null
-    /**
-     * 照片尺寸
-     */
-    var ExifOffset:Int? = null
+    var ResolutionUnit: String? = null
+
     /**
      * 相机品牌
      */
@@ -28,51 +41,48 @@ class PhotoInfo {
      */
     var Model:String? = null
     /**
-     * 历史软件Agent
+     * 镜头型号
      */
-    var Software:String? = null
+    var Lensmodel:String? = null
     /**
-     * 拍摄日期
+     * 快门时间
      */
-    var DateTimeOriginal: Date? = null
+    var ExposureTime:String? = null
+
+    /**
+     * 焦距
+     */
+    var  focallength:String? = null
+
+    /**
+     * ios
+     */
+    var ISOSpeedRatings:String? = null
+    /**
+     * 光圈数
+     */
+    var aperture:String? = null
+
     /**
      * 版权
      */
     var Copyright:String? = null
     /**
-     * 创作者
+     * 拍摄者
      */
     var Artist:String? = null
     /**
-     * 照片尺寸
-     */
-    var LensSpecification:String? = null
-    /**
-     * 照片尺寸
-     */
-    var FocalLengthIn35mmFilm:String? = null
-    /**
-     * 照片尺寸
-     */
-    var BodySerialNumber:String? = null
-
-    /**
-     * 照片尺寸
+     * 照片大小
      */
     var Photosize:String? = null
 
     /**
-     * 快门时间
+     * 照片地址
      */
-    var ExposureTime:Double? = null
+    var Photourl:String? = null
 
-    /**
-     * 光圈
-     */
-    var FNumber:Double? = null
 
-    /**
-     * ios
-     */
-    var ISOSpeedRatings:Int? = null
+
+
+
 }

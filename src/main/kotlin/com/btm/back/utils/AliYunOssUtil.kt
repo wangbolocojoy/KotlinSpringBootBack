@@ -180,6 +180,64 @@ object AliYunOssUtil {
        }
         return list
     }
+
+
+
+    fun uploadToAliyunPhtots(id:Int,postid:Int,userFilesRespository:UserFilesRespository,uploadFile: ArrayList<MultipartFile>? , userid:String): ArrayList<UserFilesVO> {
+        ossClient = OSSClient(OSSClientConstants.ENDPOINT, OSSClientConstants.ACCESS_KEY_ID, OSSClientConstants.ACCESS_KEY_SECRET)
+        var url: URL?
+        var filepath :String?
+        var list = ArrayList<UserFilesVO>()
+        uploadFile?.forEachIndexed { index, multipartFile ->
+            if (index <= 9) {
+                try {
+                    val objectMetadata = ObjectMetadata()
+                    objectMetadata.contentLength = multipartFile.inputStream.available().toLong()
+                    objectMetadata.cacheControl = "no-cache" //设置Cache-Control请求头，表示用户指定的HTTP请求/回复链的缓存行为:不经过本地缓存
+                    objectMetadata.setHeader("Pragma", "no-cache") //设置页面不缓存
+                    objectMetadata.contentType = getcontentType(multipartFile.contentType ?:"jpg")
+                    objectMetadata.contentDisposition = "inline;filename="+multipartFile.originalFilename+multipartFile.contentType
+                    filepath = if (multipartFile.contentType == "video") {
+                        OSSClientConstants.VIDEO + createFolder(userid) + "/"
+                    } else {
+                        OSSClientConstants.POSTPICTURE + createFolder(userid) + "/"
+                    }
+                    var fileoder = filepath + multipartFile.originalFilename
+                    // 上传文件
+                    val putResult = ossClient!!.putObject(OSSClientConstants.BACKET_NAME, fileoder, multipartFile.inputStream, objectMetadata)
+//            //生成过去的url
+//            url = ossClient!!.generatePresignedUrl(OSSClientConstants.BACKET_NAME, fileoder, expiration)
+                    url = URL("https://myiosandroidkotlinapplication.oss-cn-chengdu.aliyuncs.com/$fileoder")
+                    logger.info("save - success - pictureUrl -> $url")
+
+                    if (checkScanImage(url = url.toString())){
+                        val file = UserFiles()
+                        file.originalFileName =  multipartFile.originalFilename
+                        file.userId = id
+                        file.postId = postid
+                        file.fileType = multipartFile.contentType
+                        file.fileUrl = url.toString()
+                        file.fileLikes = 0
+                        val fvo = CopierUtil.copyProperties(file,UserFilesVO::class.java)
+                        fvo?.let { list.add(it) }
+                        userFilesRespository.save(file)
+                    }
+
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                } finally {
+                    ossClient!!.shutdown()
+                    try {
+                        multipartFile.inputStream.close()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+
+            }
+        }
+        return list
+    }
     /**
      * 创建存储空间
      * @param ossClient      OSS连接
