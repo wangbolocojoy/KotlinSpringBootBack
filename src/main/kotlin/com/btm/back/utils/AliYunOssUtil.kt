@@ -38,7 +38,7 @@ import javax.print.attribute.standard.Sides
 
 
 object AliYunOssUtil {
-    private var ossClient: OSSClient? = null
+    public var ossClient: OSSClient? = null
     private val logger: Logger = LoggerFactory.getLogger(AliYunOssUtil::class.java)
     private var client: IAcsClient? = null
     /**
