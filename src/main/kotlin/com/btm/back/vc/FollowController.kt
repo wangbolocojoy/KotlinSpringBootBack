@@ -1,7 +1,7 @@
 package com.btm.back.vc
 
 import com.btm.back.bean.ReqBody
-import com.btm.back.imp.FollowServiceImp
+import com.btm.back.imp.FollowServiceImpl
 import com.btm.back.service.FollowService
 import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,11 +15,11 @@ import javax.validation.Valid
  * 关注--粉丝
  */
 @RestController
-@RequestMapping(value = ["/swiftTemplate/Follow"])
+@RequestMapping(value = ["/api/Follow"])
 class FollowController {
 
     @Autowired
-    lateinit var  followServiceImp: FollowServiceImp
+    lateinit var  followServiceImp: FollowServiceImpl
 
 
     @UserLoginToken

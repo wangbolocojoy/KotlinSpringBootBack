@@ -22,13 +22,8 @@ enum class ErrorCodeEnum
     SEND_MASSAGE_FAIL("30001", "发送短消息失败"), SEND_MASSAGE_OFTEN("30002", "操作发送短消息太频繁,请稍后再试"), MESSAGE_TEMPLATE_UNDEFINED("30003", "短信模板未定义"),  //支付相关
     CREATE_PAY_ORDER_FAIL("40001", "创建订单支付失败"), UPDATE_PAY_ORDER_FAIL("40002", "更新支付订单失败"), DEL_PAY_ORDER_FAIL("40003", "更新支付订单失败"), PAY_ORDER_NO_EXISTS("40004", "支付订单不存在"), REFUND_APPLY_NO_EXISTS("40005", "退款申请不存在"), VERIFY_NOT_PASS("40006", "验签"), RES_FAIL("40007", "响应失败"), PAY_CHANNEL_IS_NULL("40008", "支付渠道不能为空"), PAY_CHANNEL_PARAM_ERROR("40009", "支付订单渠道参数错误");
 
-    override fun getCode(): String? {
-        return code
-    }
-
-    override fun getDescription(): String? {
-        return description
-    }
+    override fun getCode(): String = code
+    override fun getDescription(): String = description
 
     companion object {
         /**

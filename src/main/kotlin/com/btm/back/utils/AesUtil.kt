@@ -1,6 +1,5 @@
 package com.btm.back.utils
 
-import javassist.bytecode.ByteArray
 import org.apache.commons.codec.binary.Hex
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom

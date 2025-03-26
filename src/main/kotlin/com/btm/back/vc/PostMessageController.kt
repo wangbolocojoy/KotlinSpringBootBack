@@ -2,7 +2,7 @@ package com.btm.back.vc
 
 import com.btm.back.bean.MessageBody
 import com.btm.back.bean.PageBody
-import com.btm.back.imp.PostMessageServiceImp
+import com.btm.back.imp.PostMessageServiceImpl
 import com.btm.back.utils.PassToken
 import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/swiftTemplate/Message"])
+@RequestMapping(value = ["/api/Message"])
 class PostMessageController {
     @Autowired
-    lateinit  var postMessageServiceImp: PostMessageServiceImp
+    lateinit  var postMessageServiceImp: PostMessageServiceImpl
 
 
     @UserLoginToken

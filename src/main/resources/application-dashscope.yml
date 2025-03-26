@@ -1,0 +1,6 @@
+# 阿里云DashScope API配置
+ai:
+  dashscope:
+    api-key: ${DASHSCOPE_API_KEY:sk-54989dd806884dc6aad5a96f1039ac0d}
+    api-url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+    model: qwq-32b

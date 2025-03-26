@@ -1,7 +1,7 @@
 package com.btm.back.vc
 
 import com.btm.back.bean.PostBody
-import com.btm.back.imp.FavoritesServiceImp
+import com.btm.back.imp.FavoritesServiceImpl
 import com.btm.back.imp.PostStartServiceIml
 import com.btm.back.utils.PassToken
 import com.btm.back.utils.UserLoginToken
@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/swiftTemplate/PostStart/"])
+@RequestMapping(value = ["/api/PostStart/"])
 class PostStartController {
     @Autowired
     lateinit var postStartServiceIml: PostStartServiceIml
 
     @Autowired
-    lateinit var favoritesServiceImp: FavoritesServiceImp
+    lateinit var favoritesServiceImp: FavoritesServiceImpl
     @UserLoginToken
     @RequestMapping(value = ["start"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)

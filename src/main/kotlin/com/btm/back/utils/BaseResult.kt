@@ -11,15 +11,14 @@ class BaseResult: AcsResponse {
             : Any? = null
 
     constructor()
-    constructor(code: Int?, massege: String?) {
+    constructor(code: Int?, message: String?) {
         status = code
-        msg = massege
+        msg = message
     }
 
-
-    constructor(code: Int?, massege: String?, result: Any?) {
+    constructor(code: Int?, message: String?, result: Any?) {
         status = code
-        msg = massege
+        msg = message
         data = result
     }
 
@@ -28,16 +27,16 @@ class BaseResult: AcsResponse {
     }
 
     companion object{
-        fun SECUESS(massege: String?, data: Any?):BaseResult{
+        fun SUCCESS(massege: String?, data: Any?):BaseResult{
             return BaseResult(HttpCode.successcode,massege,data)
         }
-        fun SECUESS( data: Any?):BaseResult{
+        fun SUCCESS( data: Any?):BaseResult{
             return BaseResult(HttpCode.successcode,HttpCode.successmsg,data)
         }
-        fun SECUESS( messager: String):BaseResult{
+        fun SUCCESS( messager: String):BaseResult{
             return BaseResult(HttpCode.successcode,messager,null)
         }
-        fun SECUESS():BaseResult{
+        fun SUCCESS():BaseResult{
             return BaseResult(HttpCode.successcode,HttpCode.successmsg,"操作成功")
         }
 
@@ -58,7 +57,7 @@ class BaseResult: AcsResponse {
     }
 
     override fun getInstance(p0: UnmarshallerContext?): AcsResponse {
-       return BaseResult.SECUESS(p0?.httpResponse)
+       return BaseResult.SUCCESS(p0?.httpResponse)
     }
 
 

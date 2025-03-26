@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.btm.back.mapper.UserMapper">
+    <!-- 结果映射 -->
+    <resultMap id="userResultMap" type="com.btm.back.dto.User">
+        <id property="id" column="id" />
+        <result property="realName" column="real_name" />
+        <result property="phone" column="phone" />
+        <result property="nickName" column="nick_name" />
+        <result property="account" column="account" />
+        <result property="password" column="password" />
+        <result property="userSex" column="user_sex" />
+        <result property="icon" column="icon" />
+        <result property="likeStarts" column="like_starts" />
+        <result property="postNum" column="post_num" />
+        <result property="fances" column="fances" />
+        <result property="follows" column="follows" />
+        <result property="token" column="token" />
+        <result property="easyInfo" column="easy_info" />
+        <result property="address" column="address" />
+        <result property="originalFileName" column="original_file_name" />
+        <result property="isFollow" column="is_follow" />
+        <result property="creatTime" column="creat_time" />
+        <result property="birthDay" column="birth_day" />
+        <result property="constellation" column="constellation" />
+        <result property="userIdentifier" column="user_identifier" />
+        <result property="province" column="province" />
+        <result property="city" column="city" />
+        <result property="isbanned" column="isbanned" />
+        <result property="administrators" column="administrators" />
+        <result property="authentication" column="authentication" />
+    </resultMap>
+    
+    <!-- 根据手机号查找用户 -->
+    <select id="findByPhone" resultMap="userResultMap">
+        SELECT * FROM User WHERE phone = #{phone}
+    </select>
+    
+    <!-- 根据账号查找用户 -->
+    <select id="findByAccount" resultMap="userResultMap">
+        SELECT * FROM User WHERE account = #{account}
+    </select>
+    
+    <!-- 根据ID查找用户 -->
+    <select id="findById" resultMap="userResultMap">
+        SELECT * FROM User WHERE id = #{id}
+    </select>
+    
+    <!-- 查找未被禁用的用户 -->
+    <select id="findByIsbannedFalse" resultMap="userResultMap">
+        SELECT * FROM User WHERE isbanned = #{isbanned} LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <!-- 查找ID不在指定列表中的用户 -->
+    <select id="findByIdNotIn" resultMap="userResultMap">
+        SELECT * FROM User 
+        <where>
+            <if test="list != null and list.size() > 0">
+                id NOT IN 
+                <foreach collection="list" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <!-- 保存用户 -->
+    <insert id="save" parameterType="com.btm.back.dto.User">
+        INSERT INTO User (
+            real_name, phone, nick_name, account, password, user_sex, icon, like_starts, 
+            post_num, fances, follows, token, easy_info, address, original_file_name, 
+            is_follow, creat_time, birth_day, constellation, user_identifier, 
+            province, city, isbanned, administrators, authentication
+        ) VALUES (
+            #{realName}, #{phone}, #{nickName}, #{account}, #{password}, #{userSex}, #{icon}, #{likeStarts}, 
+            #{postNum}, #{fances}, #{follows}, #{token}, #{easyInfo}, #{address}, #{originalFileName}, 
+            #{isFollow}, #{creatTime}, #{birthDay}, #{constellation}, #{userIdentifier}, 
+            #{province}, #{city}, #{isbanned}, #{administrators}, #{authentication}
+        )
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    
+    <!-- 更新用户 -->
+    <update id="update" parameterType="com.btm.back.dto.User">
+        UPDATE User
+        <set>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="account != null">account = #{account},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="userSex != null">user_sex = #{userSex},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="likeStarts != null">like_starts = #{likeStarts},</if>
+            <if test="postNum != null">post_num = #{postNum},</if>
+            <if test="fances != null">fances = #{fances},</if>
+            <if test="follows != null">follows = #{follows},</if>
+            <if test="token != null">token = #{token},</if>
+            <if test="easyInfo != null">easy_info = #{easyInfo},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="originalFileName != null">original_file_name = #{originalFileName},</if>
+            <if test="isFollow != null">is_follow = #{isFollow},</if>
+            <if test="creatTime != null">creat_time = #{creatTime},</if>
+            <if test="birthDay != null">birth_day = #{birthDay},</if>
+            <if test="constellation != null">constellation = #{constellation},</if>
+            <if test="userIdentifier != null">user_identifier = #{userIdentifier},</if>
+            <if test="province != null">province = #{province},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="isbanned != null">isbanned = #{isbanned},</if>
+            <if test="administrators != null">administrators = #{administrators},</if>
+            <if test="authentication != null">authentication = #{authentication}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 删除用户 -->
+    <delete id="deleteById">
+        DELETE FROM User WHERE id = #{id}
+    </delete>
+    
+    <!-- 查找所有用户 -->
+    <select id="findAll" resultMap="userResultMap">
+        SELECT * FROM User
+    </select>
+</mapper>

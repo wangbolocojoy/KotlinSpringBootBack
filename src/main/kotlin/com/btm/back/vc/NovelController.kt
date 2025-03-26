@@ -1,7 +1,7 @@
 package com.btm.back.vc
 
 import com.btm.back.bean.ReqBody
-import com.btm.back.imp.NovelServiceImp
+import com.btm.back.imp.NovelServiceImpl
 import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/myApplication"])
+@RequestMapping(value = ["/api/novel"])
 class NovelController {
 
 
     @Autowired
-    lateinit var novelServiceImp: NovelServiceImp
+    lateinit var novelServiceImp: NovelServiceImpl
     @UserLoginToken
     @RequestMapping(value = ["/cas/getPageNovelList"],method = [RequestMethod.POST])
     @Throws(Exception::class)

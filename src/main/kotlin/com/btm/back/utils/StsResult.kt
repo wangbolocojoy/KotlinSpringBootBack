@@ -41,16 +41,16 @@ class StsResult: AcsResponse {
     }
 
     companion object{
-        fun SECUESS(massege: String?, data: Any?):StsResult{
+        fun SUCCESS(massege: String?, data: Any?):StsResult{
             return StsResult(HttpCode.successcode,massege,data)
         }
-        fun SECUESS( data: Any?):StsResult{
+        fun SUCCESS( data: Any?):StsResult{
             return StsResult(HttpCode.successcode,HttpCode.successmsg,data)
         }
-        fun SECUESS( messager: String):StsResult{
+        fun SUCCESS( messager: String):StsResult{
             return StsResult(HttpCode.successcode,messager,null)
         }
-        fun SECUESS():StsResult{
+        fun SUCCESS():StsResult{
             return StsResult(HttpCode.successcode,HttpCode.successmsg,"操作成功")
         }
 
@@ -71,7 +71,7 @@ class StsResult: AcsResponse {
     }
 
     override fun getInstance(p0: UnmarshallerContext?): AcsResponse {
-        return StsResult.SECUESS(p0?.httpResponse)
+        return StsResult.SUCCESS(p0?.httpResponse)
     }
 
 

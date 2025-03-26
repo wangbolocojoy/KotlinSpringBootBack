@@ -14,6 +14,7 @@ class PostStart  {
     var id: Int? = null
     var userId: Int? = null
     var postId:Int? = null
+    var postStartNum:Int? = null
 
 
 }

@@ -7,13 +7,11 @@ import com.btm.back.imp.PostServiceIml
 import com.btm.back.utils.PassToken
 import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping(value = ["/swiftTemplate/Post"])
+@RequestMapping(value = ["/api/Post"])
 class PostController {
     @Autowired
     lateinit var postServiceIml: PostServiceIml
@@ -21,7 +19,7 @@ class PostController {
     @UserLoginToken
     @RequestMapping(value = ["sendPost"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    fun sendPost(@RequestBody body: PostBody) = postServiceIml.sendPost(body)
+    fun sendPost(@RequestBody body: PostBody,@RequestPart("uploadFiles")uploadFiles: ArrayList<MultipartFile>) = postServiceIml.sendPost(body,uploadFiles)
 
     @UserLoginToken
     @RequestMapping(value = ["getPostsByUserId"], method = [RequestMethod.POST])

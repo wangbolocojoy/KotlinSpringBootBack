@@ -2,7 +2,7 @@ package com.btm.back.vc
 
 import com.btm.back.bean.PageBody
 import com.btm.back.bean.PhotoBody
-import com.btm.back.imp.PhotoInfoServiceImp
+import com.btm.back.imp.PhotoInfoServiceImpl
 import com.btm.back.imp.PostServiceIml
 import com.btm.back.utils.PassToken
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/10kraw/photo"])
+@RequestMapping(value = ["/api/10kraw/photo"])
 class PhotoController {
     @Autowired
-    lateinit var photoInfoServiceIml:PhotoInfoServiceImp
+    lateinit var photoInfoServiceIml: PhotoInfoServiceImpl
 
 
     /**

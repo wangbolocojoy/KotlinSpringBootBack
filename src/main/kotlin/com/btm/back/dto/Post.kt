@@ -19,6 +19,7 @@ class Post  {
     var postAddress:String? = null
     var postPublic:Boolean? = null
     var postStarts:Int? = null
+    var postStartNum:Int? = null
     var creatTime:Date? = null
     var latitude:String? = null
     var longitude:String? = null

@@ -6,9 +6,10 @@ import com.btm.back.bean.PostBody
 import com.btm.back.bean.RestPostBody
 import com.btm.back.utils.BaseResult
 import com.btm.back.utils.StsResult
+import org.springframework.web.multipart.MultipartFile
 
 interface PostService {
-    fun sendPost(body: PostBody): BaseResult
+    fun sendPost(body: PostBody, uploadFile: ArrayList<MultipartFile>): BaseResult
     fun getPostByUserId(body: PageBody): BaseResult
     fun getPosts(body: PageBody): BaseResult
     fun deletePost(body: PageBody):BaseResult

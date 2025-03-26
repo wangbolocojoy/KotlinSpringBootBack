@@ -1,259 +1,37 @@
-# 我的app后台项目
+# Kotlin Spring Boot 后端项目分析
+通过对项目的分析，我发现这是一个使用 Kotlin 和 Spring Boot 开发的后端应用程序，主要功能包括用户管理、内容发布、小说管理和社交互动等。
 
-## Kotlin Spring Boot Project
+## 项目技术栈
+- 编程语言 ：Kotlin 1.4.30-M1
+- 框架 ：Spring Boot 2.2.2.RELEASE
+- 数据库访问 ：Spring Data JPA
+- 数据库 ：MySQL
+- 缓存 ：Redis
+- API文档 ：Swagger 2.9.2
+- 认证 ：JWT (Java Web Token)
+- 云服务 ：阿里云OSS存储、OCR文字识别、内容安全检测
+- 其他工具 ：Fastjson、Gson、HttpClient等
+## 项目结构
+项目采用典型的MVC架构，主要包含以下组件：
 
-## 使用kotlin开发后台还是很不错的选择
-
-### 小说数据均来自爬虫存入数据库，不做商业用途
-
-### 该项目缺少阿里云OSSkey配置文件，数据库配置文件
-
-
-
-## 用户表操作接口👇
-```kotlin
-/**
-* 用户
-*/
-@RestController
-@RequestMapping(value = ["/swiftTemplate/User"])
-class UserController  {
-    
-    @Autowired
-    lateinit var userServiceImp :UserServiceImp
-   
-    @PassToken
-    @RequestMapping(value = ["register"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun register(@Valid @RequestBody u: ReqBody) = userServiceImp.register(u)
-    
-    @PassToken
-    @RequestMapping(value = ["login"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun login(@Valid @RequestBody u: ReqBody)= userServiceImp.login(u)
-
-    @UserLoginToken
-    @RequestMapping(value = ["getUseInfo"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun getUserInfo(@Valid @RequestBody u: ReqBody)= userServiceImp.getuserinfo(u)
-
-    @UserLoginToken
-    @RequestMapping(value = ["updateUser"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun updateUser(@Valid @RequestBody u: ReqBody)= userServiceImp.updateUser(u)
-
-    @UserLoginToken
-    @RequestMapping(value = ["uploadusericon"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun uploadIcon(@RequestParam  id:Int, @RequestParam uploadtype:String, @RequestPart("uploadFile")uploadFile: MultipartFile? )= userServiceImp.updateIcon(id,uploadtype,uploadFile)
-
-    @RequestMapping(value = ["test"])
-    @Throws(java.lang.Exception::class)
-    private fun test()=userServiceImp.test()
-
-    @UserLoginToken
-    @RequestMapping(value = ["deleteall"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun deleteall(@RequestBody u: ReqBody) {}
-
-    @UserLoginToken
-    @RequestMapping(value = ["searchfollow"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun searchfollow(@RequestBody u: ReqBody) =userServiceImp.searchfollow(u)
-
-}
-
-```
-## 粉丝 --关注接口
-```kotlin
-
-/**
- * 关注--粉丝
- */
-@RestController
-@RequestMapping(value = ["/swiftTemplate/Follow"])
-class FollowController {
-
-    @Autowired
-    lateinit var  followService: FollowService
-
-
-    @UserLoginToken
-    @RequestMapping(value = ["followuser"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun followuser(@Valid @RequestBody u: ReqBody) = followService.followUser(u)
-
-    @UserLoginToken
-    @RequestMapping(value = ["unfollowuser"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun unfollowuser(@Valid @RequestBody u: ReqBody) = followService.unFollowUser(u)
-
-    @UserLoginToken
-    @RequestMapping(value = ["getfancelist"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun getfancelist(@Valid @RequestBody u: ReqBody) = followService.getFanceList(u)
-
-    @UserLoginToken
-    @RequestMapping(value = ["getfollowlist"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun getfollowlist(@Valid @RequestBody u: ReqBody) = followService.getFollowList(u)
-}
-
-```
-##  获取粉丝列表接口
-
-```kotlin
-
-    /**
-     * 获取粉丝列表
-     * 返回该粉丝是否关注自己的  状态
-     */
-    override fun getFanceList(body: ReqBody): BaseResult {
-        val fancelist = body.userid?.let { followRespository.findByFollowid(it) }
-        return if (fancelist.isNullOrEmpty()) {
-            BaseResult.FAIL("粉丝列表为空")
-        } else {
-            val list = ArrayList<UserVo>()
-            fancelist.forEach {
-                val user = userRespository.findById(it.userid ?: 0)
-                val followlist = body.userid?.let { followRespository.findByUserid(body.userid ?: 0) }
-                //该粉丝状态是否关注了用户
-                user?.isfollow = followlist?.any { it1 ->
-                    it1.followid == user?.id
-                }
-                if (user != null) {
-                    //重新包装user
-                    val s = CopierUtil.copyProperties(user, UserVo::class.java)
-                    s?.let { it1 -> list.add(it1) }
-                }
-            }
-            BaseResult.SECUESS(list)
-        }
-    }
-
-```
-## 获取推荐人列表 测试完成
-### 过滤掉已经关注的用户
-```json
-{
-    "status":200,
-    "msg":"success",
-    "data":[
-        {
-            "id":30,
-            "nickname":null,
-            "account":"13550247642",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        },
-        {
-            "id":32,
-            "nickname":null,
-            "account":"13550247643",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        },
-        {
-            "id":33,
-            "nickname":null,
-            "account":"13550247644",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        },
-        {
-            "id":34,
-            "nickname":null,
-            "account":"13550247645",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        },
-        {
-            "id":35,
-            "nickname":null,
-            "account":"13550247646",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        },
-        {
-            "id":36,
-            "nickname":null,
-            "account":"13550247647",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        },
-        {
-            "id":37,
-            "nickname":null,
-            "account":"13550247648",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        },
-        {
-            "id":38,
-            "nickname":null,
-            "account":"13550247649",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        },
-        {
-            "id":39,
-            "nickname":null,
-            "account":"13550247650",
-            "icon":null,
-            "address":null,
-            "usersex":false,
-            "seayinfo":null,
-            "isfollow":false
-        }
-    ]
-}
-```
-
-
-
-# 我的APP项目版 使用该后台接口开发的app👉[传送门](https://github.com/wangbolocojoy/swiftTemplate)
-## 该项目使用以下框架
-
-```podfile
-pod 'Moya', '~> 13.0.1'
-pod 'ObjectMapper', '~> 3.5.2'
-pod 'AlamofireImage', '~> 3.5.2'
-pod 'SwiftyBeaver', '~> 1.7.0'
-pod 'IQKeyboardManagerSwift', '~> 6.4.0'
-pod 'MJRefresh', '~> 3.2.0'
-pod 'Gifu', '~> 3.2.0'
-pod 'SwiftyRSA','~>1.5.0'
-pod 'CryptoSwift' , '~> 1.0.0'
-pod 'Bugly','~> 2.5.0'
-```
-
-
-
-
-
+- 控制器(Controller) ：处理HTTP请求，如UserController、PostController等
+- 服务层(Service) ：实现业务逻辑，如UserService接口及其实现
+- 数据访问层(Repository) ：使用Spring Data JPA进行数据库操作
+- 实体类(DTO) ：定义数据模型，如User、Post、Novel等
+## 主要功能
+1. 用户管理 ：注册、登录、个人信息管理、实名认证
+2. 内容发布 ：发布帖子、上传照片
+3. 社交互动 ：关注用户、点赞内容、评论
+4. 小说功能 ：小说管理、分类
+5. 安全检测 ：使用阿里云内容安全服务进行图片和文本检测
+## 安全特性
+- 使用JWT进行身份验证
+- 自定义注解@UserLoginToken和@PassToken控制接口访问权限
+- 密码加密存储
+## 集成服务
+- 阿里云OSS用于文件存储
+- 阿里云OCR用于文字识别（如身份证识别）
+- 短信服务用于验证码发送
+该项目是一个功能完善的社交媒体后端系统，具有用户管理、内容管理和社交互动等核心功能，并集成了多种云服务增强应用能力
 
 

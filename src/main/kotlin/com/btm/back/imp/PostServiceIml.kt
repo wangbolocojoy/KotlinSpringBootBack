@@ -1,5 +1,8 @@
 package com.btm.back.imp
 
+import com.aliyun.oss.ClientBuilderConfiguration
+import com.aliyun.oss.common.auth.CredentialsProviderFactory
+import com.aliyun.oss.common.comm.SignVersion
 import com.aliyuncs.DefaultAcsClient
 import com.aliyuncs.auth.sts.AssumeRoleRequest
 import com.aliyuncs.exceptions.ClientException
@@ -27,6 +30,8 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -37,13 +42,13 @@ import kotlin.collections.ArrayList
 //@CacheConfig(keyGenerator = "keyGenerator") //这是本类统一key生成策略
 class PostServiceIml:PostService{
     @Autowired
-    lateinit var postRespository: PostRespository
+    lateinit var postRespository: PostRepository
 
     @Autowired
     lateinit var userRespository: UserRespository
 
     @Autowired
-    lateinit var postStartRespository: PostStartRespository
+    lateinit var postStartRepository: PostStartRepository
 
     @Autowired
     lateinit var userFilesRespository: UserFilesRespository
@@ -72,7 +77,7 @@ class PostServiceIml:PostService{
     * @Time: 01:18
     **/
 //    @CacheEvict(cacheNames = ["getPosts","getPostByUserId"],allEntries = true)
-    override fun sendPost(body: PostBody): BaseResult {
+    override fun sendPost(body: PostBody,uploadFiles: ArrayList<MultipartFile>): BaseResult {
         return if (body.userId != null) {
             if (AliYunOssUtil.checkContext( body.postDetail ?:"")){
                 val post = Post()
@@ -111,7 +116,7 @@ class PostServiceIml:PostService{
                 val s = CopierUtil.copyProperties(post,PostVO::class.java)
 
                 logger.info("发布帖子成功$s")
-                BaseResult.SECUESS(s)
+                BaseResult.SUCCESS(s)
             }else{
                 BaseResult.FAIL("内容违规,请重新组织语言")
             }
@@ -125,15 +130,15 @@ class PostServiceIml:PostService{
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val list = postRespository.findByUserIdOrderByCreatTimeDesc(body.userId ?:0,pageable)
         return if (list?.isEmpty == true){
-            BaseResult.SECUESS("该用户暂时未发过帖子")
+            BaseResult.SUCCESS("该用户暂时未发过帖子")
         }else{
             val images =ArrayList<PostVO>()
-            val startList = postStartRespository.findByUserId(body.userId?:0)
+            val startList = postStartRepository.findByUserId(body.userId?:0)
             val collList = favoritesRespository.findByUserId(body.userId?:0)
             list?.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
-                val poststartnum = postStartRespository.findByPostId(it.id?:0)
+                val poststartnum = postStartRepository.findByPostId(it.id?:0)
                 val msgList = postMessageRespository.findByPostId(body.postId ?:0)
                 val user =  userRespository.findById(it.userId ?: 0)
                 var postAuth:PostAuthorVo? = null
@@ -159,7 +164,7 @@ class PostServiceIml:PostService{
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取用户"+body.userId+"的"+images.size+"条")
-            BaseResult.SECUESS(images)
+            BaseResult.SUCCESS(images)
         }
     }
 
@@ -187,7 +192,7 @@ class PostServiceIml:PostService{
                 }
             }
             logger.info("更新帖子"+body.postId+"成功")
-            return BaseResult.SECUESS("更新成功")
+            return BaseResult.SUCCESS("更新成功")
         }else{
             return BaseResult.FAIL("传入要更新的数据")
         }
@@ -217,7 +222,7 @@ class PostServiceIml:PostService{
              post?.postReport = post?.postReport?.plus(1)
              post?.let { postRespository.save(it) }
              logger.info("用户"+body.userId +"举报帖子"+body.postId+"成功")
-             return BaseResult.SECUESS("举报成功")
+             return BaseResult.SUCCESS("举报成功")
          }
 
     }
@@ -240,7 +245,7 @@ class PostServiceIml:PostService{
             pvo?.postReports = rep
             pvo?.let { it1 -> pvoList.add(it1) }
         }
-        return BaseResult.SECUESS()
+        return BaseResult.SUCCESS()
     }
 
     /**
@@ -256,15 +261,19 @@ class PostServiceIml:PostService{
     }
 
     override fun gettoken(): BaseResult {
-        val endpoint = OSSClientConstants.STSSH
-        val AccessKeyId = OSSClientConstants.ACCESS_KEY_IDSTS
-        val accessKeySecret = OSSClientConstants.ACCESS_KEY_SECRETSTS
+        val endpoint = OSSClientConstants.ENDPOINT
         val roleArn = "acs:ram::1032913586529687:role/appserver"
         val roleSessionName = "appserver"
         try { // 添加endpoint（直接使用STS endpoint，前两个参数留空，无需添加region ID）
             DefaultProfile.addEndpoint("", "", "Sts", endpoint)
             // 构造default profile（参数留空，无需添加region ID）
-            val profile: IClientProfile = DefaultProfile.getProfile("", AccessKeyId, accessKeySecret)
+            val region = "cn-chengdu"
+            val credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider()
+            val clientConfig = ClientBuilderConfiguration().apply {
+                signatureVersion = SignVersion.V4
+            }
+            val profile: IClientProfile = DefaultProfile.getProfile(endpoint)
+//            val profile1: IClientProfile = DefaultProfile.getProfile(region,credentialsProvider )
             // 用profile构造client
             val client = DefaultAcsClient(profile)
             val request = AssumeRoleRequest()
@@ -274,7 +283,7 @@ class PostServiceIml:PostService{
             request.durationSeconds = 1000L // 设置凭证有效时间
             val response = client.getAcsResponse(request)
 
-            return BaseResult.SECUESS(response)
+            return BaseResult.SUCCESS(response)
         } catch (e: ClientException) {
             println("Failed：")
             println("Error code: " + e.errCode)
@@ -297,15 +306,15 @@ class PostServiceIml:PostService{
         val pageable: Pageable = PageRequest.of(body.page ?: 0, body.pageSize ?: 10)
         val list = postRespository.findByUserIdAndPostPublicAndPostStateOrderByCreatTimeDesc(userId = body.userId ?:0 ,postPublic = body.public ?: true,postState = body.postState ?:1, pageable = pageable)
         return if (list?.isEmpty() == true){
-            BaseResult.SECUESS("该用户暂时未发过帖子")
+            BaseResult.SUCCESS("该用户暂时未发过帖子")
         }else{
             val images =ArrayList<PostVO>()
-            val startList = postStartRespository.findByUserId(body.userId?:0)
+            val startList = postStartRepository.findByUserId(body.userId?:0)
             val collList = favoritesRespository.findByUserId(body.userId?:0)
             list?.forEach {
                 val file = it.id?.let { it1 -> userFilesRespository.findAllByPostId(it1) }
                 val listFvo = ArrayList<UserFilesVO>()
-                val poststartnum = postStartRespository.findByPostId(it.id?:0)
+                val poststartnum = postStartRepository.findByPostId(it.id?:0)
                 val msgList = postMessageRespository.findByPostId(body.postId ?:0)
                 val user =  userRespository.findById(it.userId ?: 0)
                 var postAuth:PostAuthorVo? = null
@@ -331,7 +340,7 @@ class PostServiceIml:PostService{
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取用户"+body.userId+"的"+images.size+"条")
-            BaseResult.SECUESS(images)
+            BaseResult.SUCCESS(images)
         }
 
     }
@@ -354,9 +363,9 @@ class PostServiceIml:PostService{
             postRespository.findByPostPublicAndPostStateOrderByCreatTimeDesc(postPublic = true,postState = body.postState ?:1, pageable = pageable)
         }
         return if (list.isNullOrEmpty()){
-            BaseResult.SECUESS("暂时没有帖子")
+            BaseResult.SUCCESS("暂时没有帖子")
         }else{
-            val startList = postStartRespository.findByUserId(body.userId?:0)
+            val startList = postStartRepository.findByUserId(body.userId?:0)
             val collList = favoritesRespository.findByUserId(body.userId?:0)
             val images =ArrayList<PostVO>()
             list.forEach {
@@ -386,7 +395,7 @@ class PostServiceIml:PostService{
                 s?.let { it1 -> images.add(it1) }
             }
             logger.info("获取帖子成功"+images.size+"条")
-            BaseResult.SECUESS(images)
+            BaseResult.SUCCESS(images)
         }
     }
 
@@ -401,8 +410,8 @@ class PostServiceIml:PostService{
     override fun deletePost(body: PageBody): BaseResult {
         val post = body.postId?.let { postRespository.findById(it) }
         return if (post != null&& body.userId != null){
-            val starts = postStartRespository.findByPostId(body.postId?:0)
-            starts?.let { postStartRespository.deleteAll(it) }
+            val starts = postStartRepository.findByPostId(body.postId?:0)
+            starts?.let { postStartRepository.deleteAll(it) }
             val favs = favoritesRespository.findByPostId(body.postId?:0)
             favs?.let { favoritesRespository.deleteAll(it) }
             val list = userFilesRespository.findAllByPostId(body.postId ?:0)
@@ -419,7 +428,7 @@ class PostServiceIml:PostService{
             }
             user?.let { userRespository.save(it) }
             logger.info("删除帖子成功")
-            BaseResult.SECUESS("删除成功")
+            BaseResult.SUCCESS("删除成功")
         }else{
             BaseResult.FAIL("该帖子不存在")
         }
@@ -438,7 +447,7 @@ class PostServiceIml:PostService{
     override fun updatePostLikeStartt(body: PageBody): BaseResult {
         val user = body.userId?.let { userRespository.findById(it) }
         return if (user != null){
-            val users = body.postId?.let { postStartRespository.findByPostId(it) }
+            val users = body.postId?.let { postStartRepository.findByPostId(it) }
             val has = users?.any { it.id == body.userId }
             BaseResult.FAIL()
 
@@ -454,7 +463,7 @@ class PostServiceIml:PostService{
             BaseResult.FAIL()
         }else{
             if (body.postId ?: 0 < post[0].id ?: 0){
-                BaseResult.SECUESS()
+                BaseResult.SUCCESS()
             }else{
                 BaseResult.FAIL()
 

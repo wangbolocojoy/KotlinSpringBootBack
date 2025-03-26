@@ -1,4 +1,4 @@
-<included>
+<configuration>
     <property resource="config/logback.properties" />
 
     <contextName>${context.name}</contextName>                         <!-- 本项目的名字 -->
@@ -89,4 +89,4 @@
         <appender-ref ref="root-file-debug"/>
     </root>
 
-</included>
+</configuration>

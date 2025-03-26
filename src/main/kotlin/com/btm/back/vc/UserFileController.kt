@@ -1,18 +1,18 @@
 package com.btm.back.vc
 
 import com.btm.back.bean.PageBody
-import com.btm.back.imp.UserFilesServiceImp
+import com.btm.back.imp.UserFilesServiceImpl
 import com.btm.back.utils.UserLoginToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping(value = ["/swiftTemplate/file/"])
+@RequestMapping(value = ["/api/file/"])
 class UserFileController {
 
     @Autowired
-    lateinit var userFilesServiceImp: UserFilesServiceImp
+    lateinit var userFilesServiceImp: UserFilesServiceImpl
 
     @UserLoginToken
     @RequestMapping(value = ["upLoadFiles"], method = [RequestMethod.POST])

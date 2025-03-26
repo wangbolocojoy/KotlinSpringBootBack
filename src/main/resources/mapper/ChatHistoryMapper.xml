@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.btm.back.mapper.ChatHistoryMapper">
+    <!-- 结果映射 -->
+    <resultMap id="chatHistoryResultMap" type="com.btm.back.vo.ChatHistoryVO">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="userMessage" column="user_message" />
+        <result property="aiResponse" column="ai_response" />
+        <result property="messageType" column="message_type" />
+        <result property="mediaPath" column="media_path" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+    
+    <!-- 根据用户ID查询聊天历史，按创建时间降序排序 -->
+    <select id="findByUserIdOrderByCreateTimeDesc" resultMap="chatHistoryResultMap">
+        SELECT * FROM chat_history 
+        WHERE user_id = #{userId} 
+        ORDER BY create_time DESC 
+        LIMIT #{size} OFFSET #{page} * #{size}
+    </select>
+    
+    <!-- 统计用户的聊天历史数量 -->
+    <select id="countByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM chat_history WHERE user_id = #{userId}
+    </select>
+    
+    <!-- 删除用户的所有聊天历史 -->
+    <delete id="deleteByUserId">
+        DELETE FROM chat_history WHERE user_id = #{userId}
+    </delete>
+    
+    <!-- 保存聊天历史 -->
+    <insert id="insert" parameterType="com.btm.back.vo.ChatHistoryVO">
+        INSERT INTO chat_history (
+            id, user_id, user_message, ai_response, message_type, media_path, create_time
+        ) VALUES (
+            #{id}, #{userId}, #{userMessage}, #{aiResponse}, #{messageType}, #{mediaPath}, #{createTime}
+        )
+    </insert>
+</mapper>
