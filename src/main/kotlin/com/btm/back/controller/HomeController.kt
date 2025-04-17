@@ -45,7 +45,7 @@ class HomeController {
     }
     @PassToken
     @RequestMapping(value = ["uploadfile"], method = [RequestMethod.POST])
-    private fun uploadFile(@RequestPart("imageurl")uploadFile: MultipartFile?):BaseResult {
+    fun uploadFile(@RequestPart("imageurl")uploadFile: MultipartFile?):BaseResult {
         return  blogfilesService.createBlogfile(uploadFile)
     }
 

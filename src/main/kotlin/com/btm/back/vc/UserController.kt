@@ -6,7 +6,6 @@ import com.btm.back.utils.PassToken
 import com.btm.back.utils.UserLoginToken
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -21,28 +20,26 @@ class UserController  {
     lateinit var userServiceImp :UserServiceImpl
 
     @Operation(summary = "用户注册", description = "新用户注册接口")
-    @PassToken
-    @RequestMapping(value = ["register"], method = [RequestMethod.POST])
-    private fun register(
+    fun register(
         @Parameter(description = "用户注册信息", required = true)
         @Valid @RequestBody u: ReqBody
     ) = userServiceImp.register(u)
 
     @Operation(summary = "发送验证码", description = "向用户手机发送验证码")
-    @PassToken
     @RequestMapping(value = ["sendmsg"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
-    private fun sendmsg( @RequestBody u: ReqBody) = userServiceImp.sendmsg(u)
+    fun sendmsg(
+        @Parameter(description = "发送验证码", required = true)
+        @Valid @RequestBody u: ReqBody
+    ) = userServiceImp.sendmsg(u)
 
     // 替换 @ApiOperation 为 @Operation，@ApiParam 为 @Parameter
     @Operation(summary = "用户登录", description = "用户登录接口，返回token")
-    @PassToken
-    @RequestMapping(value = ["login"], method = [RequestMethod.POST])
-    @Throws(java.lang.Exception::class)
-    private fun login(
+    fun login(
         @Parameter(description = "用户登录信息", required = true) 
         @Valid @RequestBody u: ReqBody
     ) = userServiceImp.login(u)
+
 
     @Operation(summary = "修改密码", description = "用户修改密码接口")
     @PassToken
@@ -117,6 +114,7 @@ class UserController  {
     @Throws(java.lang.Exception::class)
     private fun getDeveloperInfo() =userServiceImp.getDeveloperInfo()
 
+
     @UserLoginToken
     @RequestMapping(value = ["uploadidcard"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
@@ -149,6 +147,13 @@ class UserController  {
     @Throws(java.lang.Exception::class)
     private fun getBackList(@RequestBody u: ReqBody) =userServiceImp.getBackList(u)
 
+    @PassToken
+    @RequestMapping(value = ["getaliyuntoken"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun getaliyuntoken(@RequestBody u: ReqBody) =userServiceImp.CreateVerifyScheme(u)
 
-
+    @PassToken
+    @RequestMapping(value = ["verftokenandlogin"], method = [RequestMethod.POST])
+    @Throws(java.lang.Exception::class)
+    private fun verftokenandlogin(@RequestBody u: ReqBody) =userServiceImp.getVerifyCodeandResister(u)
 }

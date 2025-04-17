@@ -1,8 +1,15 @@
 package com.btm.back.service
+import com.aliyun.auth.credentials.Credential
+import com.aliyun.auth.credentials.provider.StaticCredentialProvider
+import com.aliyun.sdk.service.dypnsapi20170525.AsyncClient
+import com.aliyun.sdk.service.dypnsapi20170525.models.CreateVerifySchemeRequest
+import com.aliyun.sdk.service.dypnsapi20170525.models.CreateVerifySchemeResponse
 import com.btm.back.bean.ReqBody
 import com.btm.back.dto.User
 import com.btm.back.utils.BaseResult
+import darabonba.core.client.ClientOverrideConfiguration
 import org.springframework.web.multipart.MultipartFile
+import java.util.concurrent.CompletableFuture
 
 interface UserService {
     /**
@@ -95,4 +102,8 @@ interface UserService {
     fun addBackInfoPlist(body: ReqBody):BaseResult
     fun removeBackInfoPlist(body: ReqBody):BaseResult
     fun getBackList(body: ReqBody):BaseResult
+
+    fun CreateVerifyScheme(body: ReqBody):BaseResult
+
+    fun getVerifyCodeandResister(body: ReqBody):BaseResult
 }

@@ -29,6 +29,6 @@ class AIChatConfig {
     /**
      * 阿里云DashScope 模型名称
      */
-    @Value("\${ai.dashscope.model:qwq-32b}")
+    @Value("\${ai.dashscope.model:qwen-omni-turbo}")
     lateinit var dashScopeModel: String
 }

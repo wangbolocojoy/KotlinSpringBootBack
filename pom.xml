@@ -74,6 +74,11 @@
             <artifactId>aliyun-java-sdk-ocr</artifactId>
             <version>1.0.7</version>
         </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibabacloud-dypnsapi20170525</artifactId>
+            <version>1.0.8</version>
+        </dependency>
 <!--        IM框架-->
 <!--        <dependency>-->
 <!--            <groupId>org.j-im</groupId>-->

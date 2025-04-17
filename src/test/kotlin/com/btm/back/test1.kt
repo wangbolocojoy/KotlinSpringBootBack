@@ -17,7 +17,7 @@ object test1 {
 
     @JvmStatic
     fun main(args: Array<String>) {
-   
+        System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")
     }
 
 }

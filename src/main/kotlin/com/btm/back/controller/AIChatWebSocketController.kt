@@ -1,6 +1,7 @@
 package com.btm.back.controller
 
 import com.btm.back.imp.AIChatServiceImpl
+import com.btm.back.mapper.ChatHistoryMapper
 import com.btm.back.model.ChatMessage
 import com.btm.back.model.MessageType
 import com.btm.back.model.MessageStatus
@@ -34,12 +35,32 @@ class AIChatWebSocketController {
     
     @Autowired
     private lateinit var aiChatServiceImpl: AIChatServiceImpl
-    
+
+    @Autowired
+    lateinit var chatHistoryMapper: ChatHistoryMapper
+
     @Autowired
     private lateinit var userMapper: UserMapper
     
     @Autowired
     private lateinit var dashScopeClient: DashScopeClient
+    
+    /**
+     * 获取用户的聊天历史记录
+     * @param userId 用户ID
+     * @param limit 获取的历史记录数量限制
+     * @return 聊天历史记录列表，每条记录包含用户消息和AI回复
+     */
+    private fun getUserChatHistory(userId: Int, limit: Int = 5): List<Pair<String, String>> {
+        try {
+            // 获取用户最近的聊天历史记录
+            val chatHistory = chatHistoryMapper.findByUserIdOrderByCreateTimeDesc(userId, 0, limit)
+            return chatHistory.map { Pair(it.userMessage, it.aiResponse) }
+        } catch (e: Exception) {
+            logger.error("获取聊天历史失败: ${e.message}", e)
+            return emptyList()
+        }
+    }
     
     /**
      * 处理文本消息
@@ -75,6 +96,10 @@ class AIChatWebSocketController {
                 thinkingMessage
             )
             
+            // 获取用户的聊天历史记录
+            val chatHistory = getUserChatHistory(chatMessage.senderId, 5)
+            logger.info("获取到${chatHistory.size}条聊天历史记录")
+            
             // 创建响应消息ID
             val responseId = UUID.randomUUID().toString()
             val responseBuilder = StringBuilder()
@@ -82,9 +107,9 @@ class AIChatWebSocketController {
             // 调用DashScope API处理文本消息，使用流式响应
             logger.info("开始调用DashScope API处理消息")
             dashScopeClient.streamChat(
-                chatMessage.content,
-                // 处理每个响应块
-                { chunk ->
+                message = chatMessage.content,
+                chatHistory = chatHistory,
+                onChunk = { chunk ->
                     logger.info("收到AI响应块: $chunk")
                     // 创建AI回复消息片段
                     val chunkMessage = ChatMessage(
@@ -110,38 +135,49 @@ class AIChatWebSocketController {
                     // 累积响应内容
                     responseBuilder.append(chunk)
                 },
-                // 处理完成回调
-                { fullResponse ->
-                    logger.info("AI响应完成，发送完整消息")
-                    // 创建完整的AI回复消息
-                    val completeMessage = ChatMessage(
+                onChunkAudio = { chunkAudio ->
+//                    logger.info("收到AI语音块: $chunkAudio")
+                    val chunkAudioMessage = ChatMessage(
                         id = responseId,
-                        senderId = 0, // 0表示系统/AI发送
+                        senderId = 1, // 0表示系统/AI发送
                         receiverId = chatMessage.senderId,
-                        type = MessageType.TEXT,
-                        content = fullResponse,
+                        type = MessageType.VOICE,
+                        content = chunkAudio,
                         timestamp = LocalDateTime.now().toString(),
                         status = MessageStatus.READ
                     )
-                    
-                    // 发送完整消息到用户
-                    messagingTemplate.convertAndSendToUser(
-                        chatMessage.senderId.toString(),
-                        "/queue/messages",
-                        completeMessage
-                    )
-                    
-                    // 保存聊天历史
-                    aiChatServiceImpl.saveChatHistory(
-                        chatMessage.senderId,
-                        chatMessage.content,
-                        fullResponse,
-                        "text"
-                    )
-                    logger.info("聊天历史已保存")
+                    messagingTemplate.convertAndSend("/queue/chunks",
+                        chunkAudioMessage)
                 },
-                // 处理错误回调
-                { error ->
+                onComplete = { fullResponse ->
+                    logger.info("AI响应完成，完整消息${fullResponse}")
+//                    // 创建完整的AI回复消息
+                    val completeMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 1, // 0表示系统/AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.VOICE,
+                        content = "",
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.END
+                    )
+////
+//                    // 发送完整消息到用户
+//                    messagingTemplate.convertAndSend(
+//                        "/queue/messages",
+//                        completeMessage
+//                    )
+//
+//                    // 保存聊天历史
+                   aiChatServiceImpl.saveChatHistory(
+                       chatMessage.senderId,
+                       chatMessage.content,
+                       fullResponse,
+                       "text"
+                   )
+//                    logger.info("聊天历史已保存")
+                },
+                onError = { error ->
                     logger.error("处理消息失败: ${error.message}", error)
                     sendErrorMessage(chatMessage.senderId, "处理消息失败: ${error.message}")
                 }
@@ -158,6 +194,8 @@ class AIChatWebSocketController {
      */
     @MessageMapping("/chat.sendImage")
     fun handleImageMessage(@Payload chatMessage: ChatMessage) {
+        logger.info("收到图像消息: $chatMessage")
+        
         // 验证用户
 //        val user = userMapper.findById(chatMessage.senderId) ?: run {
 //            sendErrorMessage(chatMessage.senderId, "用户不存在")
@@ -166,38 +204,106 @@ class AIChatWebSocketController {
         
         // 处理图像消息
         try {
-            // 这里需要处理图像URL，从chatMessage.mediaUrl获取图像
-            // 实际实现中，可能需要下载图像或直接使用URL
-            
-            // 调用AI服务处理图像消息
-            val aiResponse = processAIImageResponse(chatMessage.content, chatMessage.mediaUrl, chatMessage.senderId)
-            
-            // 创建AI回复消息
-            val responseMessage = ChatMessage(
+            // 发送一个初始消息，表示AI正在思考
+            val thinkingMessage = ChatMessage(
                 id = UUID.randomUUID().toString(),
                 senderId = 0, // 0表示系统/AI发送
                 receiverId = chatMessage.senderId,
-                type = MessageType.TEXT, // AI回复通常是文本
-                content = aiResponse,
+                type = MessageType.SYSTEM,
+                content = "AI正在分析图像...",
                 timestamp = LocalDateTime.now().toString()
             )
             
-            // 发送消息到用户
             messagingTemplate.convertAndSendToUser(
                 chatMessage.senderId.toString(),
                 "/queue/messages",
-                responseMessage
+                thinkingMessage
             )
             
-            // 保存聊天历史
-            aiChatServiceImpl.saveChatHistory(
-                chatMessage.senderId,
-                "[图像] ${chatMessage.content}",
-                aiResponse,
-                "image",
-                chatMessage.mediaUrl
+            // 获取用户的聊天历史记录
+            val chatHistory = getUserChatHistory(chatMessage.senderId, 5)
+            logger.info("获取到${chatHistory.size}条聊天历史记录")
+            
+            // 创建响应消息ID
+            val responseId = UUID.randomUUID().toString()
+            val responseBuilder = StringBuilder()
+            
+            // 调用DashScope API处理图像消息，使用流式响应
+            logger.info("开始调用DashScope API处理图像消息")
+            dashScopeClient.streamChat(
+                message = chatMessage.content,
+                imageUrl = chatMessage.mediaUrl,
+                chatHistory = chatHistory,
+                onChunk = { chunk ->
+                    logger.info("收到AI响应块: $chunk")
+                    // 创建AI回复消息片段
+                    val chunkMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 1, // 0表示系统/1AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.TEXT,
+                        content = chunk,
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.DELIVERED
+                    )
+                    
+                    // 发送消息片段到用户
+                    messagingTemplate.convertAndSendToUser(
+                        chatMessage.senderId.toString(),
+                        "/queue/chunks",
+                        chunkMessage
+                    )
+                    messagingTemplate.convertAndSend("/queue/chunks", chunkMessage)
+                    
+                    // 累积响应内容
+                    responseBuilder.append(chunk)
+                },
+                onChunkAudio = { chunkAudio ->
+                    val chunkAudioMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 0, // 0表示系统/AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.VOICE,
+                        content = chunkAudio,
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.READ
+                    )
+                    messagingTemplate.convertAndSend("/queue/chunks", chunkAudioMessage)
+                },
+                onComplete = { fullResponse ->
+                    logger.info("AI响应完成，完整消息${fullResponse}")
+                    val completeMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 0, // 0表示系统/AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.VOICE,
+                        content = "",
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.END
+                    )
+                    
+                    // 发送完整消息到用户
+                    messagingTemplate.convertAndSend(
+                        "/queue/messages",
+                        completeMessage
+                    )
+                    
+                    // 保存聊天历史
+                    aiChatServiceImpl.saveChatHistory(
+                        chatMessage.senderId,
+                        "[图像] ${chatMessage.content}",
+                        fullResponse,
+                        "image",
+                        chatMessage.mediaUrl
+                    )
+                },
+                onError = { error ->
+                    logger.error("处理图像消息失败: ${error.message}", error)
+                    sendErrorMessage(chatMessage.senderId, "处理图像消息失败: ${error.message}")
+                }
             )
         } catch (e: Exception) {
+            logger.error("处理图像消息时发生异常: ${e.message}", e)
             sendErrorMessage(chatMessage.senderId, "处理图像消息失败: ${e.message}")
         }
     }
@@ -208,6 +314,8 @@ class AIChatWebSocketController {
      */
     @MessageMapping("/chat.sendVoice")
     fun handleVoiceMessage(@Payload chatMessage: ChatMessage) {
+        logger.info("收到语音消息: $chatMessage")
+        
         // 验证用户
 //        val user = userMapper.findById(chatMessage.senderId) ?: run {
 //            sendErrorMessage(chatMessage.senderId.toInt(), "用户不存在")
@@ -216,35 +324,106 @@ class AIChatWebSocketController {
     
         // 处理语音消息
         try {
-            val aiResponse = processAIVoiceResponse(chatMessage.mediaUrl, chatMessage.senderId.toLong())
-    
-            // 创建AI回复消息
-            val responseMessage = ChatMessage(
+            // 发送一个初始消息，表示AI正在思考
+            val thinkingMessage = ChatMessage(
                 id = UUID.randomUUID().toString(),
                 senderId = 0, // 0表示系统/AI发送
                 receiverId = chatMessage.senderId,
-                type = MessageType.TEXT, // AI回复通常是文本
-                content = aiResponse,
+                type = MessageType.SYSTEM,
+                content = "AI正在处理语音...",
                 timestamp = LocalDateTime.now().toString()
             )
             
-            // 发送消息到用户
             messagingTemplate.convertAndSendToUser(
                 chatMessage.senderId.toString(),
                 "/queue/messages",
-                responseMessage
+                thinkingMessage
             )
             
-            // 保存聊天历史
-            val transcribedText = ""
-            aiChatServiceImpl.saveChatHistory(
-                chatMessage.senderId,
-                "[语音] $transcribedText",
-                aiResponse,
-                "voice",
-                chatMessage.mediaUrl
+            // 获取用户的聊天历史记录
+            val chatHistory = getUserChatHistory(chatMessage.senderId, 5)
+            logger.info("获取到${chatHistory.size}条聊天历史记录")
+            
+            // 创建响应消息ID
+            val responseId = UUID.randomUUID().toString()
+            val responseBuilder = StringBuilder()
+            
+            // 调用DashScope API处理语音消息，使用流式响应
+            logger.info("开始调用DashScope API处理语音消息")
+            dashScopeClient.streamChat(
+                message = chatMessage.content ?: "",  // 可能没有文本内容
+                audioUrl = chatMessage.mediaUrl,
+                chatHistory = chatHistory,
+                onChunk = { chunk ->
+                    logger.info("收到AI响应块: $chunk")
+                    // 创建AI回复消息片段
+                    val chunkMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 1, // 0表示系统/1AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.TEXT,
+                        content = chunk,
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.DELIVERED
+                    )
+                    
+                    // 发送消息片段到用户
+                    messagingTemplate.convertAndSendToUser(
+                        chatMessage.senderId.toString(),
+                        "/queue/chunks",
+                        chunkMessage
+                    )
+                    messagingTemplate.convertAndSend("/queue/chunks", chunkMessage)
+                    
+                    // 累积响应内容
+                    responseBuilder.append(chunk)
+                },
+                onChunkAudio = { chunkAudio ->
+                    val chunkAudioMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 0, // 0表示系统/AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.VOICE,
+                        content = chunkAudio,
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.READ
+                    )
+                    messagingTemplate.convertAndSend("/queue/chunks", chunkAudioMessage)
+                },
+                onComplete = { fullResponse ->
+                    logger.info("AI响应完成，完整消息${fullResponse}")
+                    val completeMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 0, // 0表示系统/AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.VOICE,
+                        content = "",
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.END
+                    )
+                    
+                    // 发送完整消息到用户
+                    messagingTemplate.convertAndSend(
+                        "/queue/messages",
+                        completeMessage
+                    )
+                    
+                    // 保存聊天历史
+                    aiChatServiceImpl.saveChatHistory(
+                        chatMessage.senderId,
+                        "[语音] ${chatMessage.content ?: ""}",
+                        fullResponse,
+                        "voice",
+                        chatMessage.mediaUrl
+                    )
+                },
+                onError = { error ->
+                    logger.error("处理语音消息失败: ${error.message}", error)
+                    sendErrorMessage(chatMessage.senderId, "处理语音消息失败: ${error.message}")
+                }
             )
         } catch (e: Exception) {
+            logger.error("处理语音消息时发生异常: ${e.message}", e)
             sendErrorMessage(chatMessage.senderId, "处理语音消息失败: ${e.message}")
         }
     }
@@ -270,13 +449,136 @@ class AIChatWebSocketController {
         )
     }
     
+    /**
+     * 处理视频消息
+     * @param chatMessage 聊天消息
+     */
+    @MessageMapping("/chat.sendVideo")
+    fun handleVideoMessage(@Payload chatMessage: ChatMessage) {
+        logger.info("收到视频消息: $chatMessage")
+        
+        // 验证用户
+//        val user = userMapper.findById(chatMessage.senderId) ?: run {
+//            sendErrorMessage(chatMessage.senderId, "用户不存在")
+//            return
+//        }
+        
+        // 处理视频消息
+        try {
+            // 发送一个初始消息，表示AI正在思考
+            val thinkingMessage = ChatMessage(
+                id = UUID.randomUUID().toString(),
+                senderId = 0, // 0表示系统/AI发送
+                receiverId = chatMessage.senderId,
+                type = MessageType.SYSTEM,
+                content = "AI正在分析视频...",
+                timestamp = LocalDateTime.now().toString()
+            )
+            
+            messagingTemplate.convertAndSendToUser(
+                chatMessage.senderId.toString(),
+                "/queue/messages",
+                thinkingMessage
+            )
+            
+            // 获取用户的聊天历史记录
+            val chatHistory = getUserChatHistory(chatMessage.senderId, 5)
+            logger.info("获取到${chatHistory.size}条聊天历史记录")
+            
+            // 创建响应消息ID
+            val responseId = UUID.randomUUID().toString()
+            val responseBuilder = StringBuilder()
+            
+            // 解析视频帧URL列表
+            val videoUrls = chatMessage.mediaUrl?.split(",") ?: emptyList()
+            
+            // 调用DashScope API处理视频消息，使用流式响应
+            logger.info("开始调用DashScope API处理视频消息")
+            dashScopeClient.streamChat(
+                message = chatMessage.content,
+                videoUrls = videoUrls,
+                chatHistory = chatHistory,
+                onChunk = { chunk ->
+                    logger.info("收到AI响应块: $chunk")
+                    // 创建AI回复消息片段
+                    val chunkMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 1, // 0表示系统/1AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.TEXT,
+                        content = chunk,
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.DELIVERED
+                    )
+                    
+                    // 发送消息片段到用户
+                    messagingTemplate.convertAndSendToUser(
+                        chatMessage.senderId.toString(),
+                        "/queue/chunks",
+                        chunkMessage
+                    )
+                    messagingTemplate.convertAndSend("/queue/chunks", chunkMessage)
+                    
+                    // 累积响应内容
+                    responseBuilder.append(chunk)
+                },
+                onChunkAudio = { chunkAudio ->
+                    val chunkAudioMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 0, // 0表示系统/AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.VOICE,
+                        content = chunkAudio,
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.READ
+                    )
+                    messagingTemplate.convertAndSend("/queue/chunks", chunkAudioMessage)
+                },
+                onComplete = { fullResponse ->
+                    logger.info("AI响应完成，完整消息${fullResponse}")
+                    val completeMessage = ChatMessage(
+                        id = responseId,
+                        senderId = 0, // 0表示系统/AI发送
+                        receiverId = chatMessage.senderId,
+                        type = MessageType.VOICE,
+                        content = "",
+                        timestamp = LocalDateTime.now().toString(),
+                        status = MessageStatus.END
+                    )
+                    
+                    // 发送完整消息到用户
+                    messagingTemplate.convertAndSend(
+                        "/queue/messages",
+                        completeMessage
+                    )
+                    
+                    // 保存聊天历史
+                    aiChatServiceImpl.saveChatHistory(
+                        chatMessage.senderId,
+                        "[视频] ${chatMessage.content}",
+                        fullResponse,
+                        "video",
+                        chatMessage.mediaUrl
+                    )
+                },
+                onError = { error ->
+                    logger.error("处理视频消息失败: ${error.message}", error)
+                    sendErrorMessage(chatMessage.senderId, "处理视频消息失败: ${error.message}")
+                }
+            )
+        } catch (e: Exception) {
+            logger.error("处理视频消息时发生异常: ${e.message}", e)
+            sendErrorMessage(chatMessage.senderId, "处理视频消息失败: ${e.message}")
+        }
+    }
+    
+    // 这些方法不再需要，因为我们直接使用DashScopeClient处理多模态输入
+    // 保留这些方法的空实现，以防其他地方有引用
     private fun processAIImageResponse(content: String, mediaUrl: String?, userId: Int): String {
-        // 处理图像消息逻辑
         return "AI回复：已处理图像消息"
     }
 
     private fun processAIVoiceResponse(audioUrl: String?, userId: Long): String {
-        // 处理语音消息逻辑
         return "AI回复：已处理语音消息"
     }
 }

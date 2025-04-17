@@ -18,7 +18,6 @@ class PostMessageController {
     lateinit  var postMessageServiceImp: PostMessageServiceImpl
 
 
-    @UserLoginToken
     @RequestMapping(value = ["getMessages"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getMessages(@RequestBody body: PageBody) = postMessageServiceImp.getPostMessagesByPostId(body)

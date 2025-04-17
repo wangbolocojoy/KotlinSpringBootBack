@@ -14,7 +14,6 @@ class UserFileController {
     @Autowired
     lateinit var userFilesServiceImp: UserFilesServiceImpl
 
-    @UserLoginToken
     @RequestMapping(value = ["upLoadFiles"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun upLoadFiles( userId:Int,latitude:String?,longitude:String?, postPublic:Boolean,postDetail:String, postAddress:String?,uploadType:String, uploadFiles:ArrayList<MultipartFile>? ) = userFilesServiceImp.uploadFiles(userId,longitude,longitude,postPublic,postDetail,postAddress,uploadType,uploadFiles)

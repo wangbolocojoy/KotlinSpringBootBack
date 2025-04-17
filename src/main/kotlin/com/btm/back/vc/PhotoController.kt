@@ -21,7 +21,6 @@ class PhotoController {
     /**
      * 获取照片分类列表
      */
-    @PassToken
     @RequestMapping(value = ["getAllPhotoTypes"], method = [RequestMethod.POST])
     @Throws(java.lang.Exception::class)
     fun getAllPhotoTypes() = photoInfoServiceIml.getAllPhotoTypes()
