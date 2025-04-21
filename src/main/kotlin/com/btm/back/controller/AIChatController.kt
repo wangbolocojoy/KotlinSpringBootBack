@@ -29,7 +29,7 @@ class AIChatController {
      * @return 响应体，包含AI回复内容
      */
     @Operation(summary = "文本聊天", description = "发送文本消息与AI聊天")
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["chat/text"], method = [RequestMethod.POST])
     fun processTextChat(
         @Parameter(description = "聊天请求信息", required = true)
@@ -44,7 +44,7 @@ class AIChatController {
      * @return 响应体，包含AI回复内容
      */
     @Operation(summary = "图像聊天", description = "发送图像与AI聊天")
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["chat/image"], method = [RequestMethod.POST])
     fun processImageChat(
         @RequestParam("userId") userId: Int,
@@ -59,7 +59,7 @@ class AIChatController {
      * @return 响应体，包含AI回复内容
      */
     @Operation(summary = "语音聊天", description = "发送语音与AI聊天")
-    @PassToken
+    @UserLoginToken
     @RequestMapping(value = ["chat/voice"], method = [RequestMethod.POST])
     fun processVoiceChat(
         @RequestParam("userId") userId: Int,

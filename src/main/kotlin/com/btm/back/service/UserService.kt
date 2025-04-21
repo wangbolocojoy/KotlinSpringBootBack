@@ -34,6 +34,11 @@ interface UserService {
      * 登录
      */
     fun login(body: ReqBody):BaseResult
+    
+    /**
+     * 登出
+     */
+    fun logout(body: ReqBody):BaseResult
     /**
      * 查找用户
      */
@@ -51,6 +56,10 @@ interface UserService {
      */
     fun updateIcon(id: Int,uploadType:String,uploadFile:MultipartFile?):BaseResult
 
+    /**
+     * 更新用户token
+     */
+    fun updateUserToken(user: User)
 
     fun searchfollow(body: ReqBody):BaseResult
 

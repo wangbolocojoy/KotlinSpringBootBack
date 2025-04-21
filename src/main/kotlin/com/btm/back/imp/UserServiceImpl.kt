@@ -65,6 +65,9 @@ class UserServiceImpl : UserService {
     @Autowired
     lateinit var authenticationRespository: AuthenticationRespository
 
+    @Autowired
+    lateinit var tokenService: TokenService
+
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
 
     @Autowired
@@ -93,7 +96,7 @@ class UserServiceImpl : UserService {
                     user.account = body.phone
                     user.phone = body.phone
                     user.password = body.password
-                    user.token = TokenService.getToken(user)
+                    user.token = tokenService.getToken(user)
                     user.likeStarts = 0
                     user.creatTime = Date()
                     user.userSex = false
@@ -193,7 +196,7 @@ class UserServiceImpl : UserService {
             if (body.msgcode == code) {
                 body.phone?.let { redisTemplate.delete(it) }
                 user.password = body.password
-                user.token = TokenService.getToken(user)
+                user.token = tokenService.getToken(user)
                 userrepository.save(user)
                 val s = CopierUtil.copyProperties(user, UserVO::class.java)
                 logger.info("更新密码成功")
@@ -655,8 +658,6 @@ class UserServiceImpl : UserService {
     }
 
     override fun CreateVerifyScheme(body: ReqBody): BaseResult {
-        logger.info("System.getenv(\"ALIBABA_CLOUD_ACCESS_KEY_ID\")${System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")}")
-        logger.info("System.getenv(\"ALIBABA_CLOUD_ACCESS_KEY_SECRET\")${System.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")}")
         val provider = StaticCredentialProvider.create(
             Credential.builder()
                 // Please ensure that the environment variables ALIBABA_CLOUD_ACCESS_KEY_ID and ALIBABA_CLOUD_ACCESS_KEY_SECRET are set.
@@ -723,7 +724,7 @@ class UserServiceImpl : UserService {
                 .accessKeyId(System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"))
                 .accessKeySecret(System.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET"))
                 .build()
-        );
+        )
 
         val client = AsyncClient.builder()
             .region("cn-chengdu")
@@ -732,25 +733,28 @@ class UserServiceImpl : UserService {
                 ClientOverrideConfiguration.create()
                     .setEndpointOverride("dypnsapi.aliyuncs.com")
             )
-            .build();
+            .build()
 
-        val verifyWithFusionAuthTokenRequest = VerifyWithFusionAuthTokenRequest.builder().build()
+
+
         return if (body.VerifyToken.isNullOrEmpty()) {
             BaseResult.FAIL("请输入VerifyToken")
         } else {
+            var verifyWithFusionAuthTokenRequest = VerifyWithFusionAuthTokenRequest.builder().verifyToken(body.VerifyToken).build()
             val response = client.verifyWithFusionAuthToken(verifyWithFusionAuthTokenRequest)
             val resp = response.get()
-            if (resp.body.model.verifyResult == "PASS"){
+            logger.info("resp.body.model.verifyResult----  ${resp.body.model.verifyResult}")
+            if (resp.body.model.verifyResult == "PASS") {
                 val u = resp.body.model.phoneNumber?.let { userrepository.findByPhone(it) }
-                if (u != null){
+                if (u != null) {
                     val s = CopierUtil.copyProperties(u, UserVO::class.java)
                     BaseResult.SUCCESS("手机号已经注册直接登录", s)
-                }else{
+                } else {
                     val user = User()
                     user.account = resp.body.model.phoneNumber
                     user.phone = resp.body.model.phoneNumber
                     user.password = resp.body.model.phoneNumber
-                    user.token = TokenService.getToken(user)
+                    user.token = tokenService.getToken(user)
                     user.likeStarts = 0
                     user.creatTime = Date()
                     user.userSex = false
@@ -767,15 +771,28 @@ class UserServiceImpl : UserService {
                     logger.info("注册成功---  " + s.toString())
                     BaseResult.SUCCESS(s)
                 }
-            }else{
-                 BaseResult.FAIL("验证失败")
+            } else {
+                BaseResult.FAIL("验证失败")
             }
-
-
         }
-
-
     }
 
+    override fun updateUserToken(user: User) {
+        userrepository.save(user)
+        logger.info("更新用户token成功：${user.phone}")
+    }
+
+    /**
+     * 用户登出
+     */
+    override fun logout(body: ReqBody): BaseResult {
+        val phone = body.phone ?: return BaseResult.FAIL("手机号不能为空")
+        
+        // 使token失效
+        tokenService.invalidateToken(phone)
+        
+        logger.info("用户登出成功: $phone")
+        return BaseResult.SUCCESS("登出成功")
+    }
 
 }
